@@ -1,0 +1,162 @@
+\section{Conclusion}
+
+\begin{frame}[plain]
+    \sectionpage
+\end{frame}
+
+\begin{frame}
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item Explored eBPF for container security
+            \begin{itemize}
+                \item Real-time monitoring and anomaly detection
+                \item Minimizing performance overhead
+            \end{itemize}
+        \item Three case studies
+            \begin{itemize}
+                \item Distinct security challenges
+                \item Each builds on prior lessons
+            \end{itemize}
+        \item eBPF is practical for container security
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item Iterative case study development
+        \begin{itemize}
+            \item Revealed eBPF constraints and capabilities
+        \end{itemize}
+        \item Minimal kernel space component $\rightarrow$ lower security risks, easier verification
+        \item Complex logic: add to user space component
+    \end{itemize}
+\end{frame}
+
+% Removed: covered in Synthesis and Case Study Discussion
+% \begin{frame}
+%     \frametitle{Conclusion}
+%     \begin{itemize}
+%         \item Case Study: Runtime Auditing of Containerized Shell Sessions
+%             \begin{itemize}
+%                 \item An eBPF program was used to trace commands typed within Bash shells running inside containers
+%                 \item Integrated with Kubernetes \textit{Events}
+%                 \item Persistent and auditable trail of user actions
+%                 \item Complex infrastructure to inject eBPF programs into specific containers
+%                     \begin{itemize}
+%                         \item Custom runc wrapper
+%                         \item HTTP service architecture
+%                     \end{itemize}
+%                     % \item Careful namespace management
+%             \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+% Removed: covered in Synthesis and Case Study Discussion
+% \begin{frame}
+%     \frametitle{Conclusion}
+%     \begin{itemize}
+%         \item Case Study: System Call Tracing for Privilege Escalation Detection
+%             \begin{itemize}
+%                 \item Anomaly detection through a variation of the Bag of System Calls (BoSC) technique
+%                 \item Instrumented raw tracepoints with eBPF to trace syscalls
+%                 \item The solution achieved high-performance system call tracing
+%                     % \item Raw tracepoint programs demonstrated superior performance compared to kprobe and traditional tracepoint alternatives.
+%                     % \item Approximately 70\% of the measured data points, execution times closely mirrored baseline conditions with only minor overhead
+%                 \item Solution successfully detected a simulated container escape attempt
+%                 \item Challenges implementing complex logic in eBPF due to the strictness of the verifier
+%             \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+% Removed: covered in Synthesis and Case Study Discussion
+% \begin{frame}
+%     \frametitle{Conclusion}
+%     \begin{itemize}
+%         \item Case Study: Real-Time Traffic Spike Detection in Container Networks
+%             \begin{itemize}
+%                 \item XDP-based eBPF program to detect abnormal spikes in ingress traffic to containerized services
+%                 \item Integrated with OpenShift
+%                     % \item Minimal Median latency increases for Redis operations
+%                 \item Successfully applied lessons learned from previous studies
+%                 \item Minimal kernel-space complexity
+%                 \item More sophisticated anomaly detection logic in the user space
+%             \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Limitations}
+    \begin{itemize}
+        \item eBPF limitations
+            \begin{itemize}
+                \item Requires elevated privileges
+                \item Verifier strictness
+                \item Complex real-time analysis is hard in kernel space
+                \item Deployment of solution is complex
+            \end{itemize}
+        \item Research scope
+            \begin{itemize}
+                \item Narrow range of security scenarios covered
+                \item eBPF-based programs introduce an additional layer, which can present extra security risks
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item Future work
+            \begin{itemize}
+                \item \textbf{Case Study: System Call Tracing for Privilege Escalation Detection with Kubernetes}
+                    \begin{itemize}
+                        \item Kubernetes Integration
+                        \item Full BoSC with ML classifiers
+                        \item Real exploits
+                    \end{itemize}
+                \item \textbf{Case Study: Real-Time Traffic Spike Detection in Container Networks}
+                    \begin{itemize}
+                        \item Noisy neighbor effect
+                    \end{itemize}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item Future work
+        \begin{itemize}
+            \item Cover additional attack vectors
+            \item Automate deployment via Kubernetes Operators
+            \item Investigate
+                \begin{itemize}
+                    \item Combined syscall + network overhead
+                    \item Why some Redis operations are more affected?
+                \end{itemize}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Publications}
+    \begin{itemize}
+        \item Runtime Auditing of Containerized Shell Sessions
+            \begin{itemize}
+                \item BERTINATTO, F. J. et al. \textbf{Container-level auditing in container orchestrators with eBPF}. Advanced Information Networking and Applications (AINA), 2024.
+            \end{itemize}
+        \item System Call Tracing for Privilege Escalation Detection with Kubernetes
+            \begin{itemize}
+                \item BERTINATTO, F. J. et al. \textbf{eBPF-Based Approach to Tracing System Calls and Predicting Privilege Escalation Attacks}. IEEE Global Communications Conference (GLOBECOM), 2024.
+            \end{itemize}
+        \item Real-Time Traffic Spike Detection in Container Networks
+            \begin{itemize}
+                \item Target: GLOBECOM 2026
+            \end{itemize}
+        \item This thesis
+            \begin{itemize}
+                \item Target: Journal/Magazine (to be determined)
+            \end{itemize}
+    \end{itemize}
+\end{frame}

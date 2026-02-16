@@ -1,0 +1,1692 @@
+
+{
+  "containers": [
+    {
+      "id": "751cd3358c8af9ee136d09d56243bcafaff964bee2197431e42025cef0ad385f",
+      "podSandboxId": "80a1709b58776db81de82eb3fb329e999d0673f99a6eed6e8d45dd209da40d5f",
+      "metadata": {
+        "name": "xdp",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/bertinatto/xdp@sha256:cf30e74d6cbbbd39f94fa8d8ac639021f0accaa361dfe9c881af18d10dc12635",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/bertinatto/xdp@sha256:cf30e74d6cbbbd39f94fa8d8ac639021f0accaa361dfe9c881af18d10dc12635",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734276504223773266",
+      "labels": {
+        "io.kubernetes.container.name": "xdp",
+        "io.kubernetes.pod.name": "xdp-rlm8b",
+        "io.kubernetes.pod.namespace": "default",
+        "io.kubernetes.pod.uid": "7a4b2b0e-24bd-41c7-890e-485cf32fd59e"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "8f47c258",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "File",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "409a59dfe93ad391c67c690741a912e7a432a1540b7bdf80f24de35f4aee4012",
+      "podSandboxId": "d71324a87cb7eb2d779f984d5b901259111a3bf2003d45c31798a7a322dabb1e",
+      "metadata": {
+        "name": "app",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/centos/centos@sha256:913a42691c8dcda375f162d030dfa77ab481526c504008299650314ba2fb968e",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/centos/centos@sha256:913a42691c8dcda375f162d030dfa77ab481526c504008299650314ba2fb968e",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734266757036655916",
+      "labels": {
+        "io.kubernetes.container.name": "app",
+        "io.kubernetes.pod.name": "app",
+        "io.kubernetes.pod.namespace": "default",
+        "io.kubernetes.pod.uid": "15b196ff-1e09-4f7b-8fce-336920c60f41"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "94b8e017",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "File",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "967986a9aafa55f3552b8cf5390e3aaf171b043e83183a954a2226e11678b561",
+      "podSandboxId": "fac654cba7f3f8020506c5c887e9ecb6604f9f36135da61a0917eed9f9cc2404",
+      "metadata": {
+        "name": "networking-console-plugin",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f059a03e3c24595e806b9a111354082c0a7063b62c266970b116403763e2d8a4",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f059a03e3c24595e806b9a111354082c0a7063b62c266970b116403763e2d8a4",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265893303810735",
+      "labels": {
+        "io.kubernetes.container.name": "networking-console-plugin",
+        "io.kubernetes.pod.name": "networking-console-plugin-6d4b746747-k4qwd",
+        "io.kubernetes.pod.namespace": "openshift-network-console",
+        "io.kubernetes.pod.uid": "50ee9c66-f274-4123-abec-15fcb949b037"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "d6726698",
+        "io.kubernetes.container.ports": "[{\"name\":\"https\",\"containerPort\":9443,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "4cef6b0261b9d48a9df77cc2356201cb4f0694432893ec0694e278d70bf32632",
+      "podSandboxId": "55abbd1b0cd8eacc207211eb612b4cb38fc97881c319cb658f7c7b2efd8fe039",
+      "metadata": {
+        "name": "prom-label-proxy",
+        "attempt": 0
+      },
+      "image": {
+        "image": "566acd1b0dce52a14dc8a352b03802ddeef5bcfc91ef46abe2f179f152111c31",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d00692d420c6921241ab0a653a38099c795e4205342421f1bc612f26909b56fa",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265827473254654",
+      "labels": {
+        "io.kubernetes.container.name": "prom-label-proxy",
+        "io.kubernetes.pod.name": "alertmanager-main-1",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "03e42ea4-6c14-4b2a-95e6-263c173c3532"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "ac51878f",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "3c61de4c174c05c46f74b06b0d0dfba6b7140a32b6cc3f58aa56687238c4a92a",
+      "podSandboxId": "55abbd1b0cd8eacc207211eb612b4cb38fc97881c319cb658f7c7b2efd8fe039",
+      "metadata": {
+        "name": "kube-rbac-proxy-metric",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265827424355033",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy-metric",
+        "io.kubernetes.pod.name": "alertmanager-main-1",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "03e42ea4-6c14-4b2a-95e6-263c173c3532"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "3ae8d6bb",
+        "io.kubernetes.container.ports": "[{\"name\":\"metrics\",\"containerPort\":9097,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "1ea13b8a98ae3542971dd56a8d55776a56e7da9cdfb590a5c4ce3a6b48daeb91",
+      "podSandboxId": "d09f1fab9ca8783335152e7d13937eb05c9d6eca7e760f4c202eb5f08b219360",
+      "metadata": {
+        "name": "kube-rbac-proxy",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265827378997109",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy",
+        "io.kubernetes.pod.name": "telemeter-client-6858c6c4b6-9hpkc",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "abb91ff5-6833-4740-81ef-ee3f78a389b3"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "ac1abf86",
+        "io.kubernetes.container.ports": "[{\"name\":\"https\",\"containerPort\":8443,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "1f3cae41a6425133a100c3017939cfc4cfa4250b8ffd11389bf986a980f03faa",
+      "podSandboxId": "55abbd1b0cd8eacc207211eb612b4cb38fc97881c319cb658f7c7b2efd8fe039",
+      "metadata": {
+        "name": "kube-rbac-proxy",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265827370613050",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy",
+        "io.kubernetes.pod.name": "alertmanager-main-1",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "03e42ea4-6c14-4b2a-95e6-263c173c3532"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "ac1abf86",
+        "io.kubernetes.container.ports": "[{\"name\":\"tenancy\",\"containerPort\":9092,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "b158db3764e693bdb3ec63eb939957c9cce4c4537e78e65fe0ce4576a03b9d1d",
+      "podSandboxId": "55abbd1b0cd8eacc207211eb612b4cb38fc97881c319cb658f7c7b2efd8fe039",
+      "metadata": {
+        "name": "kube-rbac-proxy-web",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265827319067731",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy-web",
+        "io.kubernetes.pod.name": "alertmanager-main-1",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "03e42ea4-6c14-4b2a-95e6-263c173c3532"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "16fa2541",
+        "io.kubernetes.container.ports": "[{\"name\":\"web\",\"containerPort\":9095,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "26f4ff0d60ff3aaaeb6c0694137ecebac0ca23fee44b0ee3a2b76af8608dab17",
+      "podSandboxId": "d09f1fab9ca8783335152e7d13937eb05c9d6eca7e760f4c202eb5f08b219360",
+      "metadata": {
+        "name": "reload",
+        "attempt": 0
+      },
+      "image": {
+        "image": "d55dfcb1f0d86d4bb2b1befa9e4279988099c5d4450af262e9d4e2782b1a9cea",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b7ba3ac74782bb734a48f96b9f8cd384ccff957e154a36333e237b924d5ba903",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265827319030897",
+      "labels": {
+        "io.kubernetes.container.name": "reload",
+        "io.kubernetes.pod.name": "telemeter-client-6858c6c4b6-9hpkc",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "abb91ff5-6833-4740-81ef-ee3f78a389b3"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "1db870c5",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "c9d255c55243ac8711560a7309dd38d92004fa145b884fba21d880a2370e4ec8",
+      "podSandboxId": "55abbd1b0cd8eacc207211eb612b4cb38fc97881c319cb658f7c7b2efd8fe039",
+      "metadata": {
+        "name": "config-reloader",
+        "attempt": 0
+      },
+      "image": {
+        "image": "d55dfcb1f0d86d4bb2b1befa9e4279988099c5d4450af262e9d4e2782b1a9cea",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b7ba3ac74782bb734a48f96b9f8cd384ccff957e154a36333e237b924d5ba903",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265827277108769",
+      "labels": {
+        "io.kubernetes.container.name": "config-reloader",
+        "io.kubernetes.pod.name": "alertmanager-main-1",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "03e42ea4-6c14-4b2a-95e6-263c173c3532"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "89eae8f4",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "7e2d6221e67070334b85a30f5a5fafab4422619d0d056e5a1d6ef985cf21da93",
+      "podSandboxId": "d09f1fab9ca8783335152e7d13937eb05c9d6eca7e760f4c202eb5f08b219360",
+      "metadata": {
+        "name": "telemeter-client",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:49544fd8d23de917a2af00ec45f23192efacb96ca41742fef7dff86359033851",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:49544fd8d23de917a2af00ec45f23192efacb96ca41742fef7dff86359033851",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265827265401208",
+      "labels": {
+        "io.kubernetes.container.name": "telemeter-client",
+        "io.kubernetes.pod.name": "telemeter-client-6858c6c4b6-9hpkc",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "abb91ff5-6833-4740-81ef-ee3f78a389b3"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "be2d1573",
+        "io.kubernetes.container.ports": "[{\"name\":\"http\",\"containerPort\":8080,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "abc6b52c7ab77e967f90bf882b5db2c3fd89f79af05c996c7b5a0c15d2410fe0",
+      "podSandboxId": "55abbd1b0cd8eacc207211eb612b4cb38fc97881c319cb658f7c7b2efd8fe039",
+      "metadata": {
+        "name": "alertmanager",
+        "attempt": 0
+      },
+      "image": {
+        "image": "7e7f1bd82885a49987490d7f4059c4ba77a228d0c6368f13561856f187230ea5",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:dc40821529d19fb4172d1bc7bdab615727a323c7e686c166b85c9b9c1b1419d6",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265827231199421",
+      "labels": {
+        "io.kubernetes.container.name": "alertmanager",
+        "io.kubernetes.pod.name": "alertmanager-main-1",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "03e42ea4-6c14-4b2a-95e6-263c173c3532"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "931b8605",
+        "io.kubernetes.container.ports": "[{\"name\":\"mesh-tcp\",\"containerPort\":9094,\"protocol\":\"TCP\"},{\"name\":\"mesh-udp\",\"containerPort\":9094,\"protocol\":\"UDP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "bff192835c4b344a38b1c7a6054e44d24f795d3893d75e01ba0592971d8baca6",
+      "podSandboxId": "82adf415405465c75c8039ff5402ea27d4e0dc1336ec2479a3ac7f5674b94c26",
+      "metadata": {
+        "name": "download-server",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5f3cd9190b2c548ed5271bf52b07987cd329dc80c7ea7ab17f3ce19577429bb6",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5f3cd9190b2c548ed5271bf52b07987cd329dc80c7ea7ab17f3ce19577429bb6",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265724784323075",
+      "labels": {
+        "io.kubernetes.container.name": "download-server",
+        "io.kubernetes.pod.name": "downloads-7c648cbc7-dms6f",
+        "io.kubernetes.pod.namespace": "openshift-console",
+        "io.kubernetes.pod.uid": "e2ee3fc1-ca1f-49f0-8aac-9d05f74e347e"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "9e257abb",
+        "io.kubernetes.container.ports": "[{\"name\":\"http\",\"containerPort\":8080,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "0"
+      }
+    },
+    {
+      "id": "ff7b83c1d34f1e6afa26343f4cd1ded298acb01a323f2367102ef266f5c6854d",
+      "podSandboxId": "4654bdd9d6b88931cfe24fb09cfd2c6a2ae08a6df01e37154f8ecf6c1aa98106",
+      "metadata": {
+        "name": "registry",
+        "attempt": 0
+      },
+      "image": {
+        "image": "0bb8eadb20a4088dc557aabf3b138d22e01ecc5e21488e7dc5d487410daef6e0",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:70478939861e0c267bc0c61097e7743a01964e728b2191021692752d496ee61f",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265670621591274",
+      "labels": {
+        "io.kubernetes.container.name": "registry",
+        "io.kubernetes.pod.name": "image-registry-79f9875859-qb6t2",
+        "io.kubernetes.pod.namespace": "openshift-image-registry",
+        "io.kubernetes.pod.uid": "e5be090d-4e47-428a-a4c8-d4a2a7648bba"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "6478427",
+        "io.kubernetes.container.ports": "[{\"containerPort\":5000,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.preStopHandler": "{\"exec\":{\"command\":[\"sleep\",\"25\"]}}",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "55"
+      }
+    },
+    {
+      "id": "c691215fea0ea2971e7370ac37ea48596bb7110e263afb5d9f3a934df86f1fc2",
+      "podSandboxId": "1606308f192cca3fd0d4dfe1d3dd4ef30931daf595579223c3313e1d27d0f43f",
+      "metadata": {
+        "name": "monitoring-plugin",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7b299f20706fee96273a5f4e60bfc15c97aca48ebd74330dabcac55752fe81d2",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7b299f20706fee96273a5f4e60bfc15c97aca48ebd74330dabcac55752fe81d2",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265670359086232",
+      "labels": {
+        "io.kubernetes.container.name": "monitoring-plugin",
+        "io.kubernetes.pod.name": "monitoring-plugin-56d8674f94-8vnj9",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "8c52dab7-fc92-4992-898a-9a09cd5ebb8e"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "63adaabb",
+        "io.kubernetes.container.ports": "[{\"name\":\"https\",\"containerPort\":9443,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "2ef14049ad5499828e9269984b45d3def514f5bc0fa60c761d9f855b6071f2fa",
+      "podSandboxId": "bebde0ce10511465a82483a41e8a69cb8fd25ae2c7c9281a1ddf47f81f7eb61f",
+      "metadata": {
+        "name": "node-ca",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:70478939861e0c267bc0c61097e7743a01964e728b2191021692752d496ee61f",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:70478939861e0c267bc0c61097e7743a01964e728b2191021692752d496ee61f",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265662793692415",
+      "labels": {
+        "io.kubernetes.container.name": "node-ca",
+        "io.kubernetes.pod.name": "node-ca-nxsvz",
+        "io.kubernetes.pod.namespace": "openshift-image-registry",
+        "io.kubernetes.pod.uid": "b0135264-aa37-4984-b574-5217801d8344"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "bd874a53",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "fccaa9df34edfb2c70446add25728b2d24866665d12ed92f5121be6e3d713c3c",
+      "podSandboxId": "00fb093b347ea95be3e12dbbaddb0e897ad610e80524d1f37b0d4c06688a39fe",
+      "metadata": {
+        "name": "kube-rbac-proxy-metrics",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265513363885652",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy-metrics",
+        "io.kubernetes.pod.name": "thanos-querier-6db9f684b6-vkvd8",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "349f0c59-d5f0-40ce-a248-221a58ca314f"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "25922eea",
+        "io.kubernetes.container.ports": "[{\"name\":\"metrics\",\"containerPort\":9094,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "c043259bc356fc48f30e63dc7f8f513e88cc90723f4cbbdd06746261910fc298",
+      "podSandboxId": "00fb093b347ea95be3e12dbbaddb0e897ad610e80524d1f37b0d4c06688a39fe",
+      "metadata": {
+        "name": "kube-rbac-proxy-rules",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265513325670576",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy-rules",
+        "io.kubernetes.pod.name": "thanos-querier-6db9f684b6-vkvd8",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "349f0c59-d5f0-40ce-a248-221a58ca314f"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "1733ee22",
+        "io.kubernetes.container.ports": "[{\"name\":\"tenancy-rules\",\"containerPort\":9093,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "b0a4dcd0ddd24d633dadae2c98d7b4e6d9ec20365d958bab570f879e5e8fbc20",
+      "podSandboxId": "00fb093b347ea95be3e12dbbaddb0e897ad610e80524d1f37b0d4c06688a39fe",
+      "metadata": {
+        "name": "prom-label-proxy",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d00692d420c6921241ab0a653a38099c795e4205342421f1bc612f26909b56fa",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d00692d420c6921241ab0a653a38099c795e4205342421f1bc612f26909b56fa",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265513285818102",
+      "labels": {
+        "io.kubernetes.container.name": "prom-label-proxy",
+        "io.kubernetes.pod.name": "thanos-querier-6db9f684b6-vkvd8",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "349f0c59-d5f0-40ce-a248-221a58ca314f"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "ac51878f",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "b9cb20c808bfe25bf67d5089c23dc98241c2419be6d472c5eaa062d9cb44be3b",
+      "podSandboxId": "00fb093b347ea95be3e12dbbaddb0e897ad610e80524d1f37b0d4c06688a39fe",
+      "metadata": {
+        "name": "kube-rbac-proxy",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265512385469832",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy",
+        "io.kubernetes.pod.name": "thanos-querier-6db9f684b6-vkvd8",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "349f0c59-d5f0-40ce-a248-221a58ca314f"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "ac1abf86",
+        "io.kubernetes.container.ports": "[{\"name\":\"tenancy\",\"containerPort\":9092,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "c001e68763061e6d7dd893e3a9784e7aecc05a4e6e4c5d9b6d881fdfd2ee1d3f",
+      "podSandboxId": "00fb093b347ea95be3e12dbbaddb0e897ad610e80524d1f37b0d4c06688a39fe",
+      "metadata": {
+        "name": "kube-rbac-proxy-web",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265512343490484",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy-web",
+        "io.kubernetes.pod.name": "thanos-querier-6db9f684b6-vkvd8",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "349f0c59-d5f0-40ce-a248-221a58ca314f"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "16fa2541",
+        "io.kubernetes.container.ports": "[{\"name\":\"web\",\"containerPort\":9091,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "85dc779961cd08547ef4620617540d61a1ccd6dbb5f42788a324a36cdd03b38d",
+      "podSandboxId": "00fb093b347ea95be3e12dbbaddb0e897ad610e80524d1f37b0d4c06688a39fe",
+      "metadata": {
+        "name": "thanos-query",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0e8d4c193d982650a8294f1f24c5ddcccaa3f78939aa26d81a38485eb5cdb456",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0e8d4c193d982650a8294f1f24c5ddcccaa3f78939aa26d81a38485eb5cdb456",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265512304545733",
+      "labels": {
+        "io.kubernetes.container.name": "thanos-query",
+        "io.kubernetes.pod.name": "thanos-querier-6db9f684b6-vkvd8",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "349f0c59-d5f0-40ce-a248-221a58ca314f"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "102ab3a8",
+        "io.kubernetes.container.ports": "[{\"name\":\"http\",\"containerPort\":9090,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "120"
+      }
+    },
+    {
+      "id": "c98e68ccf3f86f04b9735f1a00902a31aac095415e12dd077d7c221942171aca",
+      "podSandboxId": "bd7e2ae0acac6eb58799952796c8ddca7615792b1a511ab616759e7a7f00bd89",
+      "metadata": {
+        "name": "serve-healthcheck-canary",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:da972843bb6390cd932ca40d4e880cc5cf31864b36171fb4236092e025c95a11",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:da972843bb6390cd932ca40d4e880cc5cf31864b36171fb4236092e025c95a11",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265240105028228",
+      "labels": {
+        "io.kubernetes.container.name": "serve-healthcheck-canary",
+        "io.kubernetes.pod.name": "ingress-canary-mfq85",
+        "io.kubernetes.pod.namespace": "openshift-ingress-canary",
+        "io.kubernetes.pod.uid": "87ec991d-78c6-4707-9f80-c5fd0da9047a"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "e6d043e8",
+        "io.kubernetes.container.ports": "[{\"containerPort\":8443,\"protocol\":\"TCP\"},{\"containerPort\":8888,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "e62fb4ac6784c3b1c573b9b4c1a65a39b3ab2c91ff49083bd3d6077b47eed97d",
+      "podSandboxId": "cb1211e5ffd92d8a89c21bc9401b398ae255a4618f7fcb5f1a82d8c62a9e912c",
+      "metadata": {
+        "name": "router",
+        "attempt": 1
+      },
+      "image": {
+        "image": "5a1b00f5c42de48f4baf72d36dd1075b3844fcb0d16bd2a475924588ae89fe28",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:24572c990e25eb081fa7045ccd5cb56b385433e95007c11a8f5433d1b52aa617",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265226599098792",
+      "labels": {
+        "io.kubernetes.container.name": "router",
+        "io.kubernetes.pod.name": "router-default-575f7d4f88-m7qrq",
+        "io.kubernetes.pod.namespace": "openshift-ingress",
+        "io.kubernetes.pod.uid": "310aa039-675b-4ca6-a803-18b2fb82d47c"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "d0971517",
+        "io.kubernetes.container.ports": "[{\"name\":\"http\",\"containerPort\":80,\"protocol\":\"TCP\"},{\"name\":\"https\",\"containerPort\":443,\"protocol\":\"TCP\"},{\"name\":\"metrics\",\"containerPort\":1936,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "1",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "3600"
+      }
+    },
+    {
+      "id": "7c62248f147a4a889f9bc0001e77b6dce3c11f29db2d7aef6d0ed67a23bce420",
+      "podSandboxId": "a7d330422ae57adc4b25d68b97ff5aad9cc1c39e0a657563abba42255c89ca7f",
+      "metadata": {
+        "name": "metrics-server",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:76fc864f1c6569d878dfe32d52e6688a588e7ed0f08ff32c8c31c9f9f03ccd40",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:76fc864f1c6569d878dfe32d52e6688a588e7ed0f08ff32c8c31c9f9f03ccd40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265079530414287",
+      "labels": {
+        "io.kubernetes.container.name": "metrics-server",
+        "io.kubernetes.pod.name": "metrics-server-564b6c8bf6-wsm9t",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "c153df17-b1c3-478e-bb42-e0f1c6026639"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "284fb627",
+        "io.kubernetes.container.ports": "[{\"name\":\"https\",\"containerPort\":10250,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "170"
+      }
+    },
+    {
+      "id": "96a696a51a3eb582e00e39b87c51d9f1357859c078a97bcfffd903c13adb49bb",
+      "podSandboxId": "084fe8be0752d31dadf132bc3c5296aff619972d53ccb85235c8907a7057d5a8",
+      "metadata": {
+        "name": "network-check-target-container",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a0f4997d2472caa00c5bd11ed702b30d44ed66e166c9206d041fb9a40d0a1cf9",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a0f4997d2472caa00c5bd11ed702b30d44ed66e166c9206d041fb9a40d0a1cf9",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265078675087897",
+      "labels": {
+        "io.kubernetes.container.name": "network-check-target-container",
+        "io.kubernetes.pod.name": "network-check-target-xvrzr",
+        "io.kubernetes.pod.namespace": "openshift-network-diagnostics",
+        "io.kubernetes.pod.uid": "ecfc7b22-ce79-4890-840f-3f30d8361cc7"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "c8a2c0e5",
+        "io.kubernetes.container.ports": "[{\"containerPort\":8080,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "10"
+      }
+    },
+    {
+      "id": "22855453885cd9d9d8ac14323d85222ef9bfa991fba64d58fb3b3dd5f02565c0",
+      "podSandboxId": "c18831428b192f15a3ef9ba027666c9e2ef989d3ad52412f1cd137bf69833389",
+      "metadata": {
+        "name": "kube-rbac-proxy",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265077448714706",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy",
+        "io.kubernetes.pod.name": "network-metrics-daemon-s5b7k",
+        "io.kubernetes.pod.namespace": "openshift-multus",
+        "io.kubernetes.pod.uid": "4b9ca5dd-e4d2-431f-be7d-c37891ddcef5"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "ac1abf86",
+        "io.kubernetes.container.ports": "[{\"name\":\"https\",\"containerPort\":8443,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "c11b2d7b5ed43d7b1f913bbf3f8eef171ac4750d73174430bb31c9dc53931123",
+      "podSandboxId": "c18831428b192f15a3ef9ba027666c9e2ef989d3ad52412f1cd137bf69833389",
+      "metadata": {
+        "name": "network-metrics-daemon",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bf8b6a613817485293cce646d88abf04d6e4857ac998c3bb9a978aa7d4f0deb5",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bf8b6a613817485293cce646d88abf04d6e4857ac998c3bb9a978aa7d4f0deb5",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265077322152311",
+      "labels": {
+        "io.kubernetes.container.name": "network-metrics-daemon",
+        "io.kubernetes.pod.name": "network-metrics-daemon-s5b7k",
+        "io.kubernetes.pod.namespace": "openshift-multus",
+        "io.kubernetes.pod.uid": "4b9ca5dd-e4d2-431f-be7d-c37891ddcef5"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "9d77772c",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "ae0bca33e22f2d85983807236cf8138faa2d09dd0f0f1fdbdd88cc1d69bbdf7d",
+      "podSandboxId": "985c6d69e98c6cd4291fd3642fc3f0138d940872384464b712536e0f575226e2",
+      "metadata": {
+        "name": "openshift-state-metrics",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5f87a72dd374966cf8fbf1ab5451257c96750cc9928acd24ab6932e7025d0540",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5f87a72dd374966cf8fbf1ab5451257c96750cc9928acd24ab6932e7025d0540",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265073995035719",
+      "labels": {
+        "io.kubernetes.container.name": "openshift-state-metrics",
+        "io.kubernetes.pod.name": "openshift-state-metrics-6694d67ddf-5mhwc",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "48d586bb-1a40-4bf0-9ffe-0241cc6d0678"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "55f1a975",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "5d32389edf15f5183b0f570464581242c4041611285a3362dc2fb2485194a759",
+      "podSandboxId": "c3e55c0a9952f224882880c6d038c741b4230be64d114b060edbbc364a4ffa75",
+      "metadata": {
+        "name": "kube-rbac-proxy",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265073918635287",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy",
+        "io.kubernetes.pod.name": "node-exporter-6nbrr",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "6ff04f27-607b-45c9-8c98-7e98a73c0af2"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "ac1abf86",
+        "io.kubernetes.container.ports": "[{\"name\":\"https\",\"hostPort\":9100,\"containerPort\":9100,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "a226cc3013697ecc5cdbe3dc8f7818d2e9e05b80e8809cf42ca8345457ab4208",
+      "podSandboxId": "c3e55c0a9952f224882880c6d038c741b4230be64d114b060edbbc364a4ffa75",
+      "metadata": {
+        "name": "node-exporter",
+        "attempt": 0
+      },
+      "image": {
+        "image": "f6869f7a7d035a938a860ebbb8b9c0e1ff8e0b48a1f9051adc8c298b9017b894",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:83863c9fd392d964312baca33ee94b8d6db8e2bb33f242c3dda0dae2d5df7f99",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265073723366529",
+      "labels": {
+        "io.kubernetes.container.name": "node-exporter",
+        "io.kubernetes.pod.name": "node-exporter-6nbrr",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "6ff04f27-607b-45c9-8c98-7e98a73c0af2"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "f3878c1f",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "4b1893bae1cf085e5f5e409117d8bcdf8ed75245369360ad7bde0f0890dd28cf",
+      "podSandboxId": "985c6d69e98c6cd4291fd3642fc3f0138d940872384464b712536e0f575226e2",
+      "metadata": {
+        "name": "kube-rbac-proxy-self",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265072191369791",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy-self",
+        "io.kubernetes.pod.name": "openshift-state-metrics-6694d67ddf-5mhwc",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "48d586bb-1a40-4bf0-9ffe-0241cc6d0678"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "d65c89ca",
+        "io.kubernetes.container.ports": "[{\"name\":\"https-self\",\"containerPort\":9443,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "464c923971f793b2ffed0ed1b0672c84294a3ebd491bb802c160dab8da9b2637",
+      "podSandboxId": "985c6d69e98c6cd4291fd3642fc3f0138d940872384464b712536e0f575226e2",
+      "metadata": {
+        "name": "kube-rbac-proxy-main",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265072096576290",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy-main",
+        "io.kubernetes.pod.name": "openshift-state-metrics-6694d67ddf-5mhwc",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "48d586bb-1a40-4bf0-9ffe-0241cc6d0678"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "d9e8d431",
+        "io.kubernetes.container.ports": "[{\"name\":\"https-main\",\"containerPort\":8443,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "57ba7c2cb388c16cdccc9de81df0f56389483d14897ab907432f48acb830f640",
+      "podSandboxId": "1b46d1cc291587d3e60cc7db1d1168eb80a1a0051c0001e1d15818c1cf83db73",
+      "metadata": {
+        "name": "kube-rbac-proxy",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265062169469595",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy",
+        "io.kubernetes.pod.name": "dns-default-bx5dc",
+        "io.kubernetes.pod.namespace": "openshift-dns",
+        "io.kubernetes.pod.uid": "a4e137ca-13c9-487f-927b-bf73deb11567"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "ac1abf86",
+        "io.kubernetes.container.ports": "[{\"name\":\"metrics\",\"containerPort\":9154,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "8fdb0ac15d368976f615bf1c3471568ff93cd97d11068ccb674f6fc9c9375af3",
+      "podSandboxId": "6e1ea0874f10371a1e671d229b5c8008f666cec4b800f85333a157a3a4c542cc",
+      "metadata": {
+        "name": "prometheus-operator-admission-webhook",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45b9b000222015a7431fed81a63cfb0dfa66b30dfca2db6bdc111ba2dd2d489f",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45b9b000222015a7431fed81a63cfb0dfa66b30dfca2db6bdc111ba2dd2d489f",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265062084055833",
+      "labels": {
+        "io.kubernetes.container.name": "prometheus-operator-admission-webhook",
+        "io.kubernetes.pod.name": "prometheus-operator-admission-webhook-6f58f8dc7d-psb2l",
+        "io.kubernetes.pod.namespace": "openshift-monitoring",
+        "io.kubernetes.pod.uid": "5f362a49-f46a-41ee-9eb7-76f96b3eab5d"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "3714f5ae",
+        "io.kubernetes.container.ports": "[{\"name\":\"https\",\"containerPort\":8443,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "eef27a906c2b7ecb36922e30a973d068921744d657ecc152dc6a0f5413790fcb",
+      "podSandboxId": "1b46d1cc291587d3e60cc7db1d1168eb80a1a0051c0001e1d15818c1cf83db73",
+      "metadata": {
+        "name": "dns",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bde335525ce4e297f94f6dd086e894724604b83cd7c2fcac61f9df2b2cc3016c",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bde335525ce4e297f94f6dd086e894724604b83cd7c2fcac61f9df2b2cc3016c",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265062077188875",
+      "labels": {
+        "io.kubernetes.container.name": "dns",
+        "io.kubernetes.pod.name": "dns-default-bx5dc",
+        "io.kubernetes.pod.namespace": "openshift-dns",
+        "io.kubernetes.pod.uid": "a4e137ca-13c9-487f-927b-bf73deb11567"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "b9f54e4b",
+        "io.kubernetes.container.ports": "[{\"name\":\"dns\",\"containerPort\":5353,\"protocol\":\"UDP\"},{\"name\":\"dns-tcp\",\"containerPort\":5353,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "aaed7b99b22cfe54cf53bc4e5c5ebb22e54486c93c474773e1ed993fee96f49c",
+      "podSandboxId": "e4fe68734faa90f03bb3c071f25d853246e2ddab26ce480140dfcc32593d6c12",
+      "metadata": {
+        "name": "iptables-alerter",
+        "attempt": 0
+      },
+      "image": {
+        "image": "bc9079d460a2588867ac12abd3f0e9d2257a0d80566bb08981220f3c50319e96",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1bb82d081495c2bb42f1b553b9a9bccac884d5e9b50ad341686912d3ad9c5108",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265059433653194",
+      "labels": {
+        "io.kubernetes.container.name": "iptables-alerter",
+        "io.kubernetes.pod.name": "iptables-alerter-kvxgs",
+        "io.kubernetes.pod.namespace": "openshift-network-operator",
+        "io.kubernetes.pod.uid": "6aaa9605-7171-4a1d-98a8-38b1041675e5"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "2716cd16",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "10"
+      }
+    },
+    {
+      "id": "5a78117cd4105726ed2f295ded4a208d1a6343897f6f4d138f62b489f8565cc7",
+      "podSandboxId": "62a5a9b9f92581a4683a4807d1ab6c2b238cca351281ceb0ee26f55cc939f0a9",
+      "metadata": {
+        "name": "kube-multus-additional-cni-plugins",
+        "attempt": 0
+      },
+      "image": {
+        "image": "7cb204a29d2195271d16eb85011ac21f86fc57068e4aab63ebb9290ff4327f5d",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5b325c417835f0dd42978f874c631c824f071b9c1f5214c8c99441095e316662",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265054415038286",
+      "labels": {
+        "io.kubernetes.container.name": "kube-multus-additional-cni-plugins",
+        "io.kubernetes.pod.name": "multus-additional-cni-plugins-kmvg2",
+        "io.kubernetes.pod.namespace": "openshift-multus",
+        "io.kubernetes.pod.uid": "9c00f189-2ee7-4eca-b3bf-85771e03df51"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "bafcc954",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "10"
+      }
+    },
+    {
+      "id": "2c809cf0987ba88cc43cb6648c01c72fa47d9a954b91e5c69489697a20b18142",
+      "podSandboxId": "5f05331a5b4cfd54deadc976f4cfff62da356e56bfa21abc8af895a395867311",
+      "metadata": {
+        "name": "ovnkube-controller",
+        "attempt": 0
+      },
+      "image": {
+        "image": "ca9c1fe3148b4a299e8accac635cda5df4ce45db37a9e4c517f97f16e9a9ccd7",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:68bd75166616e15b301a348f042b06a0612ff0f9f552719cb3104355415f6e9d",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265052847132022",
+      "labels": {
+        "io.kubernetes.container.name": "ovnkube-controller",
+        "io.kubernetes.pod.name": "ovnkube-node-rnlxq",
+        "io.kubernetes.pod.namespace": "openshift-ovn-kubernetes",
+        "io.kubernetes.pod.uid": "e0b2c7f5-af0a-4735-9884-5ebbb462fcad"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "bd261874",
+        "io.kubernetes.container.ports": "[{\"name\":\"ovnmetrics-port\",\"hostPort\":29105,\"containerPort\":29105,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.preStopHandler": "{\"exec\":{\"command\":[\"rm\",\"-f\",\"/etc/cni/net.d/10-ovn-kubernetes.conf\"]}}",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "ee33580100c2054f7cb45e29384654d6a4a9d444ae8f8929bb6e12848d4f99cd",
+      "podSandboxId": "5f05331a5b4cfd54deadc976f4cfff62da356e56bfa21abc8af895a395867311",
+      "metadata": {
+        "name": "sbdb",
+        "attempt": 0
+      },
+      "image": {
+        "image": "ca9c1fe3148b4a299e8accac635cda5df4ce45db37a9e4c517f97f16e9a9ccd7",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:68bd75166616e15b301a348f042b06a0612ff0f9f552719cb3104355415f6e9d",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265050650949927",
+      "labels": {
+        "io.kubernetes.container.name": "sbdb",
+        "io.kubernetes.pod.name": "ovnkube-node-rnlxq",
+        "io.kubernetes.pod.namespace": "openshift-ovn-kubernetes",
+        "io.kubernetes.pod.uid": "e0b2c7f5-af0a-4735-9884-5ebbb462fcad"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "fffa76e",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "79ff2ceac5ce7ba3f6fc9b5b106f52c9f073d03155d7197df65e14008a80572a",
+      "podSandboxId": "5f05331a5b4cfd54deadc976f4cfff62da356e56bfa21abc8af895a395867311",
+      "metadata": {
+        "name": "nbdb",
+        "attempt": 0
+      },
+      "image": {
+        "image": "ca9c1fe3148b4a299e8accac635cda5df4ce45db37a9e4c517f97f16e9a9ccd7",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:68bd75166616e15b301a348f042b06a0612ff0f9f552719cb3104355415f6e9d",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265048588490326",
+      "labels": {
+        "io.kubernetes.container.name": "nbdb",
+        "io.kubernetes.pod.name": "ovnkube-node-rnlxq",
+        "io.kubernetes.pod.namespace": "openshift-ovn-kubernetes",
+        "io.kubernetes.pod.uid": "e0b2c7f5-af0a-4735-9884-5ebbb462fcad"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "4d7b14e5",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "2f9acaa0dfc9382ea2054fd04f295a60b4d6ba1ad550b66d8afef39cea2c1940",
+      "podSandboxId": "5f05331a5b4cfd54deadc976f4cfff62da356e56bfa21abc8af895a395867311",
+      "metadata": {
+        "name": "northd",
+        "attempt": 0
+      },
+      "image": {
+        "image": "ca9c1fe3148b4a299e8accac635cda5df4ce45db37a9e4c517f97f16e9a9ccd7",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:68bd75166616e15b301a348f042b06a0612ff0f9f552719cb3104355415f6e9d",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265048553537681",
+      "labels": {
+        "io.kubernetes.container.name": "northd",
+        "io.kubernetes.pod.name": "ovnkube-node-rnlxq",
+        "io.kubernetes.pod.namespace": "openshift-ovn-kubernetes",
+        "io.kubernetes.pod.uid": "e0b2c7f5-af0a-4735-9884-5ebbb462fcad"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "b47a5aad",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "3939f78215763b420c31d329115c7c9edd1e96fb93e1c2f4d7c6f4319f150549",
+      "podSandboxId": "5f05331a5b4cfd54deadc976f4cfff62da356e56bfa21abc8af895a395867311",
+      "metadata": {
+        "name": "kube-rbac-proxy-ovn-metrics",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265048504111399",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy-ovn-metrics",
+        "io.kubernetes.pod.name": "ovnkube-node-rnlxq",
+        "io.kubernetes.pod.namespace": "openshift-ovn-kubernetes",
+        "io.kubernetes.pod.uid": "e0b2c7f5-af0a-4735-9884-5ebbb462fcad"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "d7b1e294",
+        "io.kubernetes.container.ports": "[{\"name\":\"https\",\"hostPort\":9105,\"containerPort\":9105,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "74e6ee67f13f4fb964ad8a73db4777c7aa04db99727db7a6e06047ffb781849e",
+      "podSandboxId": "5f05331a5b4cfd54deadc976f4cfff62da356e56bfa21abc8af895a395867311",
+      "metadata": {
+        "name": "kube-rbac-proxy-node",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265048466332476",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy-node",
+        "io.kubernetes.pod.name": "ovnkube-node-rnlxq",
+        "io.kubernetes.pod.namespace": "openshift-ovn-kubernetes",
+        "io.kubernetes.pod.uid": "e0b2c7f5-af0a-4735-9884-5ebbb462fcad"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "e0789f59",
+        "io.kubernetes.container.ports": "[{\"name\":\"https\",\"hostPort\":9103,\"containerPort\":9103,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "e28f27e33e78febf2c7bb455dd0dc166ac482074a31dc053015f313c1dc23b8d",
+      "podSandboxId": "5f05331a5b4cfd54deadc976f4cfff62da356e56bfa21abc8af895a395867311",
+      "metadata": {
+        "name": "ovn-acl-logging",
+        "attempt": 0
+      },
+      "image": {
+        "image": "ca9c1fe3148b4a299e8accac635cda5df4ce45db37a9e4c517f97f16e9a9ccd7",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:68bd75166616e15b301a348f042b06a0612ff0f9f552719cb3104355415f6e9d",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265048428509464",
+      "labels": {
+        "io.kubernetes.container.name": "ovn-acl-logging",
+        "io.kubernetes.pod.name": "ovnkube-node-rnlxq",
+        "io.kubernetes.pod.namespace": "openshift-ovn-kubernetes",
+        "io.kubernetes.pod.uid": "e0b2c7f5-af0a-4735-9884-5ebbb462fcad"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "59826ebe",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "d894618e84b013900b878964a65e543d76c93aa55db64b2f753d1b22d3e15c9c",
+      "podSandboxId": "5f05331a5b4cfd54deadc976f4cfff62da356e56bfa21abc8af895a395867311",
+      "metadata": {
+        "name": "ovn-controller",
+        "attempt": 0
+      },
+      "image": {
+        "image": "ca9c1fe3148b4a299e8accac635cda5df4ce45db37a9e4c517f97f16e9a9ccd7",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:68bd75166616e15b301a348f042b06a0612ff0f9f552719cb3104355415f6e9d",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265048390283492",
+      "labels": {
+        "io.kubernetes.container.name": "ovn-controller",
+        "io.kubernetes.pod.name": "ovnkube-node-rnlxq",
+        "io.kubernetes.pod.namespace": "openshift-ovn-kubernetes",
+        "io.kubernetes.pod.uid": "e0b2c7f5-af0a-4735-9884-5ebbb462fcad"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "c1b8c66c",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "382a403c40c23aec9834642f74b7224163e1084d4ff8047be42a9b055407d3f7",
+      "podSandboxId": "365a50289fe401d12b60e15fe1ee84804eed6855353e669ac351f9d341a1dd35",
+      "metadata": {
+        "name": "csi-liveness-probe",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0c5f6f2a6f1216f3fc5256d3a9ec5c3b81f520c090042cb078364adc867257d3",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0c5f6f2a6f1216f3fc5256d3a9ec5c3b81f520c090042cb078364adc867257d3",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265037429026861",
+      "labels": {
+        "io.kubernetes.container.name": "csi-liveness-probe",
+        "io.kubernetes.pod.name": "aws-ebs-csi-driver-node-7g8q2",
+        "io.kubernetes.pod.namespace": "openshift-cluster-csi-drivers",
+        "io.kubernetes.pod.uid": "0bce4856-e519-45c7-9b13-6ba748452d63"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "7c693d6a",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "e5d29fbbd40b201597514ce5a8ab95d8ec14b3871dee953cb9f90368697e3a28",
+      "podSandboxId": "365a50289fe401d12b60e15fe1ee84804eed6855353e669ac351f9d341a1dd35",
+      "metadata": {
+        "name": "csi-node-driver-registrar",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6e518946c442965ddd2d6aededc324e9211609c7f1596d5b0f13f94ff992afb6",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6e518946c442965ddd2d6aededc324e9211609c7f1596d5b0f13f94ff992afb6",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265035056089812",
+      "labels": {
+        "io.kubernetes.container.name": "csi-node-driver-registrar",
+        "io.kubernetes.pod.name": "aws-ebs-csi-driver-node-7g8q2",
+        "io.kubernetes.pod.namespace": "openshift-cluster-csi-drivers",
+        "io.kubernetes.pod.uid": "0bce4856-e519-45c7-9b13-6ba748452d63"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "f6f07b0f",
+        "io.kubernetes.container.ports": "[{\"name\":\"rhealthz\",\"hostPort\":10309,\"containerPort\":10309,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.preStopHandler": "{\"exec\":{\"command\":[\"/bin/sh\",\"-c\",\"rm -rf /registration/ebs.csi.aws.com-reg.sock /csi/csi.sock\"]}}",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "cfbce87b36ac9afdc9607a187507d42c857b0a62fe4abfc010ec2757a2f1fe82",
+      "podSandboxId": "76a25f087a540d1c2d6bbb6d54dd759858a6d10b896b7be834627e85791fb56f",
+      "metadata": {
+        "name": "kube-multus",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5b325c417835f0dd42978f874c631c824f071b9c1f5214c8c99441095e316662",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5b325c417835f0dd42978f874c631c824f071b9c1f5214c8c99441095e316662",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265031970426077",
+      "labels": {
+        "io.kubernetes.container.name": "kube-multus",
+        "io.kubernetes.pod.name": "multus-pjpft",
+        "io.kubernetes.pod.namespace": "openshift-multus",
+        "io.kubernetes.pod.uid": "d3914c79-6ff2-48b8-8925-046c416d8824"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "657de73e",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "c9f60fe33ef98911dbbf0c1a03829b16b6e36258fd65ab6bca735199c445fec1",
+      "podSandboxId": "365a50289fe401d12b60e15fe1ee84804eed6855353e669ac351f9d341a1dd35",
+      "metadata": {
+        "name": "csi-driver",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:c18ae389432645856041b8e3e28ed5a95bb0d6a05e78338055623eb9da413d80",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:c18ae389432645856041b8e3e28ed5a95bb0d6a05e78338055623eb9da413d80",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265031953197128",
+      "labels": {
+        "io.kubernetes.container.name": "csi-driver",
+        "io.kubernetes.pod.name": "aws-ebs-csi-driver-node-7g8q2",
+        "io.kubernetes.pod.namespace": "openshift-cluster-csi-drivers",
+        "io.kubernetes.pod.uid": "0bce4856-e519-45c7-9b13-6ba748452d63"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "8203eece",
+        "io.kubernetes.container.ports": "[{\"name\":\"healthz\",\"hostPort\":10300,\"containerPort\":10300,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "fe216f6b697dee1de5f7a506ceb65af054efe5a2cb9c8c6a61be1d256882976e",
+      "podSandboxId": "a702c91de9affd7b0c78a6faff8e58791adec5909ec6293e2853024cc7f12ba1",
+      "metadata": {
+        "name": "tuned",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7c1601fd7fd076cb64c7ac9491c8b50a9f2ec44df9cf894e1cbbd5760f70f5d1",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7c1601fd7fd076cb64c7ac9491c8b50a9f2ec44df9cf894e1cbbd5760f70f5d1",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265031949018645",
+      "labels": {
+        "io.kubernetes.container.name": "tuned",
+        "io.kubernetes.pod.name": "tuned-xgtqp",
+        "io.kubernetes.pod.namespace": "openshift-cluster-node-tuning-operator",
+        "io.kubernetes.pod.uid": "7e29ea33-383d-4d1c-a760-579af30d29b0"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "f790d0fe",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "13f1e1bb8310d4a77a125f661742482b592338712f5dc22634a28027232ec7f7",
+      "podSandboxId": "144a6ea50c7d1fcd9d866547515bb5b672e558e646c390dc18adf2ece676d3f1",
+      "metadata": {
+        "name": "dns-node-resolver",
+        "attempt": 0
+      },
+      "image": {
+        "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1bb82d081495c2bb42f1b553b9a9bccac884d5e9b50ad341686912d3ad9c5108",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1bb82d081495c2bb42f1b553b9a9bccac884d5e9b50ad341686912d3ad9c5108",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265031947918763",
+      "labels": {
+        "io.kubernetes.container.name": "dns-node-resolver",
+        "io.kubernetes.pod.name": "node-resolver-kh4rs",
+        "io.kubernetes.pod.namespace": "openshift-dns",
+        "io.kubernetes.pod.uid": "14e6de15-c42c-4edc-84cb-58a9edd90079"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "8b3f1534",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "0a6603c865fbf033d333882a67e54a37f3857fb7405748e271af5e8b34359632",
+      "podSandboxId": "8493dd8a0dcc83b0e2b3dd7654d6e535a0f0a4884b8d5e956d1d478eea9d4134",
+      "metadata": {
+        "name": "kube-rbac-proxy-crio",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265014353515379",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy-crio",
+        "io.kubernetes.pod.name": "kube-rbac-proxy-crio-ip-10-0-46-29.ec2.internal",
+        "io.kubernetes.pod.namespace": "openshift-machine-config-operator",
+        "io.kubernetes.pod.uid": "2028afe8c1a95dd1378496760b84dd94"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "577777a",
+        "io.kubernetes.container.ports": "[{\"hostPort\":9637,\"containerPort\":9637,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "30"
+      }
+    },
+    {
+      "id": "bb4113f642e0200386d979f5236138b18d60db48cfc09e366acdc3b2ad1ad148",
+      "podSandboxId": "b37900894d3713a4b308b28b2407f5cebd375bb998046e99a0e1a055fe116c20",
+      "metadata": {
+        "name": "kube-rbac-proxy",
+        "attempt": 0
+      },
+      "image": {
+        "image": "70b8bd8d63a08f77bacd953da2e8a1d89761329f9374b45f7a3dfd243a150bbc",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3a4aa46c4c5bf44aaaa15d4d884aa27748165adeaf41e0b283cf8183cec34d40",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265012839160907",
+      "labels": {
+        "io.kubernetes.container.name": "kube-rbac-proxy",
+        "io.kubernetes.pod.name": "machine-config-daemon-jgpcr",
+        "io.kubernetes.pod.namespace": "openshift-machine-config-operator",
+        "io.kubernetes.pod.uid": "15b7017b-af87-4a69-a111-cbb581d0ff89"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "ac1abf86",
+        "io.kubernetes.container.ports": "[{\"name\":\"metrics\",\"hostPort\":9001,\"containerPort\":9001,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "600"
+      }
+    },
+    {
+      "id": "c757785852ae1ea3b90d02e623610b75dc5502313bc1bdf79bcb8e92726705d8",
+      "podSandboxId": "b37900894d3713a4b308b28b2407f5cebd375bb998046e99a0e1a055fe116c20",
+      "metadata": {
+        "name": "machine-config-daemon",
+        "attempt": 0
+      },
+      "image": {
+        "image": "42419caaee24c3c8e9afa47408f51af889cf0ed57e44c69420c934aa9782cd2e",
+        "annotations": {},
+        "userSpecifiedImage": "",
+        "runtimeHandler": ""
+      },
+      "imageRef": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f15cd1d5bda2e3c112a3b3f96aecad1302ecf8df4cc5836af9de724c1e542a28",
+      "state": "CONTAINER_RUNNING",
+      "createdAt": "1734265012772249062",
+      "labels": {
+        "io.kubernetes.container.name": "machine-config-daemon",
+        "io.kubernetes.pod.name": "machine-config-daemon-jgpcr",
+        "io.kubernetes.pod.namespace": "openshift-machine-config-operator",
+        "io.kubernetes.pod.uid": "15b7017b-af87-4a69-a111-cbb581d0ff89"
+      },
+      "annotations": {
+        "io.kubernetes.container.hash": "9b31b639",
+        "io.kubernetes.container.ports": "[{\"name\":\"health\",\"hostPort\":8798,\"containerPort\":8798,\"protocol\":\"TCP\"}]",
+        "io.kubernetes.container.restartCount": "0",
+        "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+        "io.kubernetes.container.terminationMessagePolicy": "FallbackToLogsOnError",
+        "io.kubernetes.pod.terminationGracePeriod": "600"
+      }
+    }
+  ]
+}

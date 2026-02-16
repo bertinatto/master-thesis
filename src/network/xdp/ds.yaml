@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: xdp
+  labels:
+    app: xdp
+spec:
+  selector:
+    matchLabels:
+      app: xdp
+  template:
+    metadata:
+      labels:
+        app: xdp
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: xdp
+        image: quay.io/bertinatto/xdp:latest
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        command: ["/usr/bin/xdp"]
+        ports:
+          - containerPort: 9101 # Metrics endpoint
+            name: metrics
+        volumeMounts:
+          - name: crio-sock
+            mountPath: /var/run/crio/crio.sock
+      volumes:
+        - name: crio-sock
+          hostPath:
+            path: /var/run/crio/crio.sock
+            type: Socket
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: xdp
+  name: xdp-metrics-service
+  namespace: default
+spec:
+  ports:
+  - port: 9101
+    protocol: TCP
+    targetPort: 9101
+    name: metrics
+  selector:
+    app: xdp
+  type: ClusterIP
+
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: xdp-metrics-servicemonitor
+  namespace: default
+spec:
+  endpoints:
+  - interval: 5s
+    port: metrics
+    path: /metrics
+    scheme: http
+  selector: 
+    matchLabels:
+      app: xdp
+
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: xdp-alert
+  namespace: default
+spec:
+  groups:
+  - name: xdp
+    rules:
+    - alert: PodNetworkTrafficAnomaly
+      expr: pod_network_traffic_anomaly == 1
+      labels:
+        severity: critical
+      annotations:
+        message: "Anomalous network traffic detected in pod {{ $labels.pod_name }}"

@@ -1,0 +1,1543 @@
+\documentclass[ppgc,diss,english]{iiufrgs}
+% Programas :
+%   * cic       -- Graduação em Ciência da Computação
+%   * ecp       -- Graduação em Ciência da Computação
+%   * ppgc      -- Programa de Pós Graduação em Computação
+%   * pgmigro   -- Programa de Pós Graduação em Microeletrônica
+%
+% Tipos de Documento:
+%   * tc                -- Trabalhos de Conclusão (apenas cic e ecp)
+%   * diss ou mestrado  -- Dissertações de Mestrado (ppgc e pgmicro)
+%   * tese ou doutorado -- Teses de Doutorado (ppgc e pgmicro)
+%   * ti                -- Trabalho Individual (ppgc e pgmicro)
+%
+% Outras Opções:
+%   * english    -- para textos em inglês
+%   * openright  -- Força início de capítulos em páginas ímpares (padrão da
+%                   biblioteca)
+%   * oneside    -- Desliga frente-e-verso
+%   * nominatalocal -- Lê os dados da nominata do arquivo nominatalocal.def
+
+
+% Use unicode
+\usepackage[utf8]{inputenc}   % pacote para acentuação
+
+% Necessário para incluir figuras
+\usepackage{graphicx}           % pacote para importar figuras
+
+
+\usepackage{times}              % pacote para usar fonte Adobe Times
+% \usepackage{palatino}
+% \usepackage{mathptmx}          % p/ usar fonte Adobe Times nas fórmulas
+
+\usepackage[alf,abnt-emphasize=bf]{abntex2cite}	% pacote para usar citações abnt
+
+% others
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{listings}
+\usepackage{minted}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+%
+% Informações gerais
+%
+\title{Enhancing Linux Container Security with eBPF: A Multi-Case Study Approach}
+\translatedtitle{Aprimorando a Segurança de Containers Linux com eBPF: Uma Abordagem de Estudo de Casos Múltiplos}
+
+\author{Bertinatto}{Fábio Junior}
+% alguns documentos podem ter varios autores:
+%\author{Flaumann}{Frida Gutenberg}
+%\author{Flaumann}{Klaus Gutenberg}
+
+% orientador e co-orientador são opcionais (não diga isso pra eles :))
+\advisor[Prof.~Dr.]{Nobre}{Jéferson Campos}
+%\coadvisor[Prof.~Dr.]{Knuth}{Donald Ervin}
+
+% a data deve ser a da defesa; se nao especificada, são gerados
+% mes e ano correntes
+%\date{maio}{2001}
+
+% o local de realização do trabalho pode ser especificado (ex. para TCs)
+% com o comando \location:
+%\location{Itaquaquecetuba}{SP}
+
+% itens individuais da nominata podem ser redefinidos com os comandos
+% abaixo:
+% \renewcommand{\nominataReit}{Prof\textsuperscript{a}.~Wrana Maria Panizzi}
+% \renewcommand{\nominataReitname}{Reitora}
+% \renewcommand{\nominataPRE}{Prof.~Jos{\'e} Carlos Ferraz Hennemann}
+% \renewcommand{\nominataPREname}{Pr{\'o}-Reitor de Ensino}
+% \renewcommand{\nominataPRAPG}{Prof\textsuperscript{a}.~Joc{\'e}lia Grazia}
+% \renewcommand{\nominataPRAPGname}{Pr{\'o}-Reitora Adjunta de P{\'o}s-Gradua{\c{c}}{\~a}o}
+% \renewcommand{\nominataDir}{Prof.~Philippe Olivier Alexandre Navaux}
+% \renewcommand{\nominataDirname}{Diretor do Instituto de Inform{\'a}tica}
+% \renewcommand{\nominataCoord}{Prof.~Carlos Alberto Heuser}
+% \renewcommand{\nominataCoordname}{Coordenador do PPGC}
+% \renewcommand{\nominataBibchefe}{Beatriz Regina Bastos Haro}
+% \renewcommand{\nominataBibchefename}{Bibliotec{\'a}ria-chefe do Instituto de Inform{\'a}tica}
+% \renewcommand{\nominataChefeINA}{Prof.~Jos{\'e} Valdeni de Lima}
+% \renewcommand{\nominataChefeINAname}{Chefe do \deptINA}
+% \renewcommand{\nominataChefeINT}{Prof.~Leila Ribeiro}
+% \renewcommand{\nominataChefeINTname}{Chefe do \deptINT}
+
+% palavras-chave
+% iniciar todas com letras maiúsculas
+%
+\keyword{Linux Containers}
+\keyword{Container Security}
+\keyword{Real-Time Monitoring}
+\keyword{Kubernetes}
+\keyword{eBPF}
+
+%
+% palavras-chave na lingua estrangeira
+% iniciar todas com letras maiúsculas
+%
+\translatedkeyword{Containers Linux}
+\translatedkeyword{Segurança em Containers}
+\translatedkeyword{Monitoramento em Tempo Real}
+\translatedkeyword{Kubernetes}
+\translatedkeyword{eBPF}
+
+
+%
+% inicio do documento
+%
+\begin{document}
+
+% folha de rosto
+% às vezes é necessário redefinir algum comando logo antes de produzir
+% a folha de rosto:
+% \renewcommand{\coordname}{Coordenadora do Curso}
+\maketitle
+
+% dedicatoria
+\clearpage
+\begin{flushright}
+	\mbox{}\vfill
+	{\sffamily\itshape
+		Dedico este trabalho ao meu pai, presença constante em todos os caminhos que percorri; à minha mãe, cuja memória se fragiliza, mas nunca esquece o amor que nos une.\\}
+\end{flushright}
+
+\chapter*{Agradecimentos}
+
+À Camila, pelo apoio incondicional e pela força com que enfrentou os desafios durante minha ausência.
+
+% resumo na língua do documento
+\begin{abstract}
+Linux containers have become increasingly popular in recent years due to their ability to package and isolate applications in a portable manner.
+Although containers offer various benefits, they come with unique security challenges. One significant risk is the potential for privilege escalation attacks, which arise from their shared host architecture. Furthermore, monitoring containerized applications can be challenging due to the inherent limitations in visibility that containers offer.
+Existing solutions primarily concentrate on network and application metrics, resulting in a lack of visibility into the underlying host systems. This gap complicates the detection of kernel-level security threats and privilege escalation.
+To address these challenges, this Master's thesis explores using eBPF (Extended Berkeley Packet Filter), a Linux technology utilized for kernel instrumentation, to improve the security and observability of Linux containers.
+The work includes three case studies, each identifying a specific security challenge in containers and demonstrating how eBPF can effectively address those challenges.
+First, an eBPF-based command auditing system is developed using uretprobe hooks to capture shell commands executed within containers, providing comprehensive audit trails for security analysis. Second, a system call monitoring solution is implemented using raw tracepoints to detect privilege escalation attempts, specifically targeting container escape patterns involving namespace manipulation. Third, a network traffic anomaly detection system is designed using XDP hooks to identify unusual traffic patterns through statistical analysis, enabling real-time detection of network-based attacks.
+The proposed eBPF-based solutions were implemented using the Cilium eBPF Go library with kernel components written in C and user-space components in Go, utilizing uretprobe hooks for command auditing, raw tracepoint hooks for system call monitoring, and XDP hooks for network anomaly detection, and were
+  evaluated in local Kubernetes clusters, standalone container environments, and OpenShift clusters on AWS, respectively.
+The results demonstrate that eBPF-based security monitoring can provide comprehensive visibility into container behavior while maintaining acceptable performance characteristics, offering a practical approach to enhancing container security in production environments.
+\end{abstract}
+
+% resumo na outra língua
+\begin{translatedabstract}
+Containers Linux se tornaram cada vez mais populares nos últimos anos devido à sua capacidade de empacotar e isolar aplicações de forma portátil. Apesar dos diversos benefícios, containers apresentam desafios únicos de segurança. Um dos principais riscos é a possibilidade de ataques de escalonamento de privilégios, decorrentes da arquitetura compartilhada com o host. Além disso, o monitoramento de aplicações containerizadas é dificultado pelas limitações de visibilidade inerentes ao uso de containers.
+As soluções existentes focam, em sua maioria, em métricas de rede e de aplicação, o que resulta em pouca visibilidade sobre o sistema operacional subjacente. Essa limitação dificulta a detecção de ameaças de segurança em nível de kernel e de tentativas de escalonamento de privilégios.
+Para lidar com esses desafios, esta dissertação de mestrado explora o uso de eBPF (Extended Berkeley Packet Filter), uma tecnologia do Linux voltada para instrumentação do kernel, com o objetivo de melhorar a segurança e a observabilidade de containers Linux.
+O trabalho inclui três estudos de caso, cada um abordando um desafio específico de segurança em containers e demonstrando como o eBPF pode ser utilizado de forma eficaz. No primeiro caso, é desenvolvido um sistema de auditoria de comandos baseado em eBPF, utilizando ganchos uretprobe para capturar comandos executados em shells dentro dos containers, gerando trilhas de auditoria completas para análise de segurança. No segundo, é implementada uma solução de monitoramento de chamadas de sistema usando raw tracepoints para detectar tentativas de escalonamento de privilégios, com foco em padrões de fuga de containers que envolvem manipulação de namespaces. No terceiro caso, é projetado um sistema de detecção de anomalias de tráfego de rede, utilizando ganchos XDP para identificar padrões de tráfego incomuns por meio de análise estatística, permitindo a detecção em tempo real de ataques baseados em rede.
+As soluções propostas com eBPF foram implementadas utilizando a biblioteca Cilium eBPF para Go, com componentes de kernel escritos em C e componentes em espaço de usuário em Go, fazendo uso dos ganchos uretprobe para auditoria de comandos, raw tracepoints para monitoramento de chamadas de sistema e ganchos XDP para detecção de anomalias de rede. As soluções foram avaliadas em clusters locais de Kubernetes, ambientes standalone de containers e clusters OpenShift na AWS, respectivamente.
+Os resultados demonstram que o monitoramento de segurança baseado em eBPF pode oferecer visibilidade abrangente sobre o comportamento de containers, mantendo características de desempenho aceitáveis, constituindo uma abordagem prática para aumentar a segurança de containers em ambientes de produção.
+\end{translatedabstract}
+
+% lista de abreviaturas e siglas
+% o parametro deve ser a abreviatura mais longa
+% A NBR 14724:2011 estipula que a ordem das abreviações
+% na lista deve ser alfabética (como no exemplo abaixo).
+
+\begin{listofabbrv}{SPMD}
+	\item[BPF] Berkeley Packet Filter
+	\item[eBPF] Extended Berkeley Packet Filter
+	\item[CRI] Container Runtime Interface
+	\item[BoSC] Bag of System Calls
+	\item[CNCF] Cloud Native Computing Foundation
+	\item[IQR] Interquartile Range
+	\item[NIC] Network Interface Controller
+	\item[TC] Traffic Control
+	\item[XDP] eXpress Data Path
+\end{listofabbrv}
+
+% idem para a lista de símbolos
+%\begin{listofsymbols}{$\alpha\beta\pi\omega$}
+%       \item[$\sum{\frac{a}{b}}$] Somatório do produtório
+%       \item[$\alpha\beta\pi\omega$] Fator de inconstância do resultado
+%\end{listofsymbols}
+
+\listoffigures
+\listoftables
+
+\tableofcontents
+
+\chapter{Introduction} \label{introduction}
+
+Linux containers have gained significant popularity in recent years, largely because they allow applications to be packaged and isolated in a portable manner. According to a 2024 survey conducted by the Cloud Native Computing Foundation (CNCF) \cite{CNCFSurvey2024}, 52\% of respondents reported using containers for nearly all production applications within their organizations. Additionally, 39\% indicated that they use containers for a limited number of production systems, while 6\% are actively evaluating the technology. Furthermore, Kubernetes\footnote{https://kubernetes.io}, a container orchestration platform, is utilized in production by 80\% of the respondents, while 13\% are actively evaluating it.
+
+% Recent data \cite{DatadogSurvey2022} suggests that almost half of organizations rely on containerization as their primary tool for deploying and managing applications. Furthermore, Kubernetes\footnote{https://kubernetes.io}, the leading container orchestration platform, is utilized by nearly half of all organizations as their main solution for application deployment and management.
+
+The widespread use of containerized applications and Kubernetes usage has presented challenges for cluster administrators and network operators, particularly around security and real-time monitoring. Data from a 2023 Aqua Security report indicates that approximately 50\% of organizations that use containers faced a significant security breach in the previous year \cite{AquaReport2023}.
+%, with many incidents directly related to privilege escalation \cite{AquaReport2023}.
+
+A Linux container is essentially a process that runs on a host machine but with enhanced isolation features \cite{Zhan2022}. Linux-based containers achieve this isolation through three primary kernel features: \textit{namespaces}, \textit{cGroups}, and \textit{seccomp}. \textit{Namespaces} isolate various system resources, such as the network stack and process tree, ensuring that containers cannot interact with each other's processes \cite{Simonsson2021}. \textit{cGroups} control the allocation of hardware resources such as RAM and CPU to each container. \textit{Seccomp}, or Secure Computing, restricts the system calls that a container can make, thus limiting its access to the host system.
+
+While Linux containers are isolated from each other using various mechanisms, they still present security challenges. Particularly, containers running on the same host share the same host kernel. This shared kernel makes containers more lightweight but also makes them more susceptible to privilege escalation attacks \cite{Gao2017,Lin2018,Sultan2019}. Simply put, if there is a vulnerability in the host kernel, a process in a Linux container could potentially exploit it to gain higher privileges and break out of the container, thereby accessing the host environment and potentially compromising other containers. As a result, it is essential that extra security measures are implemented to mitigate risks to the isolation of containers \cite{Jarkas2025}.
+
+To enhance container security, it is crucial to monitor the application while it is running. Monitoring monolithic applications is straightforward because their deployment occurs on a single host. This allows for instrumentation of the host where the application runs, making it easier to monitor those applications. However, in cloud-native deployments, the situation becomes more complex. Multiple containers may be distributed across various hosts, making it challenging to manually modify each application for instrumentation \cite{Sharma2024}.
+
+% Traditionally, in Kubernetes, the sidecar pattern \cite{Burns2018} is employed to eliminate the need for manual application instrumentation. Typically, sidecars are deployed alongside each microservice to handle networking functions and perform Layer 3, Layer 4, and Layer 7 network observability tasks. However, this approach is limited to collecting network metrics, providing no visibility into the host where the application runs. There are several agent-based solutions, such as cAdvisor\footnote{https://github.com/google/cadvisor}, but deploying these solutions can incur additional resource overheads, negatively impacting workload performance, and they tend to have visibility constrained to the application layer. To achieve comprehensive observability, it is essential to collect data from the low-level host operating system \cite{Sharma2024}.
+
+Current observability approaches employed in containers and Kubernetes often utilize methods such as sidecars \cite{Burns2018}, node-level agents to monitor applications, or application-level instrumentation. However, these techniques tend to focus primarily on network-level metrics or application-specific data, resulting in limited visibility into the underlying host system. This lack of in-depth, system-level observability creates challenges for detecting security issues, particularly those involving kernel-level events or privilege escalation attempts. To address this gap, it is essential to develop solutions that collect data from the low-level host operating system and provide fine-grained, low-overhead visibility into system behavior \cite{Sharma2024}.
+
+Extended BSD Packet Filter (eBPF\footnote{https://ebpf.io/}), a Linux technology utilized for kernel instrumentation, offers a compelling alternative by enabling the collection of detailed metrics and traces directly from the Linux kernel, without modifying application code and with minimal performance impact. eBPF can observe events across the full network stack and system internals. This deep, context-rich telemetry is particularly valuable in securing containerized environments, where understanding system behavior at the kernel level is critical for detecting anomalies and enforcing runtime security. However, monitoring containers using eBPF presents challenges due to the isolated nature of containers.
+
+This work will examine ways in which eBPF can be used to improve the security of Linux containers, including its ability to monitor container activity in real time and identify malicious behavior within these environments. In addition, the performance implications of implementing the proposed eBPF-based security solutions in containerized applications are assessed.
+
+The remainder of this work is structured as follows. Chapter \ref{background} provides an overview of Linux containers, container orchestrators, and eBPF. Chapter \ref{related-work} discusses the current state of the art with regard to using eBPF to strengthen the security of Linux containers. The methodology employed in this research is outlined in Chapter \ref{methodology}, while the case studies are presented in Chapter \ref{cases}. Finally, Chapter \ref{conclusion} concludes this work with final remarks and a discussion of future work.
+
+\chapter{Background} \label{background}
+
+Containers are now an essential part of scalable application deployment due to their ability to isolate resources and simplify packaging and deployment. In addition, eBPF has emerged as a powerful tool for monitoring and securing containerized environments. This chapter provides a comprehensive understanding of these technologies and explains how they work together to offer robust, scalable, and secure solutions.
+
+\section{Linux Containers}
+
+% A container is essentially a process that runs on a host machine but with enhanced isolation features \cite{Zhan2022}. Linux-based containers achieve this isolation through three primary kernel features: \textit{namespaces}, \textit{cGroups}, and \textit{seccomp}.
+
+% \textit{Namespaces} isolate various system resources, such as the network stack and process tree, ensuring that containers cannot interact with each other's processes \cite{Simonsson2021}. \textit{cGroups} control the allocation of hardware resources such as RAM and CPU to each container. \textit{Seccomp}, or Secure Computing, restricts the system calls that a container can make, thus limiting its access to the host system.
+
+Linux-based containers are regular processes running with enhanced isolation \cite{Zhan2022}. They are built out of Linux constructs such as \textit{namespaces}, \textit{cgroups}, and \textit{seccomp}. Namespaces restrict the resources that are visible to containers by creating an abstraction for global resources, allowing processes within the same namespace to perceive that they have their own isolated instance of the global resource. Any changes made to the resource are visible to all processes within the namespace, but they are not accessible to processes outside of it. Table~\ref{tab:namespaces} lists the namespaces supported on Linux. The first column contains the namespace names, and the last column provides a summary of the resources isolated by each namespace \cite{man:namespaces}.
+
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{|l|l|}
+    \hline
+    \textbf{Namespace} & \textbf{Isolates} \\ \hline
+    Cgroup   & Cgroup root directory \\ \hline
+    Inter-Process Communication (IPC)      & System V IPC, POSIX message queues \\ \hline
+    Network  & Network devices, stacks, ports, etc. \\ \hline
+    Mount    & Mount points \\ \hline
+    PID      & Process IDs \\ \hline
+    Time     & Boot and monotonic clocks \\ \hline
+    User     & User and group IDs \\ \hline
+    Unit Timesharing System (UTS)      & Hostname and NIS domain name \\ \hline
+  \end{tabular}
+  \caption{Linux Namespace Types and Their Isolation Capabilities}
+  \label{tab:namespaces}
+\end{table}
+
+Cgroups, short for Control Groups, is a primitive feature of the Linux kernel that organizes processes into hierarchical groups. Each group can be assigned specific limits or parameters for various resources \cite{man:cgroups}. This functionality is particularly useful for containers, as cgroups can restrict the resources available to each container, such as memory and CPU. By doing so, a container cannot monopolize the available resources, preventing it from affecting the performance of other containers and applications \cite{rice2020container}.
+
+The set of system calls available to a containerized application can be restricted using a Linux kernel feature known as seccomp. Application developers can use seccomp to create filters that allow or deny specific syscalls and define actions to be taken when a restricted syscall is attempted. For instance, if an application is compromised, an attacker may attempt to execute system calls that are unusual for that application. By using seccomp, container engines greatly reduce the potential for attackers to exploit the system \cite{Alhindi2024}.
+
+% In Linux, there is also SELinux and capabilities.
+
+Figure~\ref{fig-linux-containers} illustrates the layered architecture of Linux containers, showing how low-level kernel features (namespaces, cgroups, and seccomp) are abstracted through multiple layers to provide usable container functionality. At the kernel level, namespaces, cgroups, and seccomp operate independently and require coordination to create functional containers.
+Container engines operate at an intermediate abstraction layer, receiving requests from higher-level entities such as container orchestrators or end users. These engines handle complex tasks such as pulling container images from registries and mounting them onto disk.
+Some popular container engines include Docker\footnote{Docker: https://www.docker.com}, Containerd\footnote{Containerd: https://containerd.io}, Podman\footnote{Podman: https://podman.io}, and CRI-O\footnote{CRI-O: https://cri-o.io}.
+Container engines then invoke container runtimes such as runc\footnote{runc: https://github.com/opencontainers/runc} and crun\footnote{crun: https://github.com/containers/crun}, which are command-line tools that directly manage container processes in accordance with Open Container Initiative (OCI) specifications \cite{ociSpec}.
+
+% TODO: font is too big
+
+\begin{figure}
+	\centering
+	\includegraphics[width=1\columnwidth]{img/arch_v2.png}
+	\caption{Architecture of Linux Containers.}
+	\label{fig-linux-containers}
+\end{figure}
+
+% Several container engines have emerged to address different use cases and requirements in containerized environments. Docker, one of the earliest and most popular container engines, offers a comprehensive set of features for managing the entire container lifecycle \cite{docker_2019, Abhishek2021}. Containerd is a foundational container management tool designed to be embedded in other systems. It offers primary container and image management features but lacks advanced functionalities like network or volume management \cite{containerdOnline}. Podman, developed by Red Hat, is another Docker alternative that is designed to run without privileged access, thereby enhancing system security \cite{podman}. CRI-O is optimized for Kubernetes and provides a minimal runtime environment, thereby reducing the attack surface and resource consumption \cite{crio}.
+
+\section{Container Orchestrators}
+
+Automated management of containerized services is vital due to the complexity of handling numerous containers. Orchestration frameworks, particularly Kubernetes, have become essential in managing container ecosystems at scale, addressing resource heterogeneity and environmental constraints \cite{Cassagnes2020}.
+
+Kubernetes, a project initially developed by Google and now maintained by the CNCF, is a prominent orchestrator that interfaces with various container engines via the Container Runtime Interface (CRI), ensuring compatibility across different container management tools \cite{CRISpecOnline}.
+Kubernetes provides scaling and failover capabilities for containerized applications, along with a variety of deployment patterns and additional features \cite{k8sOnline}.
+The fundamental concept of Kubernetes revolves around storing object definitions, which represent the desired state, in a shared persistent store. Kubernetes components known as controllers monitor changes to these objects, striving to achieve the desired state specified within them. 
+Objects can be created by any entity, such as an end user or another Kubernetes controller.
+Table~\ref{tab:k8s-objects} outlines some common Kubernetes objects and their definitions.
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{|p{0.32\linewidth}|p{0.6\linewidth}|}
+    \hline
+    \textbf{Kubernetes Object}             & \textbf{Description}                                        \\ \hline
+    Pod & represents one or more containers with shared storage and network resources         \\ \hline
+    DaemonSet & Ensures that pods run on the specified nodes                                  \\ \hline
+    Secret & Stores sensitive data such as passwords, tokens, and keys                        \\ \hline
+    PersistentVolume (PV) & Unit of storage that can be used by pods                          \\ \hline
+    Service & Exposes an application running in a pod to the network                          \\ \hline
+    Namespace & Isolate a group of objects (e.g., pod, secret, PV) in a single cluster        \\ \hline
+  \end{tabular}
+  \caption{Common Kubernetes objects and their descriptions.}
+  \label{tab:k8s-objects}
+\end{table}
+
+Although containers and Kubernetes offer numerous advantages regarding scalability and resource optimization, they are not without security challenges. The shared kernel architecture of containers, coupled with the complexity of orchestration platforms, creates various attack vectors that traditional security methods often struggle to address effectively.
+This need has led to the adoption of kernel-level technologies that provide deep visibility into system behavior while maintaining the performance characteristics crucial for container workloads.
+
+% For example, a \textit{pod} object represents a group of one of more containers, with shared storage and network resources, along with an specification for how to run the containers \cite{PodsOnline}.
+
+% DaemonSet is another common object that contains a certain number of pods that should run on every worker node of the cluster.
+
+% Kubernetes objects like \textit{Pods} represent the cluster's intended state, with each object playing a specific role in the system's overall functionality. 
+% The orchestration process involves managing these objects to maintain desired states \cite{PodsOnline}.
+
+% One of the most critical security concerns in containerized environments is privilege escalation, where attackers gain unauthorized access to resources beyond their initial permission level. These vulnerabilities can compromise the affected container, the host system, and the entire container cluster. Given the severity and potential impact of privilege escalation attacks in containers, it is crucial to understand how to effectively prevent, detect, and mitigate such risks.
+
+\section{eBPF}
+
+% TODO: font is too small
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\columnwidth]{img/ebpf.png}
+	\caption{eBPF program workflow.}
+	\label{fig-ebpf}
+\end{figure}
+
+The BSD Packet Filter (BPF) \cite{McCanne1993} was introduced in 1992 to enable packet filtering within the kernel of Unix BSD systems. BPF introduced a virtual machine (VM) equipped with a Just-In-Time (JIT) compilation engine and a straightforward instruction set.
+% BPF gained popularity through its integration with the packet capture tool \textit{tcpdump}\footnote{https://www.tcpdump.org/}. \textit{tcpdump} utilizes the \textit{libpcap} library and offers a user-friendly set of expressions for filtering network packets.
+The Linux operating system kernel has supported BPF since version 2.5. In kernel version 3.15, a new variant of the BPF language was introduced. This variant expanded the number of available registers from two to ten, introduced additional instructions, enabled the invocation of a controlled set of kernel instructions, and included various other improvements. These advances transformed BPF into a versatile in-kernel virtual machine. This new variant was named Extended BPF (eBPF) \cite{LWNVirtualMachineOnline, ebpfSpec}.
+
+Initially, eBPF was mainly associated with fast packet processing \cite{Toke2018} and network monitoring \cite{Abranches2021}. However, subsequent advances have made eBPF a valuable tool for tracing, profiling, and debugging programs. With the introduction of eBPF, the Linux operating system provides an extensive range of methods to carry out tracing operations \cite{Gebai2018}. eBPF programs are executed upon triggering predefined hook points within the kernel or an application. These hook points can encompass various events, such as network events, system calls, and kernel tracepoints, among others. Additionally, it is feasible to create kernel or user probes to associate eBPF programs with locations where a predefined hook does not already exist \cite{ebpfOnline}.
+
+Figure \ref{fig-ebpf} illustrates the typical flow of an eBPF program. Initially, the user writes an eBPF program in pseudo-C code format. The program is then compiled into bytecode by a compiler, often LLVM \textit{clang}. Subsequently, another program employs a system call to load the bytecode into the kernel. Within the kernel, the bytecode undergoes a verification process to ensure the safety of the eBPF program. After successful verification, the bytecode proceeds through a Just-in-Time (JIT) compilation process, ultimately preparing it for execution.
+
+As of version 6.1 of the Linux kernel, there are 32 different types of eBPF programs \cite[Version6.1, \texttt{include/uapi/linux/bpf.h}, Line 948]{Linux}. Each type of eBPF program can be attached to specific hook points in the kernel. In addition, each type of eBPF program is given a specific input and is allowed to use specific helper functions.
+
+\begin{table}[htbp]
+	\centering
+	\begin{tabular}{|p{0.5\linewidth}|p{0.45\linewidth}|}
+		\hline
+		\textbf{eBPF Program Identifier}          & \textbf{Common Name}    \\ \hline
+		\texttt{BPF\_PROG\_TYPE\_KPROBE}          & Kprobe                  \\ \hline
+		\texttt{BPF\_PROG\_TYPE\_TRACEPOINT}      & Tracepoint              \\ \hline
+		\texttt{BPF\_PROG\_TYPE\_RAW\_TRACEPOINT} & Raw Tracepoint          \\ \hline
+		\texttt{BPF\_PROG\_TYPE\_XDP}             & XDP (eXpress Data Path) \\ \hline
+		\texttt{BPF\_PROG\_TYPE\_TC}              & TC (Traffic Control)    \\ \hline
+	\end{tabular}
+	\caption{Relevant eBPF program types used in this work.}
+	\label{tab:ebpf_program_types}
+\end{table}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\columnwidth]{img/hooks_location.png}
+	\caption{Location of network hooks.}
+	\label{fig:hooks-location}
+\end{figure}
+
+For this work, the most relevant types of eBPF programs are presented in Table~\ref{tab:ebpf_program_types}. A kprobe program allows dynamic hooking into any kernel function. Similarly, tracepoint programs can be attached to statically predefined hooks (i.e., tracepoints) in the kernel. Raw tracepoint programs are very similar to tracepoint programs but are more flexible and require manual parsing of parameter fields. For that reason, they often perform better. For network-related monitoring and control, Traffic Control (TC) and eXpress Data Path (XDP) hooks can be used to intercept network traffic at different layers. As shown in Figure~\ref{fig:hooks-location}, when a network packet arrives at the Network Interface Controller (NIC), it goes through several layers in the kernel before reaching the application. These layers include XDP, TC, Netfilter, the TCP/UDP stack, and the socket layer. At each of these layers, the packet can be intercepted and modified, e.g., the XDP hook is located in the RX (receive) path within the network driver. As a result, XDP programs execute at the earliest point in the network stack. This early access to incoming data enables XDP programs to achieve higher throughput compared to TC programs.
+
+\chapter{Related Work} \label{related-work}
+
+% This chapter expands the discussion to address the existing literature that explores the application of eBPF and other related techniques to mitigate security challenges in Linux container environments.
+% Specifically, the focus is on studies investigating the detection of privilege escalation and security in containers.
+% % Additionally, approaches employing anomaly detection techniques, such as the Bag of System Calls (BoSC), are examined, as they have demonstrated efficacy in identifying malicious behaviors in containerized contexts.
+
+% Burns \cite{Burns2018} introduces the sidecar pattern for observability in Kubernetes. However, this method presents limitations, including resource overhead and the need for manual instrumentation.
+
+% In contrast, Rice \cite{Rice2022} suggests using a single eBPF-based agent per node, moving away from the sidecar pattern. The Tracee \cite{TraceeOnline} forensics tool, based on this concept, uses eBPF to trace activities on the host OS, including containerized applications. This approach to collecting and analyzing runtime events offers insights into implementing an efficient container-level auditing system.
+
+% Cassagnes et al. \cite{Cassagnes2020} discuss the application of eBPF for system performance monitoring in computer systems, underscoring the limitations of traditional methods. Their work highlights eBPF's ability to collect kernel-level data efficiently, which is relevant for monitoring actions in containers.
+
+% Nam et al. \cite{Nam2022} explore the role of eBPF in improving inter-container communication security. Their focus on security and unauthorized access prevention aligns with the goal of ensuring that administrative actions within containers are secure and traceable.
+
+% % syscall
+
+% The Bag of System Calls (BoSC) methodology has gained traction as an effective approach to intrusion detection, particularly in identifying privilege escalation attempts within Linux containers \cite{Abed2015}. Unlike traditional sequence-based approaches, which rely on the specific order of system calls \cite{Hofmeyr1998}, BoSC treats each system call as an individual entity within a \textit{bag} \cite{Fuller2007}. This flexibility enables the creation of robust and adaptable models capable of capturing nuanced behavior patterns of applications \cite{Alarifi2015}. By employing Machine Learning (ML) classifiers trained in these BoSCs, the system can effectively identify general anomalies and specific malicious activities aimed at elevating privileges \cite{Mutz2006}. This makes BoSC an invaluable asset for real-time security monitoring, as it can rapidly analyze system calls without being hindered by the need to maintain their sequential order \cite{Abed2015}.
+
+% Abed et al. \cite{Abed2015} explored the use of the BoSCs technique to identify behavioral anomalies in Linux containers. By collecting system call traces through the \textit{strace} tool and comparing them against a pre-established database of normal behavior, the study aimed to detect anomalies. However, a notable limitation is that this approach is reactive and identifies anomalies only after an attack.
+
+% Castanhel et al. \cite{Castanhel2021} investigated the potential of analyzing system call sequences to detect security threats in containerized applications. The authors used machine learning algorithms to assess system call sequences against a custom dataset comprising normal and anomalous behaviors. Their findings suggest that filtering out harmless system calls, as classified by the framework proposed by \cite{Bernaschi2002}, slightly improves detection accuracy.
+
+% % network
+
+% Liu et al. \cite{Liu2020} introduce a system that uses eBPF to analyze network traffic in containerized environments. This system collects data from various network protocols through three types of eBPF programs: socket filter, kprobe/kretprobe, and tracepoint. Additionally, they apply machine learning techniques for anomaly detection. The eBPF method employed for data collection has shown high throughput, with a performance impact on user applications of only about 1\%. Their approach to network observability highlights the feasibility of using eBPF for in-depth monitoring in complex container environments, which is similar to the focus of this work.
+
+% Shiraishi et al. \cite{Shiraishi2020} propose a real-time monitoring system that utilizes eBPF sensors to gather service-related network metrics within containerized microservice architectures. The system constructs a comprehensive full-stack topology and adjusts the sensor position in response to events from a container orchestrator.
+
+% Lee et al. \cite{Lee2022} present a packet tracing method designed for container overlay networks that leverages eBPF. Their approach enhances traditional distributed tracing methods, which typically focus on measuring latency at the application layer in microservices, by also incorporating the infrastructure layer represented by the container overlay network. To overcome limitations in existing tracing methods, they utilize a modified sidecar\footnote{https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers} proxy to insert the trace context to a fixed position within the HTTP header. This strategy effectively reduces the search space required to detect the trace context using eBPF.
+
+% Sharma et al. \cite{Sharma2024} propose an eBPF-based observability solution for cloud-native applications running in Kubernetes.
+% Their solution operates in kernel space without degrading the performance of events they instrument. In addition, since the solution runs at the host level, it does not require instrumenting the application code.
+% According to the authors, compared to existing solutions, their solution significantly reduces the overhead on the monitored application. Specifically, the eBPF-based solution reduces cluster CPU by around 21 to 214 times. Also,  memory utilization is reduced by 30\% to 159\%.
+
+% In summary, the existing literature offers valuable insights into monitoring, auditing, and securing containerized environments. However, existing solutions tend to address these areas individually and often lack real-world evaluations across multiple layers of container operations. The following chapters of this work address these research gaps by presenting three case studies based on the published findings from this research. Each case study focuses on a specific aspect: command-level auditing, system call tracing, and network anomaly detection. Together, they provide practical methodologies and implementation insights that advance the current state of container security.
+
+This chapter examines existing literature on eBPF applications and related techniques for enhancing security in Linux container environments. The focus centers on studies investigating security monitoring and observability solutions, system call analysis, and network monitoring in containerized systems.
+% The literature review is organized into three main areas that directly inform the research approach presented in subsequent chapters.
+
+\section{eBPF-based Monitoring and Observability Solutions}
+
+Traditional monitoring approaches in containerized environments often introduce significant overhead and complexity. Burns \cite{Burns2018} introduces the sidecar pattern for observability in Kubernetes, which, while widely adopted, presents notable limitations including resource overhead and the requirement for manual instrumentation of each service.
+
+Rice \cite{Rice2022} proposes a paradigm shift toward using a single eBPF-based agent per node, eliminating the need for per-container sidecars. This approach is exemplified by the Tracee \cite{TraceeOnline} forensics tool, which leverages eBPF to trace activities across the host OS, including containerized applications. Tracee demonstrates how eBPF can provide comprehensive runtime event collection and analysis, offering valuable insights for implementing efficient container-level auditing systems without the overhead associated with traditional approaches.
+
+Cassagnes et al. \cite{Cassagnes2020} provide a comprehensive analysis of the advantages of eBPF for system performance monitoring compared to traditional kernel-level monitoring methods. Their work highlights the ability of eBPF to collect kernel-level data efficiently with minimal performance impact, establishing the foundation for its application in container monitoring scenarios. However, their focus remains primarily on performance monitoring rather than security-oriented applications.
+
+Nam et al. \cite{Nam2022} extend eBPF applications to inter-container communication security, addressing unauthorized access prevention between containers sharing the same host. While their work demonstrates the utility of eBPF in container security contexts, it focuses primarily on communication channels rather than comprehensive behavioral analysis of containerized applications.
+
+Although current eBPF-based monitoring solutions show substantial performance enhancements compared to traditional methods, most of these solutions function as standalone tools or agents and do not integrate well with Kubernetes. This gap emphasizes the need for further research to develop integrated frameworks that incorporate eBPF capabilities directly into Kubernetes environments.
+
+% while prior research has explored performance monitoring, communication security, and forensics individually, these solutions generally lack a cohesive integration architecture with Kubernetes itself. They operate as isolated tools or agents without addressing how eBPF-based observability and security can be systematically incorporated into Kubernetes-native workflows and control planes. This gap highlights the need for further research into designing integrated, low-overhead frameworks that embed eBPF capabilities directly into Kubernetes environments, enabling unified and scalable observability and security for modern cloud-native workloads.
+
+% While these eBPF-based monitoring solutions demonstrate significant performance improvements over traditional approaches, several gaps remain. Most existing solutions focus on general observability rather than security-specific monitoring, and few provide comprehensive evaluation of their effectiveness against sophisticated attack scenarios. Additionally, the integration of these tools with existing container security frameworks remains largely unexplored.
+
+\section{System Call Analysis}
+
+System call analysis has emerged as a fundamental technique for detecting malicious activities in containerized environments. The Bag of System Calls (BoSC) methodology represents a significant advancement in this area, particularly for identifying privilege escalation attempts within Linux containers \cite{Abed2015}. Unlike traditional sequence-based approaches that depend on the specific order of system calls \cite{Hofmeyr1998}, BoSC treats each system call as an individual entity within a collection \cite{Fuller2007}. This approach offers greater flexibility in creating robust models capable of capturing nuanced application behavior patterns \cite{Alarifi2015}.
+
+The effectiveness of BoSC stems from its compatibility with Machine Learning classifiers, which can identify both general anomalies and specific malicious activities targeting privilege escalation \cite{Mutz2006}. This capability makes BoSC particularly valuable for real-time security monitoring, as it can analyze system calls rapidly without being constrained by sequential order requirements \cite{Abed2015}.
+
+Abed et al. \cite{Abed2015} conducted pioneering research applying BoSC techniques to identify behavioral anomalies in Linux containers. Their approach involved collecting system call traces using the \textit{strace} tool and comparing them against pre-established normal behavior baselines. While their work demonstrated the feasibility of system call-based anomaly detection in containers, a significant limitation lies in its reactive nature, i.e., anomalies are identified only after attacks have occurred, limiting its effectiveness for real-time threat prevention.
+
+Despite the reactive nature of their approach, Abed et al.'s work established the feasibility of BoSC techniques in containerized environments. Building upon this foundation, Castanhel et al. \cite{Castanhel2021} investigated system call sequence analysis for detecting security threats in containerized applications. Their research employed machine learning algorithms to evaluate system call sequences against custom datasets containing both normal and anomalous behaviors. Notably, their findings indicate that filtering out benign system calls, as classified by the framework proposed by Bernaschi et al. \cite{Bernaschi2002}, provides marginal improvements in detection accuracy. However, this filtering approach raises questions about the potential for sophisticated attacks to exploit the reduced monitoring scope.
+
+While analyzing system calls has shown potential for detecting anomalies in containerized applications, current methods have several limitations. The primary emphasis on detecting incidents after they occur reduces the effectiveness of real-time threat prevention. Furthermore, existing research lacks evaluation against modern container-specific evasion techniques.
+
+\section{Network Traffic Analysis and Anomaly Detection}
+
+Network-level monitoring represents another critical dimension of container security, with eBPF offering unique advantages for traffic analysis in containerized environments. Liu et al. \cite{Liu2020} developed a comprehensive system utilizing eBPF to analyze network traffic across containerized environments. Their implementation employs three distinct eBPF program types to collect data from various network protocols: socket filters, kprobe/kretprobe, and tracepoint. The system incorporates machine learning techniques for anomaly detection and demonstrates impressive performance characteristics, with reported performance impact on user applications of approximately 1\% under their testing conditions. While this low overhead is promising, the specific testing scenarios and workload characteristics that produced these results require further examination for broader applicability.
+
+Shiraishi et al. \cite{Shiraishi2020} focus specifically on real-time monitoring within containerized microservice architectures, proposing a system that utilizes eBPF sensors to gather service-related network metrics. Their approach constructs comprehensive full-stack topology views and dynamically adjusts sensor positioning in response to container orchestrator events. However, their work primarily addresses operational observability rather than security-oriented anomaly detection.
+
+Lee et al. \cite{Lee2022} address the specific challenges of packet tracing in container overlay networks through eBPF-based solutions. Their approach enhances traditional distributed tracing methods by incorporating infrastructure-layer analysis alongside application-layer latency measurements. To overcome existing tracing limitations, they employ a modified sidecar proxy to insert trace context at fixed positions within HTTP headers, effectively reducing the search space required for trace context detection using eBPF. While innovative, this approach requires application-level modifications that may limit its applicability in environments where application changes are not feasible.
+
+Recent work by Sharma et al. \cite{Sharma2024} presents an eBPF-based observability solution specifically designed for cloud-native applications in Kubernetes environments. Their solution operates entirely in kernel space without degrading the performance of instrumented events and requires no application code modification since it operates at the host level. The authors report significant performance improvements compared to existing solutions, with cluster CPU usage reduced by factors ranging from 21 to 214, and memory utilization decreased by 30\% to 159\%. However, these significant performance claims require validation under diverse workload conditions.
+
+Current methods utilizing network-level eBPF monitoring provide various options for monitoring network traffic and detecting anomalies. However, they frequently lack a real-time capability to identify issues such as unusual traffic spikes. Additionally, these approaches often depend on modifications at the application level, which may not always be feasible.
+
+% Our work seeks to address this gap by introducing a solution that continuously and passively monitors all incoming traffic at the pod level, utilizing a custom statistical algorithm to identify deviations in network activity, and promptly issues alerts for such occurrences. This approach enhances early detection capabilities, allowing for a proactive response to potential security threats or system inefficiencies.
+
+\section{Research Gaps and Opportunities}
+
+Table~\ref{tab:sota-container-security} provides a comparison of existing approaches in container security monitoring. The existing literature offers valuable insights into monitoring, auditing, and securing containerized environments. However, existing solutions tend to address these areas individually and often lack real-world evaluations across multiple layers of container operations. In addition, a few existing approaches focus on post-incident detection rather than proactive threat prevention, limiting their effectiveness in preventing security breaches.
+
+The following chapters of this work address these research gaps by presenting three case studies based on the published findings from this research. Each case study focuses on a specific aspect: command-level auditing, system call tracing, and network anomaly detection. Together, they demonstrate how eBPF can be applied across multiple security domains, unlike existing approaches that typically address only one.
+
+\begin{table}[htbp]
+\centering
+\label{tab:sota-container-security}
+\resizebox{\textwidth}{!}{%
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{Study} & \textbf{Approach} & \textbf{Focus} & \textbf{Real-time} \\
+    \hline
+    Burns (2018) & Sidecar pattern & General observability & Yes \\
+    \hline
+    Rice (2022) & eBPF agent & Host-level tracing & Yes \\
+    \hline
+    Cassagnes (2020) & eBPF & Performance monitoring & Yes \\
+    \hline
+    Nam (2022) & eBPF & Inter-container communication & Yes \\
+    \hline
+    Abed (2015) & strace + BoSC & Anomaly detection & No \\
+    \hline
+    Castanhel (2021) & ML + syscalls & Privilege escalation & No \\
+    \hline
+    Liu (2020) & eBPF + ML & Network monitoring & Yes \\
+    \hline
+    Shiraishi (2020) & eBPF sensors & Network monitoring & Yes \\
+    \hline
+    Lee (2022) & eBPF + sidecar & Packet tracing & Yes \\
+    \hline
+    Sharma (2024) & eBPF & Cloud-native observability & Yes \\
+    \hline
+    \textbf{This work} & \textbf{eBPF} & \textbf{Multi-domain} & \textbf{Yes} \\
+    \hline
+  \end{tabular}%
+}
+\caption{State-of-the-art in Container Security Monitoring}
+\end{table}
+
+\chapter{Methodology} \label{methodology}
+
+This Chapter presents the research methodology employed to investigate how eBPF can enhance container security through practical implementations. This research employs an exploratory multiple-case study approach to systematically examine real-world security challenges in containerized environments and develop eBPF-based solutions to address these challenges.
+
+% \section{Research Approach}
+
+% The multiple case study approach was selected for various reasons. Firstly, there are various types of eBPF programs that can be attached to different hook points in the kernel. Each type of eBPF program presents distinct possibilities and has its own unique considerations when deployed in a container environment.
+% Secondly, while many challenges related to container security have been addressed, the shared host environment in which these containers operate still presents new potential attack vectors. As a result, implementing several additional security measures in containers is important to mitigate future threats.
+% Finally, Linux containers are primarily managed by container orchestrators, particularly Kubernetes. Therefore, it is essential to assess how easily the eBPF-based solutions can be deployed within these environments.
+
+% Given the wide range of possibilities that eBPF offers, the various security needs of Linux containers, and the wide range of environments where containers can run, adopting a case study approach is a reasonable strategy to address the objectives of this work. By analyzing individual case studies, the goal is to test the effectiveness of eBPF when it comes to improving the security of containers, the ease of deploying the solution, and the overhead they might introduce.
+
+This study employs a qualitative, exploratory research design, utilizing multiple case studies as the primary research method. According to Yin \cite{Yin2018}, case study research is particularly suitable for investigating contemporary phenomena within their real-life context, making it ideal for examining emerging technologies, such as eBPF, in production container environments.
+The research follows an iterative approach where each case study builds upon insights from previous cases, allowing for a comprehensive understanding of the capabilities of eBPF across different security domains.
+%This methodology enables the exploration of "how" and "why" questions regarding the effectiveness of eBPF solutions in container security contexts.
+
+% \section{Case Study Selection and Justification}
+
+% The multiple case study approach was selected for several strategic reasons:
+
+% \begin{itemize}
+%     \item \textbf{Technical Diversity}: eBPF offers various program types that can be attached to different kernel hook points. Each eBPF program type presents unique capabilities and deployment considerations in container environments. By examining multiple cases, this research demonstrates the versatility and breadth of eBPF's security applications.
+%     \item \textbf{Security Coverage}: Container security encompasses multiple attack vectors due to the shared kernel architecture. Rather than focusing on a single security aspect, multiple case studies allow comprehensive coverage of different threat scenarios, from privilege escalation to network anomalies.
+%     \item \textbf{Deployment Context Variation}: Linux containers operate across diverse environments, from standalone deployments to complex orchestrated systems like Kubernetes. Multiple case studies enable evaluation of eBPF-based solutions across these varied deployment contexts.
+%     \item \textbf{Real-world Applicability}: Each case study addresses documented security challenges faced by organizations deploying containers in production, ensuring practical relevance and immediate applicability.
+% \end{itemize}
+
+The multiple case study approach was selected for several strategic reasons.
+One major consideration is the technical diversity offered by eBPF, which offers various program types that can be attached to different kernel hook points. Each eBPF program type presents unique capabilities and deployment considerations in container environments. By examining multiple cases, this research demonstrates the versatility and breadth of security applications of eBPF.
+Another important factor is the security coverage that eBPF can provide. Container security encompasses multiple attack vectors due to the shared kernel architecture. Rather than focusing on a single security aspect, multiple case studies enable comprehensive coverage of various threat scenarios, ranging from privilege escalation to network anomalies.
+The variation in deployment contexts also plays a significant role in the selection of the multiple case study approach for this work. Linux containers operate across diverse environments, from standalone deployments to complex orchestrated systems like Kubernetes. Multiple case studies enable the evaluation of eBPF-based solutions across various deployment contexts.
+Finally, real-world applicability is a crucial consideration in the selection of the case study approach. Each study addresses specific security challenges faced by organizations that deploy containers in production, ensuring that the findings are both practical and immediately relevant.
+
+
+% The three selected case studies represent distinct security domains:
+
+% \begin{enumerate}
+%     \item \textbf{Command Auditing}: Addresses the need for comprehensive audit trails in containerized environments where traditional logging mechanisms may be insufficient.
+%     \item \textbf{Privilege Escalation Detection}: Targets one of the most critical container security threats - attempts to escape container isolation through system call manipulation.
+%     \item \textbf{Network Anomaly Detection}: Focuses on identifying malicious network patterns that could indicate attacks against containerized applications.
+% \end{enumerate}
+
+The three selected case studies represent distinct security domains. The first case study addresses the need for comprehensive audit trails in containerized environments where traditional logging mechanisms may be insufficient. The second case study targets one of the most critical container security threats: attempts to escape container isolation through system call manipulation. Finally, the third case study focuses on identifying malicious network patterns that could indicate attacks against containerized applications.
+
+% \section{Research Framework}
+
+% The research framework follows a systematic approach for each case study:
+
+% \begin{enumerate}
+%     \item \textbf{Problem Identification}: Each case study begins by identifying a specific container security challenge based on industry reports, academic literature, and practical deployment experiences.
+%     \item \textbf{Solution Design}: eBPF-based solutions are designed that leverage appropriate kernel hook points and data collection mechanisms to address the identified security challenge.
+%     \item \textbf{Implementation}: Solutions are implemented using modern eBPF development frameworks and libraries, ensuring compatibility with current container runtime environments.
+%     \item \textbf{Evaluation}: Each solution undergoes functional validation to assess effectiveness. In cases where the performance impact of the monitored application is relevant, quantitative evaluation includes latency and throughput metrics for the monitored application.
+% \end{enumerate}
+
+The research framework follows a systematic approach for each case study. 
+Each case study begins by identifying a specific container security challenge based on industry reports, academic literature, and practical deployment experiences.
+An eBPF-based solution is then designed to address the identified problem, leveraging appropriate kernel hook points and data collection mechanisms.
+The proposed solution is implemented using modern eBPF development frameworks and libraries, ensuring compatibility with current container runtime environments.
+Finally, each solution undergoes functional validation to assess effectiveness. In cases where the performance impact of the monitored application is relevant, quantitative evaluation includes latency and throughput metrics for the monitored application.
+
+
+% \section{Implementation}
+
+All eBPF-based solutions follow a consistent dual-component architecture. Kernel-space components are implemented in C and compiled to eBPF bytecode using LLVM clang. User-space components are developed in Go using the Cilium eBPF library\footnote{https://github.com/cilium/ebpf/tree/main} for eBPF program management and data collection. %This architecture ensures type safety, memory management, and cross-platform compatibility across different container runtime environments.
+
+The eBPF-based solutions were deployed in container environments according to the goal of the case study. In some cases, the eBPF-based solutions were injected into containers to monitor the containerized application. In other cases, a single eBPF-based program monitored the containerized applications from the host system. In all cases, no changes were required to the monitored applications.
+
+% \section{Data Collection}
+
+Data collection was performed according to the environment and goals of each case study.
+Several programs were used to gather data necessary for this research, including programs available in the Linux kernel source tree and custom and existing benchmarking tools widely used to evaluate the performance of upstream applications, such as \textit{redis-benchmark}\footnote{https://redis.io/docs/management/optimization/benchmarks}.
+All datasets produced during benchmarking were retained for analysis and are publicly accessible \footnote{https://github.com/bertinatto/master-thesis/tree/master/src}.
+
+% \section{Evaluation Criteria}
+
+The effectiveness of eBPF-based solutions discussed in this work is measured by several factors. First, the evaluation assesses how effectively each solution fulfills its specific security function in containers, such as command auditing, privilege escalation detection, and network anomaly detection. In addition, where applicable, some solutions are evaluated based on the amount of overhead they introduce to the monitored containerized application while performing their security function. Finally, the analysis takes into account the complexity involved in deploying each solution on the system.
+
+% \section{Tools And Technologies}
+
+A variety of tools and technologies were used to conduct this research, including container management and orchestration, virtualization, benchmarking, and data analysis. Table~\ref{tab:tools} provides an overview of these tools and their respective purposes.
+
+\begin{table}
+	\centering
+	\begin{tabular}{|p{0.32\linewidth}|p{0.6\linewidth}|}
+		% \begin{tabular}{|l|l|}
+		\hline
+		\textbf{Tool}             & \textbf{Purpose}                                        \\ \hline
+		Podman, Containerd, CRI-O & Container creation and management                       \\ \hline
+		Kubernetes, OpenShift     & Container orchestration                                 \\ \hline
+		Vagrant                   & Virtualization of Kubernetes nodes                      \\ \hline
+		ebpf-go library           & Creation of eBPF-based solutions and benchmarking tools \\ \hline
+		Nginx, Redis              & Containerized application workloads                     \\ \hline
+		ab, redis-benchmark       & Performance benchmarking and functional testing         \\ \hline
+		R language                & Data analysis                                           \\ \hline
+	\end{tabular}
+	\caption{Tools and Technologies Used in This Research.}
+	\label{tab:tools}
+\end{table}
+
+% \section{Limitations}
+
+% The main limitation of this research is the narrow range of security scenarios covered. Containers, which can host internet-facing applications and share the same kernel, have a large attack surface. However, this work only addresses a small subset of security challenges around containers, leaving many important issues unexamined. Another potential limitation of this work is that eBPF-based programs introduce an additional layer, which can present extra security risks. For example, eBPF programs require elevated privileges to run within containers or in the host system. Any bugs in either the kernel space component or the user space component of an eBPF-based solution could jeopardize the security of the host system and, as a result, other containers running on the same host.
+
+% \section{Conclusion}
+
+% In conclusion, the case study approach, conducted in an exploratory manner, offers a comprehensive framework for evaluating the different security challenges present in containerized environments. Using the diverse capabilities of eBPF programs, this method enables the exploration of various solutions to address these security challenges.
+
+\chapter{Case Studies} \label{cases}
+
+This chapter presents a series of case studies that evaluate how eBPF can be utilized effectively to enhance container security. Each case study addresses a specific security challenge commonly encountered in containerized environments and proposes an eBPF-based solution to mitigate or monitor that problem. The case studies reflect realistic scenarios, such as auditing user commands within a containerized shell session, monitoring system calls to detect privilege escalation attempts, and inspecting network traffic to identify suspicious behavior. Each case study includes details on the motivation behind the study, the specific security challenge addressed, the implementation of the eBPF-based solution, and the results, along with their implications for container security.
+
+% TODO
+To ensure consistency and comparability, each case study in this chapter follows a standardized structure. First, the security challenge motivating the case study is introduced. Next, the proposed eBPF-based solution is described, including architectural decisions and design rationale. Implementation details are outlined, highlighting the selected eBPF program types, hook points, and deployment strategies. Each case study includes an experimental evaluation that assesses the effectiveness of the proposed solution and, where applicable, its performance impact. Finally, a discussion summarizes the main findings, limitations, and lessons learned. Additionally, the case studies are presented incrementally, with insights and infrastructure developed in earlier cases influencing the design choices of subsequent ones.
+
+\section{Case Study: Runtime Auditing of Containerized Shell Sessions} \label{case:container}
+
+The surge in containerized applications and Kubernetes usage has introduced new challenges, especially in real-time auditing for cluster administrators and network operators. Traditional actions performed by cluster administrators, such as executing a shell interpreter within a container, do not persist commands executed, leaving no audit trail post-termination. Kubernetes offers an \textit{Events} mechanism, but lacks the capability to record shell interpreter commands.
+
+This case study introduces an eBPF-based auditing solution. eBPF is employed for instrumentation in order to capture commands executed within Bash shell interpreters by targeting the \textit{readline}\footnote{https://git.savannah.gnu.org/cgit/readline.git/tree/readline.c?h=readline-8.2\#n351} function. This eBPF-based solution integrates an eBPF program loader service within containers, creating Kubernetes \textit{Events} resources for later inspection by cluster administrators. This service provides cluster administrators with a detailed record of executed commands, enhancing the ability to audit and troubleshoot containerized applications.
+
+\subsection{Proposal}
+
+For implementing the solution for this case study, an eBPF program was created to capture the commands executed within the Bash shell interpreter. This was achieved by instrumenting the \textit{readline}\footnote{https://git.savannah.gnu.org/cgit/readline.git/tree/readline.c?h=readline-8.2\#n351} function, which is used by Bash\footnote{https://www.gnu.org/software/bash/} to read user-provided commands. The focus on Bash stems from its status as the default shell in most contemporary Linux distributions.
+
+The eBPF program employed in this case study monitored commands executed by any user on the system. While this may pose challenges in systems with multiple users, it becomes advantageous within the context of Linux containers. Containers have a limited perception of the system, and the program running inside a container perceives the container itself as the entire system. Consequently, the eBPF program needs to be injected into the container so that it can capture commands executed by any process running within the same container.
+
+Running eBPF programs in containers introduces additional complexities. In particular, one major challenge is to ensure that the eBPF program runs within the same namespace as the process being monitored. Specifically, the eBPF program needs to run within the same mount and \textit{PID} namespaces as the shell interpreter. To overcome this namespace alignment requirement, \textit{nsenter}\footnote{https://man7.org/linux/man-pages/man1/nsenter.1.html} tool, which allows the execution of a program within specified namespaces, was employed. The eBPF program was executed via \textit{nsenter} to ensure that it runs in the appropriate namespaces.
+
+To initiate the eBPF program as soon as a shell interpreter starts running in a container, two additional components were introduced to the solution: a \text{runc}\footnote{https://github.com/opencontainers/runc} wrapper and an HTTP service running on the worker node alongside the \textit{kubelet}. The HTTP interface was selected for its simplicity of implementation and easy integration with the \textit{runc} wrapper, which can easily communicate with the HTTP service using a command-line HTTP client.
+
+Figure \ref{fig-impl-readline} illustrates the workflow of the eBPF-based solution proposed in this case study.
+The \textit{runc} wrapper detects when a Bash process is to be executed inside a container, captures the Process ID (PID) of the incoming Bash process, and sends it to the HTTP service running on the worker node. After that, the wrapper proceeds to run \textit{runc}, allowing it to start the Bash process inside the container. Finally, the HTTP service accepts incoming PIDs via an HTTP interface and runs the eBPF program within the specified mount and PID's namespace using the \textit{nsenter} tool. Once the eBPF program is running within a container, it captures all commands executed within any Bash process running in that container. The eBPF program then communicates this information back to the HTTP service running on the host machine. This communication is facilitated by a Unix Domain Socket, which is mapped within the container and exposes the HTTP interface of the custom service. Upon receiving information from the eBPF program, the service creates corresponding Event resources within the Kubernetes API server. As a result, Kubernetes cluster administrators gain a comprehensive view of the actions executed within the container. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\columnwidth]{img/impl.png}
+	\caption{Architecture of the eBPF-based solution.}
+	\label{fig-impl-readline}
+\end{figure}
+
+\subsection{Implementation} \label{audit:implementation}
+
+The solution outlined in this case study is triggered once a user starts a Bash process inside an existing container.
+Typically, users will start a Bash interpreter in an existing container using a command like \textit{kubectl exec -it <pod\_name> -- bash}.
+The present solution starts with the implementation of a \textit{runc} wrapper, a simple shell script designed to initiate the rest of the solution before effectively invoking \textit{runc}.
+To facilitate this, the \textit{runc} wrapper initially detects the PID of the process that is being executed in the container, i.e., the \textit{bash} command in this example. The wrapper then sends the PID to the HTTP service running on the same node where both the containerized application and the \textit{bash} process are running via Unix Domain Sockets. Finally, the wrapper calls \textit{runc} to complete its original task and launch the bash program inside the container.
+The full implementation of the \textit{runc} wrapper is presented in Listing~\ref{list:implementation-runc-wrapper}.
+
+\begin{listing}[htpb]
+\begin{minted}[fontsize=\footnotesize,breaklines]{shell}
+#!/bin/bash
+FILE=$(echo "$@" | grep ' exec ' | awk -F'--pid-file ' '{print $2}' | cut -d' ' -f1)
+if [ ! -z "$FILE" ]; then
+    curl --unix-socket /tmp/mysocket.sock \
+         --data "path=$FILE" "localhost/pid2"
+fi
+exec /usr/bin/runc "$@"
+\end{minted}
+	\caption{Implementation of the runc wrapper.}
+	\label{list:implementation-runc-wrapper}
+\end{listing}
+
+The HTTP service exposes two HTTP endpoints, as presented in Table~\ref{tab:http-endpoints}. One endpoint is designed to be called by the \textit{runc} wrapper to provide the path containing the PID of the Bash process initiated within the container. Additionally, this endpoint starts the eBPF program in the same container as the PID of the Bash process. The other endpoint is called by the eBPF program itself to deliver the command that has been typed in the Bash interpreter. This endpoint will read this command and create a Kubernetes \textit{Event} that can later be analyzed by the cluster administrator.
+
+\begin{table}
+	\centering
+	\begin{tabular}{|l|l|l|p{8cm}|}
+		\hline
+		\textbf{Method} & \textbf{Path} & \textbf{Parameters} & \textbf{Description}                                                            \\
+		\hline
+		POST            & /pid          & path(string)        & Starts the eBPF program in the same container as the PID being sent             \\
+		\hline
+		POST            & /event        & message(string)     & Creates a Kubernetes Event containing the command executed inside the container \\
+		\hline
+	\end{tabular}
+	\caption{HTTP endpoints exposed by the HTTP service used in the eBPF-based solution.}
+	\label{tab:http-endpoints}
+\end{table}
+
+The final component of the eBPF-based solution is the eBPF program. The eBPF program comprises two distinct components that operate in both kernel space and user space. The user space component is written in Go and relies on the ebpf-go\footnote{https://github.com/cilium/ebpf/tree/main} library to load and attach the kernel space component to the \textit{uretprobe/bash\_readline} tracepoint. Additionally, the user space component receives events from the kernel space component that represent the commands executed within the container and sends this information to the HTTP service.
+
+% Forcing a line break
+The kernel space component is developed in C and is classified as a \linebreak \textbf{BPF\_PROG\_TYPE\_KPROBE} type.
+Its implementation is intentionally minimal, as it only extracts the parameters of the \textit{readline} function. The parameters are conveyed to the user space component using an eBPF map, which serves as the standard eBPF method for exchanging data between the kernel and user space. Listing~\ref{list:impl-ebpf-readline} presents the implementation of the kernel space component, which has been based on an example\footnote{https://github.com/cilium/ebpf/blob/main/examples/uretprobe/uretprobe.c} implementation by the Cilium\footnote{https://cilium.io/} project.
+
+\begin{listing}[htpb]
+	\begin{minted}[fontsize=\footnotesize,breaklines]{C}
+// +build ignore
+#include "common.h"
+#include "bpf_tracing.h"
+char __license[] SEC("license") = "Dual MIT/GPL";
+
+struct event {
+  u32 pid;
+  u8 line[80];
+};
+
+struct {
+  __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
+} events SEC(".maps");
+
+
+const struct event *unused __attribute__((unused));
+
+SEC("uretprobe/bash_readline")
+int uretprobe_bash_readline(struct pt_regs *ctx) {
+  struct event event;
+  event.pid = bpf_get_current_pid_tgid();
+  bpf_probe_read(&event.line,
+                 sizeof(event.line),
+                 (void *)PT_REGS_RC(ctx));
+  bpf_perf_event_output(ctx,
+                        &events,
+                        BPF_F_CURRENT_CPU,
+                        &event,
+                        sizeof(event));
+  return 0;
+}
+\end{minted}
+	\caption{Implementation kernel space component of the eBPF program.}
+	\label{list:impl-ebpf-readline}
+\end{listing}
+
+To deploy the solution in a Kubernetes cluster, additional steps are required. As described in Chapter \ref{background}, container runtimes, like \textit{runc}, are invoked by container engines like Containerd. Consequently, a configuration change is needed in Containerd to invoke the \textit{runc} wrapper instead of calling \textit{runc} directly. The excerpt in Listing~\ref{list-containerd_configuration} provides additional configuration details that should be added to the Containerd configuration file\footnote{/etc/containerd/config.toml} on the worker node, specifically under the \textit{[plugins."io.containerd.grpc.v1.cri".containerd.runtimes]} section.
+
+\begin{listing}[htpb]
+	\begin{minted}[fontsize=\footnotesize,breaklines]{toml}
+[plugins."io.containerd.grpc.v1.cri".containerd. runtimes.wrapper]
+  runtime_type = "io.containerd.runc.v1"
+  pod_annotations = ["*"]
+  container_annotations = ["*"]
+
+[plugins."io.containerd.grpc.v1.cri".containerd. runtimes.wrapper.options]
+  BinaryName="/usr/bin/wrapper"
+\end{minted}
+	\caption{Containerd configuration.}
+	\label{list-containerd_configuration}
+\end{listing}
+
+To enable applications running in Kubernetes to use the \textit{runc} wrapper, a \textit{RuntimeClass} must be created and referenced by the workloads that require monitoring. Listing~\ref{list-runtimeclass} illustrates the YAML file used to define this resource.
+
+\begin{listing}[htbp]
+	\begin{minted}[fontsize=\footnotesize]{yaml}
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: my-wrapper-name
+handler: wrapper
+\end{minted}
+	\caption{RuntimeClass that uses the runc wrapper.}
+	\label{list-runtimeclass}
+\end{listing}
+
+Lastly, it is necessary to specify the designated \textit{RuntimeClass} in the deployment object of the containerized application that requires monitoring. For example, Listing~\ref{list-deployment} demonstrates a \textit{Deployment} object that utilizes the \textit{RuntimeClass} defined in Listing~\ref{list-runtimeclass}. Additionally, this object includes a mapping that allows the eBPF program to be accessed from the host directory and executed by the service on the worker node via \textit{nsenter}.
+
+\begin{listing}[htbp]
+	\begin{minted}[fontsize=\footnotesize,breaklines]{yaml}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      runtimeClassName: wrapper
+      containers:
+      - name: nginx
+        image: nginx:latest
+        volumeMounts:
+        - mountPath: /ebpf
+          name: ebpf-program-mount-point
+      volumes:
+      - name: ebpf-program-mount-point
+        hostPath:
+          # Location on the host where
+          # the eBPF program is located
+          path: /path-on-the-host
+\end{minted}
+	\caption{Deployment Object using the custom wrapper RuntimeClass}
+	\label{list-deployment}
+\end{listing}
+
+\subsection{Evaluation}
+
+In order to assess the viability of using eBPF programs within containers, experiments were conducted in a test environment that emulates a typical deployment of containerized applications. The test environment comprised a Kubernetes 1.26 cluster with a single node, running on a virtual machine. A single-node Kubernetes setup was chosen to focus on evaluating the feasibility of the approach rather than the scalability or performance of the system. The Kubernetes cluster was set up using the \textit{hack/local-up-cluster.sh} script, which is available in the Kubernetes source code\footnote{https://github.com/kubernetes/kubernetes/blob/v1.26.15/hack/local-up-cluster.sh}.
+The virtual machine was provisioned using Vagrant version 2.2.9 and utilized the Kernel Virtual Machine (KVM) virtualization technology on a Linux-based system.
+The virtual machine was equipped with 4 GiB of Random Access Memory (RAM) and an Intel Skylake CPU with 4 cores. It ran Fedora Linux version 37 with a Linux kernel version 6.2.8.
+The host machine used for running the virtual machine was a ThinkPad P1 Gen 3 laptop, equipped with 32 GB of RAM and an Intel Core i7-10850H processor featuring 12 cores.
+The host machine ran Fedora Linux version 37 with a Linux kernel version 6.2.8.
+
+After completing the manual steps outlined in Subsection \ref{audit:implementation}, a series of experiments were performed in order to evaluate the effectiveness of the solution presented in this case study.
+To simulate a real-world troubleshooting scenario, a Bash shell interpreter was initiated within the running container \textit{nginx} from Listing~\ref{list-deployment} and executed multiple commands.
+
+The commands executed within the container commands were designed to replicate a troubleshooting scenario where an administrator investigates the underlying cause of stalled requests within an \textit{nginx} worker process. During this process, the administrator examines the \textit{nginx} logs, monitors active processes, and utilizes the strace tool\footnote{https://strace.io/} to trace the specific system call where the issue arises.
+
+During the experimentation process, the HTTP service successfully generated Kubernetes \textit{Event} objects for each command executed within the container. Table~\ref{tab:events} provides a comprehensive list of the \textit{Events} created in the Kubernetes cluster throughout the course of the experiments. The data presented in the table was obtained using the \textit{kubectl} command.
+
+\begin{table}
+	\label{tab:events}
+	\centering
+	\footnotesize
+	\begin{tabular}{|p{0.6\textwidth}|p{0.35\textwidth}|}
+		\hline
+		\textbf{Object}                      & \textbf{Message}              \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & ls                            \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & ip a                          \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & vim /etc/nginx/nginx.conf     \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & cat /var/log/nginx/access.log \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & cat /var/log/nginx/error.log  \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & ps                            \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & apt update                    \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & apt install procps            \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & ps                            \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & strace -p 1                   \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & apt install strace            \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & strace -p 1                   \\
+		\hline
+		pod/nginx-deployment-89c6ff86b-92ndx & strace -p 28                  \\
+		\hline
+	\end{tabular}
+	\caption{Kubernetes Events.}
+\end{table}
+
+In conclusion, the experiment demonstrated that this solution has the potential to enhance the auditing and monitoring capabilities of containerized applications deployed in Kubernetes. By utilizing eBPF technology, it is possible to capture and record the commands executed within containers in a Kubernetes cluster, providing valuable insights for auditing purposes. This approach offers a comprehensive view of the actions taken inside containers, enabling cluster administrators to effectively troubleshoot and analyze the behavior of these applications. With further development and refinement, this solution could significantly improve the observability and security of container deployments.
+
+% In order to validate the solution presented in this case study, a comparison with existing tools was done. This subsection describes each of the compared solutions and provides details on the methodology and evaluation criteria used.
+
+% \textit{Falco} is a real-time security monitoring tool designed to identify anomalous behaviors in applications and infrastructure. \textit{Tracee}, another contender in container monitoring and security, excels at capturing and analyzing system events within containers, providing insights into container-level activities. Finally, \textit{Auditd}, an established auditing solution, was included in this analysis. \textit{Auditd} offers detailed system-level auditing capabilities. These existing solutions are compared to the eBPF solutions presented in this case study in terms of resource usage and responsiveness, justifying each comparison.
+
+% Specific rules were defined for each solution to capture and evaluate relevant container events.
+% Performance tests were conducted using a custom script, which was executed 100,000 times. The performance results are displayed in Table \ref{tab:comparative-analysis-revised}, which presents a comparison of three distinct metrics. The first column concerns the comparison of the response times, the second column regarding the CPU usage, and the third column pertains to the assessment of memory usage.
+
+% \begin{table}
+% \footnotesize
+% \caption{Comparative Analysis of Response Time, CPU Usage, and Memory Usage}
+% \centering
+% \begin{tabular}{|c|c|c|c|}
+% \hline
+% \textbf{Tool} & \textbf{Response Time (s)} & \textbf{CPU Usage (\%)} & \textbf{Memory Usage (MB)} \\
+% \hline
+% Falco  & 49.16 & -0.60 & 6.43 \\
+% Tracee & 50.12 &  0.20 & 4.77 \\
+% eBPF   & 49.12 & -0.50 & 6.30 \\
+% Auditd & 49.34 & -0.40 & 6.20 \\
+% \hline
+% % \multirow{4}{*}{Test 2B} & Falco  & 49.44 &  0.40 & 1.55 \\
+% %                          & Tracee & 49.89 &  0.80 & 3.98 \\
+% %                          & eBPF   & 49.33 &  0.30 & 1.50 \\
+% %                          & Auditd & 49.42 &  0.20 & 1.40 \\
+% % \hline
+% % \multirow{4}{*}{Test 3A} & Falco  & 49.35 &  0.00 & 2.34 \\
+% %                          & Tracee & 50.02 &  0.80 & 4.26 \\
+% %                          & eBPF   & 49.53 & -0.10 & 2.20 \\
+% %                          & Auditd & 49.63 &  0.00 & 2.10 \\
+% % \hline
+% % \multirow{4}{*}{Test 4B} & Falco  & 49.54 &  0.00 & 0.76 \\
+% %                          & Tracee & 49.83 &  0.60 & 3.55 \\
+% %                          & eBPF   & 49.74 & -0.10 & 0.70 \\
+% %                          & Auditd & 49.79 &  0.00 & 0.60 \\
+% % \hline
+% % \multirow{4}{*}{Test 5A} & Falco  & 49.71 &  0.00 & 2.34 \\
+% %                          & Tracee & 49.52 &  0.80 & 4.26 \\
+% %                          & eBPF   & 49.42 & -0.10 & 2.20 \\
+% %                          & Auditd & 49.44 &  0.00 & 2.10 \\
+% % \hline
+% % \multirow{4}{*}{Test 6B} & Falco  & 49.84 &  0.00 & 0.76 \\
+% %                          & Tracee & 49.93 &  1.60 & 3.55 \\
+% %                          & eBPF   & 49.90 & -0.10 & 0.70 \\
+% %                          & Auditd & 50.00 &  0.00 & 0.60 \\
+% % \hline
+% \end{tabular}
+% \label{tab:comparative-analysis-revised}
+% \end{table}
+
+% Overall, the eBPF solution proposed in this case study consistently demonstrated competitive response times, closely matching or slightly outperforming the other tools across tests. In terms of CPU usage, eBPF frequently reported minimal or even negative CPU deltas, suggesting efficient processing with low overhead. Memory usage was also favorable for eBPF, often consuming less than \textit{Falco} and \textit{Tracee}, and aligning closely with the lightweight footprint of \textit{Auditd}. These results affirm eBPF's efficiency and responsiveness in container security monitoring, making it a viable alternative to more mature solutions while offering modern capabilities tailored to dynamic cloud-native environments.
+
+\subsection{Discussion}
+
+The eBPF-based solution presented in this case study successfully achieved its primary objective: demonstrating the feasibility of using eBPF to effectively monitor containerized applications. 
+%without introducing significant overhead. 
+However, the type of monitoring provided by this solution requires an eBPF program to be injected into the container where the application runs. To enable per-container monitoring, a relatively complex solution involving several components that communicate with each other is necessary. This complexity is also reflected in the deployment process, which requires multiple manual steps.
+% Additionally, while no modifications are needed for the monitored application itself, cluster administrators must choose to adopt this solution. % by specifying the custom \textit{RuntimeClass} in the deployment object of the application to be monitored. 
+
+One potential way to address the limitations of the solution presented in this case study is by automating parts of the process using Kubernetes primitives, such as operators\footnote{https://kubernetes.io/docs/concepts/extend-kubernetes/operator/}.
+For instance, a custom operator could deploy the \textit{runc} wrapper and the HTTP service to every worker node. Additionally, the operator could create the \textit{RuntimeClass} object and modify the Containerd configuration to use that \textit{RuntimeClass} as the default for every new deployment created in the cluster. This would ensure that every application deployed by a user is automatically monitored by the eBPF-based solution.
+
+
+% Lastly, it is necessary to specify the designated \textit{RuntimeClass} in the deployment object of the containerized application that requires monitoring. 
+% Another point is the multiple ebpf programs running. for this use case, bash, there shouldn't be too many bash sessions, but for a different user case, where we monitor a dfi
+
+\section{Case Study: System Call Tracing for Privilege Escalation Detection} \label{case:syscall}
+
+The widespread use of containerized applications has increased the urgency to manage vulnerabilities in these environments, especially the escalation of privileges. Recent data from a 2023 Aqua Security report indicates that approximately 50\% of organizations using containers experienced a significant security breach in the previous year, with many incidents directly related to privilege escalation \cite{AquaReport2023}.
+
+Privilege escalation, in which unauthorized access extends beyond initial permissions, poses a severe threat to the security of the container and its host \cite{nikolova2021privilege}. Especially concerning is the possibility that a breach in one container can cascade to a system-wide incident \cite{maidul2020vulnerabilities}. This underscores the vital importance of robust security mechanisms, complemented by continuous auditing and monitoring in containerized infrastructures \cite{barnett2021hardening}.
+
+%TODO: seccomp exists, but it cannot with bags
+
+Techniques such as the \textit{Bag of System Calls} (BoSC) \cite{Kang2005} have emerged as powerful tools for predicting and preventing privilege escalation attacks. After collecting and analyzing system calls, the BoSC technique can be used to train classifiers to identify malicious actions, offering a strengthened security layer in containerized settings \cite{Abed2015} \cite{Fuller2007} \cite{Alarifi2015} \cite{Hofmeyr1998}. A vital prerequisite to using the BoSC technique is to trace all system calls executed by a monitored application. However, collecting those system calls is known to be a costly task. This task is typically achieved with tools such as \textit{strace}\footnote{https://strace.io/}, which are known to cause considerable slowdowns in the execution of applications.
+
+This case study proposes a solution to this problem using eBPF. In this work, various types of eBPF programs are compared, and their impact is evaluated when tracing system calls. Afterward, an approach is presented to capture system calls executed within the container and utilize a simplified method inspired by the BoSC technique to identify potential privilege escalation attempts.
+
+\subsection{Proposal} \label{syscall:proposal}
+
+% TODO: mention this solution only contains the eBPF program
+
+The solution proposed in this case study contains a single eBPF program that encompasses two distinct components operating both in the kernel space and user space. The user space component serves as a communication channel between the kernel space component and the user. The solution detects and notifies the user of any anomalies identified by the kernel space component.
+
+The kernel space component forms the central part of the solution. It receives events for all system call executions by hooking into the \textit{raw\_tracepoint/sys\_enter} raw tracepoint. In addition, this component parses and constructs system call parameter fields. The extra work of constructing the parameter fields is needed because raw tracepoint programs do not get that information ready for use. %Even though this is an inconvenience for the programmer, this is the main reason raw tracepoint programs are the fastest type of eBPF program available.
+The Subsection~\ref{syscall:evaluation} presents some data on this matter.
+
+The program keeps track of the last \textit{N} system calls executed to look for a suspicious set of system calls. This number must only be large enough to hold the suspicious system calls. However, a large \textit{N} means more processing overhead.
+As a result, this solution stores the last 100 calls, as that number should be enough to hold any behavior signature used in the experiments of this case study. Algorithm~\ref{alg:ebpf} presents the method for analyzing system calls in real-time used in this work.
+
+% The program tracks the last \textit{N} executed system calls to implement the BoSC technique and identify potentially suspicious sets of system calls. The value of \textit{N} should be large enough to accommodate the collection of system calls, but a larger \textit{N} results in greater processing overhead. Therefore, this solution stores the last 100 calls, which is sufficient for our experiments. Algorithm~\ref{alg:ebpf} outlines the method used in this work for real-time system call analysis.
+
+\begin{algorithm}
+	\small
+	\begin{algorithmic}[1]
+		\Function{SearchForAnomalousSyscallsSet}{}
+		\State $syscall \gets \text{context.current\_syscall}()$
+		\State $latest\_syscalls[\text{index} \mod 100] \gets syscall$
+		\State $\text{index} \gets \text{index} + 1$
+		\If{$latest\_syscalls$ contains $anomalous\_set$}
+		\State \Return \text{True}
+		\Else
+		\State \Return \text{False}
+		\EndIf
+		\EndFunction
+	\end{algorithmic}
+	\caption{Search for Anomalous Set of System Calls}\label{alg:ebpf}
+\end{algorithm}
+
+Figure~\ref{fig-impl} illustrates the workflow of the eBPF-based solution presented in this case study. Each time a containerized user application executes a system call, the kernel space component receives an event and applies the Algorithm~\ref{alg:ebpf}. Once an anomalous set of system calls is detected, a signal is registered on the eBPF map, which is read and acted upon by the user space component. The user space component then logs an event to the system logging infrastructure (e.g., journald or syslogd).
+% However, in future work, this solution could take on a more active role and terminate the suspicious process before it causes any harm to the system.
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\columnwidth]{img/syscall/implementation.png}
+	\caption{Architecture of the implementation.}
+	\label{fig-impl}
+\end{figure}
+
+\subsection{Implementation} \label{syscall:implementation}
+
+The kernel space component is developed in C and is classified as a \linebreak \textbf{BPF\_PROG\_TYPE\_RAW\_TRACEPOINT} type. The user space component is written in Go and relies on github.com/cilium/ebpf\footnote{https://github.com/cilium/ebpf/tree/main} library to load and attach the kernel space component to the \textit{raw\_tracepoint/sys\_enter} tracepoint. % In addition, we use the tooling provided by this library to compile the C source file from the kernel space component into eBPF bytecode and emit a Go file to be used by the user space component.
+
+The successful operation of this eBPF-based solution depends on the ability of both kernel and user space components to exchange information with each other effectively. Therefore, communication between elements of the solution is done via several hash tables implemented as eBPF maps of type \textbf{BPF\_MAP\_TYPE\_ARRAY}. The kernel space component uses these maps to notify the user space component that an anomalous set of system calls has been detected.
+
+Listing~\ref{list:impl-ebpf-syscallb} presents part of the kernel space component used in this case study. The remaining code cannot be shown due to space constraints.
+The kernel space component is attached to the \textit{raw\_tracepoint/sys\_enter} hook, which is triggered every time a syscall is executed.
+This component stores the last executed syscalls in a map. The index for this map is an integer that is atomically incremented every time a syscall is executed.
+
+\begin{listing}[htpb]
+\begin{minted}[fontsize=\footnotesize,breaklines]{C}
+//...
+SEC("raw_tracepoint/sys_enter")
+int tracepoint__raw_syscalls__sys_enter(struct bpf_args *ctx)
+{
+  // Index need to be dealt with in an atomically way.
+  u32 index_key = 0;
+  u64 index_init_val = 0;
+  u64 *index_ptr;
+  index_ptr = bpf_map_lookup_elem(&index_map, &index_key);
+  if (!index_ptr) {
+      bpf_map_update_elem(&index_map,
+                          &index_key,
+                          &index_init_val,
+                          BPF_ANY);
+      return 0;
+  }
+
+  // Reserves the current index value for the current
+  // syscall and atomically increments the index for the next one.
+  u32 syscall_index = __sync_fetch_and_add(index_ptr, 1) % MAX_ENTRIES;
+  u64 syscall_init_val = 0, *syscall_ptr;
+  syscall_ptr = bpf_map_lookup_elem(&syscall_map, &syscall_index);
+  if (!syscall_ptr) {
+      bpf_map_update_elem(&syscall_map,
+                          &syscall_index,
+                          &syscall_init_val,
+                          BPF_ANY);
+      return 0;
+  }
+
+  // Store syscall in our map. This effectively sends the
+  // information to user-space.
+  unsigned long syscall_id = ctx->args[1];
+  *syscall_ptr = syscall_id;
+
+  // Apply the algorithm.
+}
+\end{minted}
+	\caption{Implementation kernel space component of the eBPF-based solution used in this case study.}
+	\label{list:impl-ebpf-syscallb}
+\end{listing}
+
+\subsection{Evaluation} \label{syscall:evaluation}
+
+In this subsection, a series of experiments were conducted in order to evaluate the solution proposed in this case study. Firstly, the overhead introduced by various kinds of eBPF programs while instrumenting two kernel functions is analyzed. This information is critical in determining the appropriate type of eBPF program for the solution. Then, the overhead introduced by this proposal when tracing system calls is assessed. Finally, a scenario is simulated in which a user attempts to escape a container, and the solution is evaluated for its ability to detect the privilege escalation attempt.
+
+% \subsection{eBPF Overhead} \label{overhead}
+
+In the initial assessment, the additional processing time introduced by three different eBPF programs when attached to two kernel functions, "task\_rename" and "fib\_tab\_lookup", was evaluated. As the approach of the eBPF-based solution requires analyzing all system calls, it is crucial to keep any extra processing overhead to a minimum. A benchmarking program, whose source code is available in the Linux kernel tree\footnote{https://github.com/torvalds/linux}, was used to carry out this analysis.
+
+The benchmark program performs operations that trigger the execution of the kernel functions "task\_rename" and "fib\_tab\_lookup". For example, the "fib\_table\_lookup" test sends UDP packets to the localhost to invoke the homonymous kernel function. Similarly, the "task\_rename" test writes a string to the "/proc/self/comm" file to trigger the "task\_rename" kernel function. In addition, the program attaches three types of eBPF programs capable of tracing system calls to each test and processor core at different times: \textit{BPF\_PROG\_TYPE\_KPROBE} (kprobe), \textit{BPF\_PROG\_TYPE\_TRACEPOINT} (tracepoint), and \textit{BPF\_PROG\_TYPE\_RAW\_TRACEPOINT} (raw tracepoint).
+
+The benchmark results are shown in Table~\ref{tab:ebpf:bench}. The table has cells that display the total count of executions for a function under the Test column. A lower count means the function has a higher overhead due to tracing. The Base column displays a baseline count where system calls were not traced. The Kprobe, Tracepoint, and Raw Tracepoint columns display their respective eBPF type counts.
+Based on the results in the table, it was observed that raw tracepoints outperformed both tracepoint and kprobes. Therefore, this information confirms that the raw tracepoint is the most suitable type of eBPF program to be used by the proposal presented in this case study. Based on this, the remaining experiments were conducted using raw tracepoints.
+
+\begin{table}
+	\centering
+	\footnotesize
+	\label{tab:ebpf:bench}
+	\begin{tabular}{@{}p{2.5cm}cccc@{}}
+		\toprule
+		\textbf{Test}                        & \textbf{Base} & \textbf{Kprobe} & \textbf{Tracepoint} & \textbf{Raw Tracepoint} \\
+		\midrule
+		\multirow{12}{*}{task\_rename}       & 3634077       & 2123379         & 2783954             & 3290377                 \\
+		                                     & 3575526       & 2119257         & 2775150             & 3269406                 \\
+		                                     & 3547105       & 2118399         & 2773609             & 3256166                 \\
+		                                     & 3552119       & 2114393         & 2772998             & 3238374                 \\
+		                                     & 3536425       & 2113806         & 2753713             & 3210991                 \\
+		                                     & 3535852       & 2108881         & 2741596             & 3210334                 \\
+		                                     & 3502616       & 2096884         & 2745746             & 3210268                 \\
+		                                     & 3481862       & 2095712         & 2734844             & 3204348                 \\
+		                                     & 3497963       & 2057025         & 2732783             & 3154480                 \\
+		                                     & 3436194       & 2058983         & 2721204             & 3126806                 \\
+		                                     & 3488200       & 2058618         & 2701266             & 3074301                 \\
+		                                     & 3370600       & 1942835         & 2556992             & 3064059                 \\
+		\midrule
+		\multirow{12}{*}{fib\_table\_lookup} & 227078        & 217006          & 219809              & 225775                  \\
+		                                     & 227418        & 216564          & 218820              & 224287                  \\
+		                                     & 224382        & 212639          & 218528              & 221524                  \\
+		                                     & 222373        & 211783          & 214378              & 220404                  \\
+		                                     & 222416        & 211558          & 213313              & 220570                  \\
+		                                     & 221204        & 210310          & 212369              & 219942                  \\
+		                                     & 219844        & 209461          & 212342              & 217033                  \\
+		                                     & 219352        & 209040          & 211847              & 213021                  \\
+		                                     & 217366        & 209247          & 205254              & 212151                  \\
+		                                     & 215330        & 208072          & 204731              & 211712                  \\
+		                                     & 212873        & 205315          & 205401              & 211606                  \\
+		                                     & 207209        & 202412          & 203225              & 208844                  \\
+		\bottomrule
+	\end{tabular}
+	\caption{eBPF overhead benchmark.}
+\end{table}
+
+In the second experiment, the latency of the \textit{getpid()} syscall was evaluated under two distinct conditions: traced with a raw tracepoint eBPF program and untraced. This approach allows for assessing the impact of eBPF tracing on syscall performance. To achieve this, a program was created to measure the execution time of the \textit{getpid()} syscall, running it 100,000 times in each scenario. The \textit{getpid()} syscall was chosen to minimize the influence of disk and network I/O on the experiments. Moreover, this syscall does not require input and consistently returns a value of the same size (\textit{pid\_t}), making it an ideal candidate for this evaluation.
+
+The comparison of execution times between the two scenarios is shown in Figure~\ref{fig:box_comparison}. It can be observed that the median execution time under eBPF tracing is only slightly higher than that of the baseline. The negligible increase in the median execution time suggests that the eBPF program monitoring the \textit{getpid()} syscall had a minimal impact on overall performance.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=\columnwidth]{src/syscall/images/box_comparison.png}
+	\caption{Syscall execution times with and without eBPF tracing.}
+	\label{fig:box_comparison}
+\end{figure}
+
+The analysis of syscall execution times, captured through a Cumulative Distribution Function (CDF) plot, reveals distinct patterns when comparing scenarios with and without eBPF tracing. For around 70\% of the data points, the execution times under eBPF tracing closely mirror those observed without tracing, albeit with a minor overhead. However, beyond around the 0.7 point in the y-axis, a noticeable shift occurs as the eBPF line diverges rightward, indicating that for the remaining 30\% of the data, it is observed longer execution times under the eBPF tracing. Figure~\ref{fig:cdf} captures this distribution and the observed shifts.
+
+% This suggests a higher presence of outliers in the eBPF-traced dataset.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=\columnwidth]{src/syscall/images/cdf.png}
+	\caption{Cumulative Distribution Function of execution times with and without eBPF tracing.}
+	\label{fig:cdf}
+\end{figure}
+
+The results of the third assessment are presented next. This experiment aims to compare the results of \textit{redis-benchmark}\footnote{https://redis.io/docs/management/optimization/benchmarks} when executed against a containerized \textit{redis-server} in two scenarios. The first scenario involves running \textit{redis-server} in a container as a standalone process. In this scenario, the goal is to collect data on how the benchmark performs when no system calls are traced. The data collected in this scenario will serve as a baseline. In the second scenario, the performance of \textit{redis-server} is examined while tracing its system calls with the eBPF program. These scenarios are investigated to understand how eBPF tracing affects the overall performance of \textit{redis-server}. Figure~\ref{fig:redis_benchmark_rps_syscall} presents the number of requests per second (RPS) (y-axis) for all Redis operations (x-axis) achieved in both scenarios of this experiment. As evident from the data, the observed overhead has been minimal despite eBPF tracing introducing an overhead in all Redis operations.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=\columnwidth]{src/syscall/images/redis_benchmark_rps_comparison_overlap.png}
+	\caption{Requests per Second (RPS) for all Redis operations with and without eBPF tracing.}
+	\label{fig:redis_benchmark_rps_syscall}
+\end{figure}
+
+%The data presented in this subsection suggests that the eBPF-based solution introduces a small overhead as the cost of tracing all system calls executed in a containerized application. Consequently, the following experiments aim to demonstrate the effectiveness solution in detecting a privilege escalation attempt.
+
+% \subsection{Privilege escalation attempt}
+
+Finally, the results of the fourth experiment are presented. In this experiment, a user trying to escape a container is simulated having them attempt to enter a different Linux namespace. This experiment evaluates whether the eBPF-based solution can apply a simplified variant of the BoSC technique in a controlled environment. This experiment is an initial step toward testing the solution with real-world scenarios.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=0.5\columnwidth]{src/syscall/images/escalation2.png}
+	\caption{Container escape by entering a different Linux namespace.}
+	\label{fig:escalation}
+\end{figure}
+
+In this simulation, Podman\footnote{https://podman.io}, a popular container engine, is used to create a container in interactive mode and a pseudo-terminal (TTY). Once the container prompt starts, the user uses the \textit{nsenter} tool to switch to the same \textit{mount} namespace as (Process ID) PID number 1. In Linux, this PID typically belongs to the \textit{init} program, which is the first process launched at the start of the system boot. This command grants the user access to the host's filesystem if successful. Figure~\ref{fig:escalation} provides a visualization of these steps.
+
+The subsequent task is to pinpoint critical system calls executed within the \textit{nsenter} command and indicate an attempt to break out of the container. The eBPF-based solution and \textit{strace} identified the same sequence of system calls. Listing~\ref{list:sequence} shows an excerpt of the \textit{strace} output. Consequently, the bag of syscalls used in this experiment includes the \textit{openat} system call, with the second argument being "/proc/1/ns/mnt", and the \textit{setns} system call, with the second argument being "CLONE\_NEWNS" (0x00020000).
+
+% \begin{enumerate}
+% \item \textit{openat}, with the second argument being "/proc/1/ns/mnt"
+% \item \textit{setns}, with the second argument being CLONE\_NEWNS (0x00020000)
+% \end{enumerate}
+
+\begin{listing}[H]
+	\begin{minted}[fontsize=\footnotesize,breaklines]{c}
+openat(AT_FDCWD, "/proc/1/ns/mnt", O_RDONLY) = 3
+setns(3, CLONE_NEWNS)                   = 0
+close(3)                                = 0
+\end{minted}
+	\caption{Excerpt of strace output for nsenter command.}
+	\label{list:sequence}
+\end{listing}
+
+As the concluding phase of the experiment, the eBPF program shown in Listing~\ref{list:impl-ebpf-syscallb} was initiated on the host system, and the procedures delineated in Listing~\ref{list:escape} were manually executed. The purpose of this procedure was to determine the effectiveness of this solution in detecting a potential attempt by the user to escape the container using the \textit{nsenter} tool.
+
+\begin{listing}[H]
+	\begin{minted}[fontsize=\footnotesize,breaklines]{shell-session}
+$ podman run --interactive --tty fedora:38
+# nsenter --target 1 -m
+\end{minted}
+	\caption{Simulation of the user trying to escape a container.}
+	\label{list:escape}
+\end{listing}
+
+Upon executing the procedures outlined in Listing~\ref{list:escape}, the eBPF-based solution successfully detected and alerted the attempt to escape the container, demonstrating its effectiveness in enhancing the security and safety of the container environment. Listing~\ref{list:escape-alert} shows how the alert can be seen in the system's logging system.
+
+\begin{listing}[H]
+	\begin{minted}[fontsize=\footnotesize,breaklines]{shell-session}
+$ journalctl -p alert -t ebpf-alert
+Apr 19 12:23:32 localhost ebpf-alert[69660]: PID 69669 tried to break out via nsenter!
+\end{minted}
+	\caption{Alert logged in the system's logging system.}
+	\label{list:escape-alert}
+\end{listing}
+
+\subsection{Discussion}
+
+This research indicates that eBPF serves as a robust tool for monitoring and auditing container behavior by tracing system calls of containerized applications. The eBPF-based solution presented in this case study offers detailed visibility into container activity and improves the security of containerized systems.
+The results of the experiments confirmed that raw tracepoint programs provide the least amount of overhead when tracing all system calls.
+Additionally, the benchmarks performed with \textit{redis} demonstrated that the eBPF-based solution introduced a small latency to the containerized application.
+Finally, the effectiveness of the eBPF-based solution presented in this research was demonstrated in the experiments when it successfully detected a user's attempt to break out of a container.
+
+ 
+% todo: describe for loop issues
+
+% the ebpf code is more involved than the previus case as it uses more concepts
+% it was hard to satisty the verifies, specially for loop, for example:
+% for loop using I directory in bpf_map_lookup_elem won't work
+% for (u32 i = 0; i < MAX_ENTRIES; i++) {
+% u32 key = i;  // Force verifier to see a valid pointer
+% u64 *syscall_ptr = bpf_map_lookup_elem(&syscall_map, &key);
+% if (!syscall_ptr) {
+%     continue;
+% }
+
+
+% has shown great potential
+% Even though The overhead introduced in this solution is minimal, ie. manageable
+% No changes to the monitored application where done.
+% ebpf program run in the host rather than container, as done in the previous study case.
+
+% the solution misses component to integrate with kubernetes
+
+%
+
+Several areas can be explored to enhance the eBPF-based solution for container security presented in this case study. One approach focuses on developing rules and policies within the eBPF program to identify activities carried out by real-world exploits. This would mitigate the risk of privilege escalation attacks, improving the security of containerized environments. Additionally, the solution presented in this case study can be expanded to have a more active role in the system by taking proactive actions to prevent an escalation of privilege once it has been identified. An example of these actions would be to kill the offending process instead of just generating a passive alert. Lastly, a sequence-based system call analysis approach could be evaluated as an alternative to the simplified BoSC technique used in this work. By largely ignoring the temporal order in which system calls are invoked, the BoSC technique could easily lead to false positives. For instance, a benign program might invoke the same system calls as an exploit, but in a different order, potentially leading the program to be incorrectly flagged as a threat by the BoSC technique. A sequence-based system call approach could help the solution identify a broader range of abnormal behavior signatures. On the same vein, this solution could be expanded to receive an event after the system call is executed, in addition to receiving the event before the system call is executed, as it currently does. This would allow it to perform additional verification on the system by checking its state after the system call execution. Thus, this additional information can be used to better identify anomalous behavior within the containerized application.
+
+\section{Case Study: Real-Time Traffic Spike Detection in Container Networks} \label{case:network}
+
+The ease of deploying applications using a microservice architecture, combined with the continuous improvement of hardware capacity, has led to an increase in the number of containers per pod in Kubernetes, resulting in higher pod density. Furthermore, co-located applications running on the same pods can exhibit varying networking behaviors, which can lead to significant network traffic. Therefore, it is essential to understand traffic anomalies in these co-located containerized applications. This understanding allows for informed decisions regarding application architecture and hardware resource scaling. Additionally, it can serve as an early warning sign of potential security incidents, such as data theft.
+
+% When a network packet arrives at the Network Interface Controller (NIC), it goes through several layers in the Linux kernel before reaching the application. These layers include XDP, TC, Netfilter, the TCP/UDP stack, and the socket layer. At each of these layers, the packet can be intercepted and modified, e.g., the XDP hook is located in the RX (receive) path within the network driver. As a result, XDP programs execute at the earliest point in the network stack. This early access to incoming data enables XDP programs to achieve higher throughput compared to TC programs.
+
+% todo: add image here
+
+Although current methods offer various ways to monitor network traffic and detect anomalies, many existing solutions deployed in production environments often fail to provide a real-time approach to identify network traffic anomalies, such as unusual traffic spikes. This case study seeks to address this gap by introducing a solution that continuously and passively monitors all incoming traffic at the pod level, utilizing a custom statistical algorithm to identify deviations in network activity, and promptly reports alerts for such occurrences. This approach enhances early detection capabilities, allowing for a proactive response to potential security threats or system inefficiencies.
+
+% This just gave me an idea to motivate your work: Public cloud network usage. If you want to write in Section 1 and 2 that a solution like yours also helps monitoring the traffic in such environments, which are known to be hard to control (and they are costly!).
+
+This case study proposes an eBPF-based solution for monitoring traffic at the pod level. The solution is designed to generate alerts when there is an abnormal increase in traffic. Additionally, the effectiveness of this solution is assessed by simulating normal application usage followed by a sudden spike in traffic.
+Furthermore, the performance impact is evaluated by measuring the overhead incurred on the monitored containerized application during active network monitoring.
+% We also evaluate the performance impact by examining the overhead caused by our solution during active network monitoring.
+
+\subsection{Proposal}
+
+The eBPF-based solution proposed in this case study encompasses two distinct components that operate in both the kernel and the user space. The kernel space component is intentionally kept small to have a minimal performance impact. This component simply counts bytes of incoming packets and shares this information with the user space component.
+
+This solution employs the XDP hook to trigger the kernel space component at the earliest possible time. This allows the eBPF-based solution to handle higher throughput with minimal performance overhead. One limitation of using XDP is that it cannot handle egress traffic. However, this solution focuses exclusively on ingress traffic, for which XDP is well-suited. Most of the logic of this solution runs on the user-space side, where it is responsible for attaching the eBPF program to the virtual network interfaces associated with the pods and containers that should be monitored. The general functioning of this solution is described below.
+
+% TODO: create a picture that outlines how our solution works
+
+Once the eBPF-based solution is started on a node, it identifies the running containers on that particular node. To keep the implementation simple, this solution focuses on containers running in the \textit{default} \textit{namespace}. Once the list of containers is known, the subsequent step is to identify the network interfaces associated with each of them. In general, each pod may have multiple containers, and all containers from the same pod share the same network interface. The network interfaces created by \textit{CRI-O} are named based on the first 15 bytes of the sandbox ID assigned to each container. As a result, this solution uses this assumption to infer the list of network interfaces to which the kernel space eBPF program should be attached. With the list of network interfaces at hand, the solution attaches the kernel space eBPF program to the XDP hook.
+
+The eBPF program running in the kernel space keeps a map of the virtual interface index and the number of bytes that that particular network interface has received. Every time a new packet arrives at the network interface, the eBPF program updates the information from this map. Since this solution uses XDP as the program type for the kernel space component, the eBPF program of this solution is executed right when the network driver receives the packet, before any expensive operation is completed.
+
+The user space component checks the information available in the map every second. Initially, the user space component calculates how many bytes the network interface has received in the past second and records that information to feed the algorithm. The user space component then executes the algorithm to determine whether the observed traffic for the given network interface and its associated pod constitutes an anomalous spike. If an anomaly is detected, the user space component generates an alert that is visible to the user through the \textit{OpenShift Console}.
+
+The algorithm used to detect an anomalous traffic spike is described in Algorithm~\ref{alg:anomaly_detection}. Initially, the algorithm checks if the pod and the network interface have enough historical data to make a decision. The algorithm then calculates the mean, the variance, and the standard deviation of the delta values, i.e., the amount of traffic received every second. Then, the algorithm calculates the \textit{Z-Score} for the current delta value, and if the value is bigger than 2.5 times the standard deviation, then the algorithm flags the current reading value as anomalous.
+
+% todo: the algorithm is simple, but is not the focus here
+
+\begin{algorithm}[htbp]
+	\footnotesize
+	\begin{algorithmic}[1]
+		\Require {stats: PodStats, deltaBytes: Integer}
+		\Ensure {Boolean (true if anomalous, false otherwise)}
+		\Statex
+
+		\Function{isAnomalous}{stats, deltaBytes}
+		% \Comment{Check if enough data is available for analysis}
+		\If{stats.count $<$ 5}
+		\State \Return \textbf{false}
+		\EndIf
+		% \Comment{Calculate mean and variance of delta values}
+		\State mean $\gets$ stats.sum / stats.count
+		\State variance $\gets$ (stats.sumSquared / stats.count) - (mean $\times$ mean)
+		% \State stdDev $\gets 1$
+		% \Comment{Compute standard deviation if variance is positive}
+		% \If{variance $>$ 0}
+		\State stdDev $\gets \sqrt{\text{variance}}$
+		% \EndIf
+		% \Comment{Calculate z-score for the current deltaBytes}
+		\State zScore $\gets \frac{| \text{deltaBytes} - \text{mean} |}{\text{stdDev}}$
+
+		% \Comment{Return true if z-score exceeds the threshold}
+		\Return zScore $>$ 2.5
+		\EndFunction
+	\end{algorithmic}
+	\caption{Anomaly Detection Algorithm.}\label{alg:anomaly_detection}
+\end{algorithm}
+
+\subsection{Implementation} \label{case:network:implementation}
+
+The kernel space component is developed in C and is classified as a \linebreak
+\textbf{BPF\_PROG\_TYPE\_XDP} type. The user space component is written in Go and relies on ebpf-go library\footnote{https://github.com/cilium/ebpf/tree/main} to load and attach the kernel-space component to the network interface. Additionally, the tooling provided by this library is used to compile the C source file from the kernel-space component into eBPF bytecode and emit a Go file to be used by the user space component.
+
+% The successful operation of this eBPF-based solution depends on the ability of both kernel and user space components to exchange information with each other effectively. Therefore, communication between elements of our solution is done via a hash table implemented as an eBPF map of type \textit{BPF\_MAP\_TYPE\_ARRAY}. The kernel space component uses this map to notify the user space component that an anomalous set of system calls has been detected.
+
+Listing~\ref{list:impl-ebpf-network} presents part of the kernel space component used in this case study. Due to space constraints, the full source code cannot be presented here.
+The kernel space component is attached to the \textit{xdp.frags} hook, which is triggered every time a network packet arrives at the NIC.
+
+\begin{listing}[htpb]
+	\begin{minted}[fontsize=\footnotesize,breaklines]{C}
+// (...)
+
+// Define an LRU hash map for storing byte
+// count and timestamp by veth interface
+struct {
+  __uint(type, BPF_MAP_TYPE_LRU_HASH);
+  __uint(max_entries, MAX_MAP_ENTRIES);
+  __type(key, __u32);            // Virtual interface index
+  __type(value, struct datarec); // Bytes and timestamp
+} xdp_stats_map SEC(".maps");
+
+int parse_eth_pkt(struct xdp_md *ctx, __u64 *pkt_size) {
+  // Parse eth patcket and calculate packet size
+}
+
+SEC("xdp.frags")
+int xdp_prog_func(struct xdp_md *ctx) {
+  __u32 ip;
+  __u64 pkt_size;
+  __u64 current_time = bpf_ktime_get_ns();
+  __u32 ifindex = ctx->ingress_ifindex;
+
+  // Retrieve data record for this IP
+  struct datarec *rec = bpf_map_lookup_elem(&xdp_stats_map, &ifindex);
+  if (!rec) {
+    // No entry in the map for this interface yet, so initialize it
+    struct datarec init_data = {
+      .bytes = pkt_size,
+      .last_seen = current_time
+    };
+    bpf_map_update_elem(&xdp_stats_map, &ifindex, &init_data, BPF_ANY);
+  } else {
+    // Update byte count
+    rec->bytes += pkt_size;
+    rec->last_seen = current_time;
+  }
+}
+\end{minted}
+	\caption{Implementation kernel space component of the case eBPF program used in this case study.}
+	\label{list:impl-ebpf-network}
+\end{listing}
+
+% Explain that most of the logic goes into the userspace program, differently from other cases
+
+Both kernel and user space components are compiled into a single binary and packaged into a single container image. This container image is deployed in the worker nodes with the help of a \textit{DaemonSet} object. Since this solution runs in an isolated container, the necessary permissions to map network interfaces to the pods running on the host are not available. As a result, the \textit{DaemonSet} is tailored so that the container of this solution has those permissions. In addition to that, the \textit{/var/run/crio/crio.sock} socket file from the host is mapped inside the container where the solution runs. This is required so that the solution can use \textit{cri-o} as if it were executed in the host. Listing~\ref{list:ds} shows the exact \textit{DaemonSet} used in this experiment. In addition to the \textit{DaemonSet}, the other objects that this solution requires to create alerts, such as a \textit{Service}, \textit{ServiceMonitor}, and \textit{PrometheusRule}, are created.
+
+\begin{listing}[htbp]
+	% \begin{minted}[fontsize=\footnotesize,frame=single,breaklines]{shell-session}
+	\begin{minted}[fontsize=\footnotesize,breaklines]{yaml}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: xdp
+  labels:
+    app: xdp
+spec:
+  selector:
+    matchLabels:
+      app: xdp
+  template:
+    metadata:
+      labels:
+        app: xdp
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: xdp
+        image: quay.io/bertinatto/xdp:latest
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        command: ["/usr/bin/xdp"]
+        ports:
+          - containerPort: 9101
+            name: metrics
+        volumeMounts:
+          - name: crio-sock
+            mountPath: /var/run/crio/crio.sock
+      volumes:
+        - name: crio-sock
+          hostPath:
+            path: /var/run/crio/crio.sock
+            type: Socket
+\end{minted}
+	\caption{\textit{DaemonSet} deployment file.}
+	\label{list:ds}
+\end{listing}
+% TODO: ...
+% TODO: mention the SEC("xdp.frags") saga
+
+\subsection{Evaluation} \label{case:network:evaluation}
+
+This subsection presents the evaluation of the eBPF-based solution proposed in this case study. The experiments are conducted in an environment based on OpenShift (OCP) version 4.18.0-rc6, which is a Kubernetes distribution developed by Red Hat\footnote{https://www.redhat.com/en}. The underlying Kubernetes version is 1.31.4. The OCP cluster is deployed on the AWS public cloud, consisting of six nodes: three nodes serve as the control plane, and three nodes serve as worker nodes. All nodes are configured as~\textit{m6i.xlarge}\footnote{https://aws.amazon.com/ec2/instance-types/m6i} AWS instances, each featuring 4 vCPUs and 32 GiB of RAM. Figure~\ref{fig:setup-experiments} shows the experimental setup with a Redis application pod and the solution deployed on different cluster worker nodes.
+
+% \subsection{Overhead}
+Two experiments were performed using Redis. Both experiments involve running a Redis server in a container in one of the worker nodes and two different benchmarking tools running in a different container in a different node. Note that the benchmarking tools run on a different node to ensure that the incoming Redis commands are being delivered over the network interface and not through localhost. %Figure~\ref{fig:setup-experiments} provides a visual representation of the setup we used to perform our experiment.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{img/experiments.png}
+	\caption{Experimental setup.}
+	\label{fig:setup-experiments}
+\end{figure}
+
+In the first experiment, a benchmarking tool was developed to measure the latencies of the SET and GET operations in Redis. The tool establishes a connection to a Redis server and executes 100,000 key-value insertions (SET operations), followed by 100,000 retrievals (GET operations). The latency of each operation is recorded in microseconds and stored in a CSV file for further analysis. For benchmarking, the program generates random 1000-byte string values for SET operations.
+
+The benchmarking tool is executed against the containerized Redis server in two scenarios. The first scenario collects data on how the benchmark performs when the eBPF-based solution is not actively monitoring the network usage of the Redis server pod. The data collected in this scenario serves as a baseline. In the second scenario, the performance of the containerized Redis server is examined while using the eBPF-based solution to monitor its network usage. These scenarios are investigated to assess the impact of the proposed solution on the overall performance of the Redis server. Figure~\ref{fig:boxplot-latencies} illustrates the findings of this experiment, focusing on values up to the 95th percentile to minimize the impact of outliers and enhance visualization. The median latency for eBPF is slightly higher at 597 \textmu{s} compared to the baseline's 594 \textmu{s}, indicating a marginal increase in response time for both GET and SET operations. Conversely, the interquartile range (IQR) remains consistent at 12 \textmu{s} for both eBPF and the baseline dataset, suggesting that eBPF has not introduced any additional central variability. When analyzing the entire dataset, it is possible to observe a similar trend: the median latency for eBPF stands at 598 \textmu{s}, while the median for the baseline is still 594 \textmu{s}. The interquartile range (IQR) is also consistent at 13 \textmu{s} for both eBPF and baseline.
+
+% \begin{figure}[htpb]
+%     \centering
+%     \includegraphics[width=\columnwidth]{src/redis/images/scatter_redis.png}
+%     \caption{.}
+%     \label{fig:latency-distribution}
+% \end{figure}
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=\columnwidth]{src/network/redis/images/boxplot_latencies.png}
+	\caption{Latencies of GET and SET operations.}
+	\label{fig:boxplot-latencies}
+\end{figure}
+
+Lastly, the results of the second assessment are presented. This assessment compares the outcomes of \textit{redis-benchmark}\footnote{https://redis.io/docs/management/optimization/benchmarks} when executed against a containerized Redis server in two scenarios.
+Once again, the first scenario involves running the Redis server in a container as a standalone process. In this scenario, the goal is to collect data on how the benchmark performs when the eBPF-based solution is not monitoring Redis. The data collected in this scenario serves as a baseline. In the second scenario, the performance of the Redis server is examined while the eBPF-based solution is actively monitoring its pod. Figure~\ref{fig:redis_benchmark_rps_network} presents the number of requests per second (RPS) (y-axis) for all Redis operations (x-axis) achieved in both scenarios of this experiment. As evident from the data, the observed overhead has been minimal despite the eBPF-based solution clearly introducing an overhead in all Redis operations.
+
+% TODO: check how the following information can be added
+% Initially we were getting mixed results. We noticed our solution introduced an overall overhead of 5-15% in Redis operations, however,as we ran more experiments, the results were not very consistent. We noticed that occasionally we would get better results when our solution was working. Once we adjusted the configuration of redis-benchark from 100,000 requests to 1M, we started getting more consistent results, confirming a consistent and small overhead when our solution was used.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=\columnwidth]{src/network/redis/images/redis_benchmark_rps_comparison_overlap.png}
+	\caption{Requests per Second (RPS) for all Redis operations with and without eBPF.}
+	\label{fig:redis_benchmark_rps_network}
+\end{figure}
+
+% \subsection{Functional}
+
+% Based on the previous assessments, an experiment is carried out to evaluate the effectiveness of the proposed solution.
+The experiments presented so far evaluate the performance overhead of the proposed solution. The following experiment is designed to evaluate the effectiveness of the proposed solution.
+First, two instances of the \textit{Nginx}\footnote{https://nginx.org} HTTP web server are deployed in the Kubernetes cluster.
+In this experiment, both instances of the HTTP web server run on the same worker node, but on different pods.
+Two instances of the HTTP server were deployed to evaluate whether the eBPF-based solution correctly identifies the instance where the spike in network usage happens.
+
+The HTTP web servers are exposed to clients outside the Kubernetes cluster. This is achieved using \textit{Services} and \textit{Routes} objects. Next, two HTTP clients external to the Kubernetes cluster are simulated making requests to both HTTP web servers. This is a typical scenario of applications deployed on large Content Delivery Networks (CDNs) with public reachability over the Internet. The requests are made sequentially and not concurrently, i.e., as soon as the HTTP server responds to one request, the next one is issued. This step is used to warm up the cache of the solution and to simulate a baseline traffic usage of the monitored HTTP servers.
+
+An anomalous burst of requests is simulated in one of the services using the Apache HTTP server benchmarking tool (\textit{ab})\footnote{https://httpd.apache.org/docs/2.4/programs/ab.html}. The burst consists of a total of 100 requests, processed in groups of 10. Figure~\ref{fig:setup-experiments-functional} illustrates the setup used for this experiment.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{img/experiments_functional.png}
+	\caption{Setup used to check the effectiveness of the eBPF-based solution.}
+	\label{fig:setup-experiments-functional}
+\end{figure}
+
+% The command to perform this step is shown in Listing~\ref{list:client}.
+% \begin{listing}[htpb]
+% \begin{minted}[fontsize=\footnotesize,frame=single,breaklines]{shell-session}
+% $ while true; do curl http-server-service-1-default.apps.example.com; done
+% \end{minted}
+% \caption{HTTP client performing requests to the monitored HTTP server.}
+% \label{list:client}
+% \end{listing}
+
+
+
+% Listing~\ref{list:ab} shows the exact command used.
+% \begin{listing}[htbp]
+% \begin{minted}[fontsize=\footnotesize,frame=single,breaklines]{shell-session}
+% $ ab -n 100 -c 10 http-server-service-1-default.apps.example.com/
+% \end{minted}
+% \caption{HTTP client performing requests to the monitored HTTP server.}
+% \label{list:ab}
+% \end{listing}
+
+After executing the procedures as intended, the eBPF-based solution successfully detected and alerted to the traffic spike in the correct pod. Figure~\ref{fig:alert} presents the alert in the OpenShift Console.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{img/alert.png}
+	\caption{Traffic spike alert generated by the eBPF-based solution.}
+	\label{fig:alert}
+\end{figure}
+
+\subsection{Discussion}
+
+% Interpret the results. Was it worth it? Was overhead acceptable? What did you learn? Are there any limitations?
+
+In this study, the feasibility of utilizing eBPF to monitor network traffic in containerized applications was evaluated. A solution was proposed for deployment on worker nodes within a Kubernetes cluster. This approach involves identifying the running containers on each worker node and mapping the virtual network interfaces associated with those containers. An eBPF program is then attached to each of these network interfaces, which records network usage for both the interfaces and their respective containers. Subsequently, an algorithm is applied to detect anomalous spikes in network traffic and generate alerts when such anomalies are identified. The research findings suggest that eBPF is a robust tool for monitoring the network usage of containerized applications, providing detailed visibility into container network activity and enhancing the security of containerized systems.
+
+Several areas can be explored to enhance the eBPF-based solution presented in this Case Study. For instance, the eBPF-based solution can be expanded to detect when individual containers are saturating the network link, causing a noisy neighbor effect on the worker node's network.
+
+\section{Synthesis of Case Study Findings}
+
+Originally, the plan was to organize the case studies around specific primary objectives, with the goal of combining them in the final case study.
+For instance, the Case Study \ref{case:container} evaluated the feasibility of using eBPF to monitor containerized applications.
+The main contribution to this case study for this research was the approach created for deploying the eBPF program inside containers so that it could monitor the containerized application deployed in a Kubernetes cluster.
+Both the user space and kernel space components of the eBPF program were simple and small.
+However, an involved approach had to be created in order to start the eBPF program in the same container as the monitored application, as soon as a shell program is started in that same container. As part of that approach, a \textit{runc} wrapper program had to be created, along with an HTTP service to start the eBPF program in the correct container and also create Kubernetes \textit{Events} reporting the commands executed in the shell application in that same container.
+As this case study concentrated mainly on the infrastructure needed to implement eBPF programs in containerized applications within a Kubernetes cluster, a performance analysis of the eBPF-based solution was not a central focus of this study.
+
+With the infrastructure required to deploy eBPF programs in containerized applications of a Kubernetes cluster ready, the primary objective of the Case Study \ref{case:syscall} was to build solid knowledge in the development of eBPF programs.
+As a result, this case study focused on introducing the BoSC technique to predict privilege escalation attacks in containers running independently of Kubernetes.
+The robustness of the eBPF program used in this case study is evident.
+However, the implementation of the BoSC technique in the eBPF program introduced some challenges that were not anticipated.
+Specifically, the logic for checking the bag of calls is located in the kernel space component rather than in the user space.
+This design choice was made to avoid race conditions, as it was not feasible to ensure that the user space component would not miss any syscalls.
+During the development of this eBPF program, it became evident that the eBPF verifier imposes rigorous checks to reject potentially unsafe code in the kernel space component.
+However, the added complexity of the kernel space component of the eBPF program raises the risk of introducing software bugs that could cause the kernel to crash.
+
+The lack of proper eBPF documentation was also a problem in the development of the eBPF program for the Case Study \ref{case:syscall}.
+While a wealth of eBPF documentation is available online, much of it is outdated and no longer applicable to the latest versions of the Linux kernel.
+As a result, many parts of the eBPF program from the Case Study \ref{case:syscall} were developed through extensive trial and error.
+
+% Evaluated the performance of a monitored application and evaluated the overhead added by the eBPF-based solution.
+% A lot of energy was spent on creating tools for benchmarking the eBPF-base solution.
+
+Many tools and scripts were developed to evaluate the solution proposed in the Case Study \ref{case:syscall}.
+The evaluation also leveraged existing benchmarking tools that add credibility to the results.
+An abundance of performance results were generated, but ultimately excluded due to space limitations.
+
+In retrospect, an interesting observation regarding Case Study \ref{case:syscall} was that eBPF should be used cautiously with techniques that need to apply logic to the observed data in real-time.
+For instance, the BoSC technique requires verifying if a set of syscalls is present in the last N syscalls executed.
+This step cannot wait for the kernel space component to communicate the last N syscalls to the user space component. The logic needs to be applied immediately in the kernel space component.
+Consequently, the kernel space component needs to incorporate a larger amount of code. Although this code must pass through the stringent checks of the eBPF verifier, it could introduce potential security vulnerabilities and additional overhead for the monitored application.
+Therefore, eBPF is more suitable for approaches where immediate action is not required, allowing the kernel space component to send the data to the user space component for later processing.
+
+% Also, a positive point, once the eBPF program wasthere was no problem in running  was the eBPF program compiled
+% This resulted in challenges creating the eBPF program
+
+Finally, Case Study \ref{case:network} builds upon the lessons learned from the previous case studies to create a more robust solution.
+For instance, the eBPF component running in the kernel space is small and contained.
+Most of the logic resides in the user space program.
+In addition, the deployment of the eBPF program is done in Kubernetes using the lessons learned from the Case Study \ref{case:container}.
+Fortunately, the infrastructure to deploy the eBPF program in Case Study \ref{case:network} is not nearly as complex as Case Study \ref{case:container} because there was no need to be selective about where to inject the eBPF program.
+In other words, in the Case Study \ref{case:container}, the eBPF program, comprised of user space and kernel space components, was injected into containers where the user started a shell session, so the solution needed to be aware of every process started in the container of the monitored application.
+However, in Case Study \ref{case:network}, a single user space component is deployed on worker nodes. This component monitors the startup of pods, detects the network interfaces assigned to the pods, and injects the kernel space component into them.
+Additionally, the alerting mechanism has evolved to better integrate with Kubernetes and OpenShift.
+
+During the evaluation phase, Case Study \ref{case:network} was built upon the insights gained from Case Study \ref{case:syscall}.
+For example, the benchmarking and the visualization tools created in Case Study \ref{case:syscall} were used as a base for the tools used in the Case Study \ref{case:network}. This approach significantly accelerated the development of the latter.
+
+In conclusion, this research demonstrated that eBPF-based monitoring can be applied across diverse security scenarios while incurring minimal overhead.
+The progression across case studies confirmed that keeping kernel space components minimal and delegating complex logic to user space produces more maintainable solutions.
+In addition, each eBPF-based solution may require a custom deployment strategy, as the information needed to attach programs to their respective hook points varies by eBPF program type.
+
+% However, there is still some risks.The userspace program needs to run as root, which is often discourage in Kubernetes.
+% In addition, the eBPF program needs to run in the host's network and PID namespaces.
+% In general, eBPF require privilged acess to the system.
+% This is a common requirement for eBPF programs need to run as root. However, it is much better than having.
+
+% case studier
+% ultima secao para integrar todos
+% na primeira fez isso, mas tive problema
+% relacionar eles
+% ex: ia fazer assim, mas por causa desse problema, eu fiz assim
+% - se juntar o case 2 com o 1, nao preciso alterar containerd pq o programa ebpf sera inserido em todos os cotnaienrs, nao em containers onde bash e iniciado
+% posso ser especulativo: apesar da restrica, pelo menos a curva de aprendizado
+
+\chapter{Conclusion} \label{conclusion}
+
+% \section{Lessons Learned}
+
+% ebpf require extra privileges, and that cascades to kubernetes deployments, which is often disencouraged.
+% eBPF is not easy. scripts in python won't help because the ebpf needs to be written in C and that's a very different thing, the verifies has its own life.
+% ebpf program might now work in different kernels: https://ebpfchirp.substack.com/p/why-does-my-ebpf-program-work-on
+
+%The results confirmed that eBPF can effectively provide deep visibility into container activity, capturing detailed behavioral insights that would be difficult or inefficient to obtain using traditional methods.
+
+This thesis explored the use of eBPF to enhance the security of Linux containers by enabling real-time monitoring and anomaly detection while minimizing performance overhead. Through a comprehensive series of case studies, this research demonstrated the practicality of eBPF as a foundation for container-level security solutions while revealing important implementation challenges and deployment considerations.
+
+Three distinct security scenarios were examined using a multiple case study methodology: auditing user commands within containerized shell sessions, tracing system calls to detect potential privilege escalation attempts, and monitoring network traffic for abnormal patterns. Each case study addressed distinct security challenges while building upon lessons learned from previous investigations.
+
+In the Case Study \ref{case:container}, an eBPF program was used to trace commands typed within Bash shells running inside containers. By integrating this mechanism with Kubernetes \textit{Events}, the solution provided administrators with a persistent and auditable trail of user actions. However, this case study revealed the significant infrastructure complexity required to inject eBPF programs into specific containers, necessitating a custom runc wrapper, HTTP service architecture, and careful namespace management. While functionally successful, the deployment complexity highlighted the need for more streamlined approaches.
+
+The Case Study \ref{case:syscall} focused on enabling anomaly detection through the Bag of System Calls (BoSC) technique. By instrumenting raw tracepoints with eBPF, the solution achieved high-performance system call tracing,  with analysis showing that for approximately 70\% of the measured data points, execution times closely mirrored baseline conditions with only minor overhead. Raw tracepoint programs demonstrated superior performance compared to kprobe and traditional tracepoint alternatives. The eBPF-based solution successfully detected a simulated container escape attempt, confirming its utility in identifying privilege escalation behaviors. This case study also revealed the challenges of implementing complex logic within eBPF's kernel-space constraints due to verifier strictness.
+
+Finally, the Case Study \ref{case:network} employed an XDP-based eBPF program to detect abnormal spikes in ingress traffic to containerized services. The solution was integrated with OpenShift to provide real-time alerts through Prometheus and web interfaces, offering administrators timely insights into suspicious traffic patterns. Performance evaluation showed median latency increases of only 3 microseconds (597 \textmu{s} vs 594 \textmu{s} baseline) for Redis operations, with interquartile ranges remaining consistent at 12 \textmu{s} for both scenarios, demonstrating negligible impact on application performance. This case study successfully applied lessons learned from previous studies by maintaining minimal kernel-space complexity while implementing sophisticated anomaly detection logic in user space.
+
+The research methodology of iterative case study development proved valuable in understanding eBPF's practical constraints and capabilities. The progression from complex deployment architectures to streamlined solutions revealed that eBPF's effectiveness depends significantly on architectural choices. Kernel-space components should be kept minimal to reduce security risks and verifier complexity, while user-space components can handle sophisticated logic and integration requirements.
+
+However, this research also identified important limitations. eBPF-based solutions require elevated privileges, which can complicate deployment in security-conscious environments. The eBPF verifier imposes stringent constraints that can make complex real-time analysis challenging to implement safely. Additionally, eBPF program compatibility across different kernel versions remains a practical concern for production deployments.
+
+Despite these challenges, this thesis demonstrates that eBPF can serve as an effective mechanism for securing containerized environments through monitoring, provided it is properly designed and implemented. Where performance was evaluated, the measured impact remained minimal. Combined with the flexibility of eBPF programs to attach to diverse hook points, this makes it a valuable foundation for security observability in modern container orchestration platforms. Integration with diverse alerting mechanisms, such as Kubernetes Events, system logging, and OpenShift monitoring, demonstrates that eBPF-based solutions can leverage existing notification channels rather than requiring the replacement of current tools.
+
+The findings contribute to the growing body of knowledge on container security by providing empirical evidence of capabilities and limitations of eBPF solutions, outlining practical architectural patterns for different deployment scenarios, and presenting quantitative performance characteristics across multiple container security domains. For organizations deploying containers in production environments, the results presented in the Case Studies offer concrete guidance on implementing kernel-level security monitoring without compromising application performance.
+
+% Essa seção estava inicialmente na Metodologia
+The main limitation of this research is the narrow range of security scenarios covered. Containers, which can host internet-facing applications and share the same kernel, have a large attack surface. However, this work only addresses a small subset of security challenges around containers, leaving many important issues unexamined. Another potential limitation of this work is that eBPF-based programs introduce an additional layer, which can present extra security risks. For example, eBPF programs require elevated privileges to run within containers or in the host system. Any bugs in either the kernel space component or the user space component of an eBPF-based solution could compromise the security of the host system and, as a result, other containers running on the same host.
+
+Future work should focus on automating the deployment of eBPF-based components using Kubernetes operators and controllers to reduce configuration complexity and improve usability at scale. Expanding support to cover additional attack vectors would enhance the applicability of the solution across diverse environments. Additionally, investigating the cumulative performance impact of combining multiple eBPF-based solutions, such as syscall tracing and network monitoring, would provide valuable guidance for production deployments that require comprehensive monitoring. Finally, developing standardized interfaces between eBPF monitoring components and existing security information and event management systems could accelerate adoption in enterprise environments.
+
+The development of this work has resulted in the publication of two peer-reviewed papers. Case Study~\ref{case:container} served as the foundation for the work published in BERTINATTO, F. J. et al., \textbf{Container-level auditing in container orchestrators with eBPF}, presented at the \textit{Advanced Information Networking and Applications (AINA), 2024}. Likewise, Case Study~\ref{case:syscall} builds upon the findings reported in BERTINATTO, F. J. et al., \textbf{eBPF-Based Approach to Tracing System Calls and Predicting Privilege Escalation Attacks}, presented at the \textit{IEEE Global Communications Conference (GLOBECOM), 2024}.
+
+\bibliographystyle{abntex2-alf}
+\bibliography{biblio}
+
+\appendix
+
+\chapter{Resumo Expandido}
+
+Nos últimos anos, o uso de containers Linux tem se popularizado de forma expressiva como uma estratégia eficaz para empacotar, isolar e distribuir aplicações em ambientes de nuvem e sistemas distribuídos. Essa popularização decorre de características como portabilidade, leveza e rápida inicialização. Contudo, tais vantagens são acompanhadas de desafios significativos relacionados à segurança. Containers compartilham o mesmo kernel do sistema operacional hospedeiro, o que os torna mais suscetíveis a ataques do tipo escalonamento de privilégio e outras ameaças que exploram vulnerabilidades no kernel.
+
+Neste contexto, esta dissertação propõe o uso de eBPF (Extended Berkeley Packet Filter), uma tecnologia recente e poderosa do kernel Linux que permite a instrumentação segura, dinâmica e eficiente em diferentes pontos do sistema, com o objetivo de melhorar a segurança de containers. A principal proposta deste trabalho é explorar, por meio de estudos de caso, como eBPF pode ser utilizado para monitorar, auditar e detectar comportamentos suspeitos ou maliciosos dentro de ambientes containerizados, sem incorrer em grandes penalidades de desempenho.
+
+A metodologia adotada baseou-se em uma abordagem prática por meio de múltiplos estudos de caso. Cada estudo de caso aborda um cenário específico relacionado à segurança de containers. As soluções propostas utilizam programas eBPF do tipo \textit{kprobe}, \textit{raw tracepoint} ou \textit{XDP}, dependendo do tipo de observabilidade necessária. As soluções foram implementadas com o uso da linguagem Go e da biblioteca \texttt{github.com/cilium/ebpf}, e testadas tanto em ambientes com contêineres independentes quanto em orquestradores de containers como Kubernetes e OpenShift, com avaliação de desempenho e impacto sobre as aplicações monitoradas.
+
+O primeiro estudo de caso foca na auditoria de comandos executados dentro de containers. A proposta foi interceptar comandos digitados no interpretador Bash, utilizado frequentemente por administradores para depuração e manutenção. Para isso, um programa eBPF foi acoplado à função \texttt{readline} via \textit{uretprobe}, capturando os comandos em tempo real e registrando-os como eventos no cluster Kubernetes. Os resultados demonstraram que a solução é viável, introduz baixa sobrecarga de recursos e fornece rastreabilidade dos comandos executados nos containers, facilitando auditorias e investigações posteriores.
+
+O segundo estudo de caso aborda a detecção de escalonamento de privilégios através da técnica conhecida como \textit{Bag of System Calls} (BoSC). Um programa eBPF foi projetado para capturar todas as chamadas de sistema executadas por processos dentro de containers. A análise foi feita utilizando \textit{raw tracepoints}, a modalidade mais performática disponível. A partir da sequência de chamadas capturadas, o sistema detecta padrões anômalos que podem indicar tentativas de evasão de container ou execução de exploits. A eficácia da abordagem foi validada por meio da simulação de um ataque utilizando a ferramenta \texttt{nsenter}, e a detecção foi realizada com sucesso. Além disso, foi comprovado que a sobrecarga introduzida pelo rastreamento com eBPF foi mínima.
+
+O terceiro estudo de caso trata da monitoração de tráfego de rede nos containers. Neste cenário, o objetivo foi identificar variações abruptas no volume de tráfego de entrada que podem indicar comportamentos maliciosos ou falhas operacionais. Utilizou-se um programa eBPF do tipo \textit{XDP}, que opera no nível mais baixo da pilha de rede do kernel. A cada pacote recebido, o programa atualiza um contador por interface de rede virtual associada aos pods. Um componente em espaço de usuário verifica periodicamente os dados coletados, aplica um algoritmo estatístico de detecção de anomalias baseado em \textit{z-score} e emite alertas via o sistema de monitoramento Prometheus. Os testes realizados com Redis e NGINX demonstraram que o sistema é eficiente, responsivo e introduz impacto mínimo no desempenho das aplicações monitoradas.
+
+De forma geral, os estudos de caso demonstraram que o uso de eBPF em containers é não apenas viável, mas também altamente promissor. As soluções propostas nos estudos de caso apresentaram bom desempenho. Por outro lado, também se constatou que o desenvolvimento de programas eBPF exige conhecimento avançado sobre internals do kernel Linux e que as limitações impostas pelo verificador de segurança do eBPF demandam atenção cuidadosa durante a implementação.
+
+Como conclusão, esta dissertação evidencia o grande potencial do eBPF como ferramenta para ampliar a segurança de ambientes baseados em containers, oferecendo visibilidade profunda e em tempo real das operações realizadas por aplicações containerizadas. A versatilidade do eBPF permite que ele seja adaptado a diferentes tipos de ameaça e que seja integrado com as principais plataformas de orquestração de containers.
+
+% Trabalhos futuros incluem a criação de operadores Kubernetes para automatizar o deploy dessas soluções, a extensão da cobertura de ataques monitorados e a incorporação de técnicas de aprendizado de máquina para análise inteligente dos dados capturados.
+
+\end{document}

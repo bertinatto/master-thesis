@@ -1,0 +1,789 @@
+@article{Cassagnes2020,
+abstract = {In this paper, we explain that container engines are strengthening their isolation mechanisms. Therefore, non-intrusive monitoring becomes a must-have for the performance analysis of containerized user-space application in production environments. After a literature review and background of Linux subsystems and container isolation concepts, we present our lessons learned of using the extended Berkeley packet filter to monitor and profile performance. We carry out the profiling and tracing of several Interledger connectors using two full-fledged implementations of the Interledger protocol specifications.},
+author = {Cassagnes, Cyril and Trestioreanu, Lucian and Joly, Clement and State, Radu},
+doi = {10.1109/NOMS47738.2020.9110434},
+isbn = {9781728149738},
+journal = {Proceedings of IEEE/IFIP Network Operations and Management Symposium 2020: Management in the Age of Softwarization and Artificial Intelligence, NOMS 2020},
+keywords = {Cloud computing,Interledger,Performance,Profiling,Tracing,eBPF},
+number = {August 2019},
+title = {{The rise of eBPF for non-intrusive performance monitoring}},
+year = {2020}
+}
+
+@ARTICLE{Nam2022,
+  author={Nam, Jaehyun and Lee, Seungsoo and Porras, Phillip and Yegneswaran, Vinod and Shin, Seungwon},
+  journal={IEEE/ACM Transactions on Networking}, 
+  title={Secure Inter-Container Communications Using XDP/eBPF}, 
+  year={2022},
+  volume={},
+  number={},
+  pages={1-14},
+  doi={10.1109/TNET.2022.3206781}}
+
+@article{Toke2018,
+abstract = {Programmable packet processing is increasingly implemented using kernel bypass techniques, where a userspace application takes complete control of the networking hardware to avoid expensive context switches between kernel and userspace. However, as the operating system is bypassed, so are its application isolation and security mechanisms; and well-tested configuration, deployment and management tools cease to function. To overcome this limitation, we present the design of a novel approach to programmable packet processing, called the eXpress Data Path (XDP). In XDP, the operating system kernel itself provides a safe execution environment for custom packet processing applications, executed in device driver context. XDP is part of the mainline Linux kernel and provides a fully integrated solution working in concert with the kernel's networking stack. Applications are written in higher level languages such as C and compiled into custom byte code which the kernel statically analyses for safety, and translates into native instructions. We show that XDP achieves single-core packet processing performance as high as 24 million packets per second, and illustrate the flexibility of the programming model through three example use cases: layer-3 routing, inline DDoS protection and layer-4 load balancing.},
+author = {H{\o}iland-J{\o}rgensen, Toke and Brouer, Jesper Dangaard and Borkmann, Daniel and Fastabend, John and Herbert, Tom and Ahern, David and Miller, David},
+doi = {10.1145/3281411.3281443},
+isbn = {9781450360807},
+journal = {CoNEXT 2018 - Proceedings of the 14th International Conference on Emerging Networking EXperiments and Technologies},
+keywords = {BPF,DPDK,Programmable Networking,XDP},
+pages = {54--66},
+title = {{The eXpress data path: Fast programmable packet processing in the operating system kernel}},
+year = {2018}
+}
+
+@book{Gregg2021,
+author = {Gregg, Brendan},
+file = {:home/fbertina/Downloads/(Addison-Wesley Professional Computing series) Brendan Gregg - Systems Performance{\_} Enterprise and the Cloud-Addison-Wesley Professional (2020).pdf:pdf},
+isbn = {9780136820154},
+title = {{Systems Performance Second Edition}},
+year = {2021}
+}
+
+@INPROCEEDINGS{Abranches2021,
+  author={Abranches, Marcelo and Michel, Oliver and Keller, Eric and Schmid, Stefan},
+  booktitle={2021 IEEE Conference on Network Function Virtualization and Software Defined Networks (NFV-SDN)}, 
+  title={Efficient Network Monitoring Applications in the Kernel with eBPF and XDP}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={28-34},
+  abstract={Continuous traffic monitoring and analytics are fundamental to the operation of today’s networks. Network telemetry allows for performing fine-grained analytics on network flow or packet records for various use cases including intrusion detection and traffic engineering. While some analytics tasks can be offloaded to programmable switches, ultimately, telemetry data needs to be processed by analytics applications in software. These applications are highly specialized, and running many such applications concurrently to achieve high coverage is expensive. To reduce the resource footprint of software network analytics, we present a novel network monitoring primitive that consolidates logic which all monitoring applications require. The primitive can (partially) be offloaded to a SmartNIC and triggers applications only when required based on high-level traffic metrics, avoiding unnecessary and redundant computations. We identify eBPF and XDP as a natural fit for this task, and implement a prototype of our system on top of this novel technology. Our evaluation shows that the combination of conditional execution of analytics tasks and the use of modern packet I/O technologies not relying on expensive busy polling (e.g., as in DPDK) significantly reduces the resource footprint of performing continuous network analytics.},
+  keywords={},
+  doi={10.1109/NFV-SDN53031.2021.9665095},
+  ISSN={},
+  month={Nov},}
+
+@ARTICLE{Zhan2022,
+  author={Zhan, Mengqi and Li, Yang and Yang, Huiran and Yu, Guangxi and Li, Bo and Wang, Weiping},
+  journal={IEEE Transactions on Services Computing}, 
+  title={<sc>Coda</sc>: Runtime Detection of Application-Layer CPU-Exhaustion DoS Attacks in Containers}, 
+  year={2022},
+  volume={},
+  number={},
+  pages={1-12},
+  abstract={Denial of service (DoS) attacks have increasingly exploited vulnerabilities in algorithms or implementation methods in application-layer programs. In this type of attack, called CPU-exhaustion DoS attack, a few well-crafted requests may consume a lot of server resources, which is essentially different from traditional volumetric DoS attacks. Due to the lack of recognizable patterns, the traditional network-layer defense mechanism is usually unable to detect such sophisticated DoS attacks. In this paper, we propose <small>Coda</small>, a framework for detecting application-layer CPU-exhaustion DoS attacks in containers. <small>Coda</small> monitors the CPU time consumed by each connection and uses statistical methods to detect attacks. It traces system calls and other related information from the container based on Linux eBPF at the host level. Some specific system calls are used to indicate the establishment and closure of the connection, which in turn indicate the start/end of the request processing. After triggering these specific system calls, <small>Coda</small> starts/ends monitoring the CPU time consumed by a connection. An attack can be detected when the CPU time consumed by an attack connection is statistically different from that consumed by a legitimate connection. <small>Coda</small> has the following key advantages. First, it works with programs built in different programming languages. Second, it remains agnostic to the source code of protected programs. Third, it supports monitoring the container and is transparent to the container. Through evaluation of real-world attacks, we demonstrate that <small>Coda</small> can accurately detect ongoing application-layer CPU-exhaustion DoS attacks with low additional overhead.},
+  keywords={},
+  doi={10.1109/TSC.2022.3194266},
+  ISSN={1939-1374},
+  month={},}
+
+@book{RobEwaschuk2016,
+author = {{Rob Ewaschuk}},
+file = {:home/fbertina/MEGA/Mestrado/CMP193 - Ger{\^{e}}ncia e Aplica{\c{c}}{\~{o}}es em Redes - 2022-2/eBPF/monitoring-distributed-systems.pdf:pdf},
+mendeley-groups = {eBPF},
+publisher = {O'Reilly Media, Inc.},
+title = {{Monitoring Distributed Systems}},
+year = {2016}
+}
+
+@article{Gebai2018,
+abstract = {As applications and operating systems are becoming more complex, the last decade has seen the rise of many tracing tools all across the software stack. This article presents a hands-on comparison of modern tracers on Linux systems, both in user space and kernel space. The authors implement microbenchmarks that not only quantify the overhead of different tracers, but also sample fine-grained metrics that unveil insights into the tracers' internals and show the cause of each tracer's overhead. Internal design choices and implementation particularities are discussed, which helps us to understand the challenges of developing tracers. Furthermore, this analysis aims to help users choose and configure their tracers based on their specific requirements to reduce their overhead and get the most of out of them.},
+author = {Gebai, Mohamad and Dagenais, Michel R.},
+doi = {10.1145/3158644},
+issn = {15577341},
+journal = {ACM Computing Surveys},
+number = {2},
+title = {{Survey and analysis of kernel and userspace tracers on linux: Design, implementation, and overhead}},
+volume = {51},
+year = {2018}
+}
+
+@article{McCanne1993,
+abstract = {Many versions of Unix provide facilities for user-level packet capture, making possible the use of general purpose workstations for network monitoring. Because network monitors run as user-level processes, packets must be copied across the kernel/user-space protection boundary. This copying can be minimized by deploying a kernel agent called a packet filter, which discards unwanted packets as early as possible. The original Unix packet filter was designed around a stack-based filter evaluator that performs sub-optimally on current RISC CPUs. The BSD Packet Filter (BPF) uses a new, register-based filter evaluator that is up to 20 times faster than the original design. BPF also uses a straightforward buffering strategy that makes its overall performance up to 100 times faster than Sun's NIT running on the same hardware.},
+author = {McCanne, Steven and Jacobson, Van},
+file = {:home/fbertina/MEGA/Mestrado/CMP193 - Ger{\^{e}}ncia e Aplica{\c{c}}{\~{o}}es em Redes - 2022-2/eBPF/bpf-usenix93.pdf:pdf},
+isbn = {1880446480},
+journal = {Proceedings of the Winter 1993 USENIX Conference},
+pages = {259--269},
+title = {{The BSD packet filter: A new architecture for user-level packet capture}},
+year = {1993}
+}
+
+@misc{TraceeOnline,
+author = "Aqua Security",
+title = "Tracee",
+month = "feb",
+year = "2023",
+url = "https://aquasecurity.github.io/tracee/dev/",
+}
+
+@article{merkel2014,
+  title={Docker: lightweight linux containers for consistent development and deployment},
+  author={Merkel, Dirk and others},
+  journal={Linux j},
+  volume={239},
+  number={2},
+  pages={2},
+  year={2014}
+}
+
+@article{Simonsson2021,
+title = {Observability and chaos engineering on system calls for containerized applications in Docker},
+journal = {Future Generation Computer Systems},
+volume = {122},
+pages = {117-129},
+year = {2021},
+issn = {0167-739X},
+doi = {https://doi.org/10.1016/j.future.2021.04.001},
+url = {https://www.sciencedirect.com/science/article/pii/S0167739X21001163},
+author = {Jesper Simonsson and Long Zhang and Brice Morin and Benoit Baudry and Martin Monperrus},
+keywords = {Fault injection, Chaos engineering, System call, Containers, Observability},
+abstract = {In this paper, we present a novel fault injection system called ChaosOrca for system calls in containerized applications. ChaosOrca aims at evaluating a given application’s self-protection capability with respect to system call errors. The unique feature of ChaosOrca is that it conducts experiments under production-like workload without instrumenting the application. We exhaustively analyze all kinds of system calls and utilize different levels of monitoring techniques to reason about the behavior under perturbation. We evaluate ChaosOrca on three real-world applications: a file transfer client, a reverse proxy server and a micro-service oriented web application. Our results show that it is promising to detect weaknesses of resilience mechanisms related to system calls issues.}
+}
+
+@INPROCEEDINGS{Jaramillo2016,
+  author={Jaramillo, David and Nguyen, Duy V and Smart, Robert},
+  booktitle={SoutheastCon 2016}, 
+  title={Leveraging microservices architecture by using Docker technology}, 
+  year={2016},
+  volume={},
+  number={},
+  pages={1-5},
+  abstract={Microservices architecture is not a hype and for awhile, started getting attention from organizations who want to shorten time to market of a software product by improving productivity effect through maximizing the automation in all life circle of the product. However, microservices architecture approach also introduces a lot of new complexity and requires application developers a certain level of maturity in order to confidently apply the architectural style. Docker has been a disruptive technology which changes the way applications are being developed and distributed. With a lot of advantages, Docker is a very good fit to implementing microservices architecture. In this paper we will discuss about how Docker can effectively help in leveraging mircoservices architecture with a real working model as a case study.},
+  keywords={},
+  doi={10.1109/SECON.2016.7506647},
+  ISSN={1558-058X},
+  month={March},}
+
+@INPROCEEDINGS{Tosatto2015,
+  author={Tosatto, Andrea and Ruiu, Pietro and Attanasio, Antonio},
+  booktitle={2015 Ninth International Conference on Complex, Intelligent, and Software Intensive Systems}, 
+  title={Container-Based Orchestration in Cloud: State of the Art and Challenges}, 
+  year={2015},
+  volume={},
+  number={},
+  pages={70-75},
+  abstract={How to effectively manage increasingly complex enterprise computing environments is one of the hardest challenges that most organizations have to face in the era of cloud computing, big data and IoT. Advanced automation and orchestration systems are the most valuable solutions helping IT staff to handle large-scale cloud data centers. Containers are the new revolution in the cloud computing world, they are more lightweight than VMs, and can radically decrease both the start up time of instances and the processing and storage overhead with respect to traditional VMs. The aim of this paper is to provide a comprehensive description of cloud orchestration approaches with containers, analyzing current research efforts, existing solutions and presenting issues and challenges facing this topic.},
+  keywords={},
+  doi={10.1109/CISIS.2015.35},
+  ISSN={},
+  month={July},}
+
+  @INPROCEEDINGS{Kitahara2020,
+  author={Kitahara, Hirokuni and Gajananan, Kugamoorthy and Watanabe, Yuji},
+  booktitle={2020 IEEE International Conference on Big Data (Big Data)}, 
+  title={Highly-Scalable Container Integrity Monitoring for Large-Scale Kubernetes Cluster}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={449-454},
+  doi={10.1109/BigData50022.2020.9377815}}
+
+@misc{LWNVirtualMachineOnline,
+author = "Jonathan Corbet",
+title = "BPF: the universal in-kernel virtual machine",
+month = "mar",
+year = "2023",
+url = "https://lwn.net/Articles/599755",
+}
+
+@book{Rice2022,
+author = {Rice, Liz},
+isbn = {9781492097259},
+publisher = {O'Reilly Media, Inc.},
+title = {{What Is eBPF?}},
+year = {2022}
+}
+
+@book{Burns2018,
+author = {Burns, Brendan},
+isbn = {9781491983645},
+publisher = {O'Reilly Media, Inc.},
+title = {{Designing Distributed Systems}},
+year = {2018}
+}
+
+@article{Vieira2021,
+author = {Vieira, Marcos A. M. and Castanho, Matheus S. and Pac\'{\i}fico, Racyus D. G. and Santos, Elerson R. S. and J\'{u}nior, Eduardo P. M. C\^{a}mara and Vieira, Luiz F. M.},
+title = {Fast Packet Processing with EBPF and XDP: Concepts, Code, Challenges, and Applications},
+year = {2020},
+issue_date = {January 2021},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {53},
+number = {1},
+issn = {0360-0300},
+url = {https://doi.org/10.1145/3371038},
+doi = {10.1145/3371038},
+abstract = {Extended Berkeley Packet Filter (eBPF) is an instruction set and an execution environment inside the Linux kernel. It enables modification, interaction, and kernel programmability at runtime. eBPF can be used to program the eXpress Data Path (XDP), a kernel network layer that processes packets closer to the NIC for fast packet processing. Developers can write programs in C or P4 languages and then compile to eBPF instructions, which can be processed by the kernel or by programmable devices (e.g., SmartNICs). Since its introduction in 2014, eBPF has been rapidly adopted by major companies such as Facebook, Cloudflare, and Netronome. Use cases include network monitoring, network traffic manipulation, load balancing, and system profiling. This work aims to present eBPF to an inexpert audience, covering the main theoretical and fundamental aspects of eBPF and XDP, as well as introducing the reader to simple examples to give insight into the general operation and use of both technologies.},
+journal = {ACM Comput. Surv.},
+month = {feb},
+articleno = {16},
+numpages = {36},
+keywords = {packet processing, Computer networking, network functions}
+}
+
+@misc{kprobes,
+author = "Keniston, Jim and Panchamukhi, Prasanna S and Hiramatsu, Masami",
+title = "Kernel Probes (Kprobes)",
+month = "feb",
+year = "2023",
+url = "https://www.kernel.org/doc/Documentation/kprobes.txt",
+}
+
+@INPROCEEDINGS{Pan2019,
+  author={Pan, Yao and Chen, Ian and Brasileiro, Francisco and Jayaputera, Glenn and Sinnott, Richard},
+  booktitle={2019 IEEE International Conference on Big Knowledge (ICBK)}, 
+  title={A Performance Comparison of Cloud-Based Container Orchestration Tools}, 
+  year={2019},
+  volume={},
+  number={},
+  pages={191-198},
+  doi={10.1109/ICBK.2019.00033}}
+
+@misc{CNCFOnline,
+author = "Cloud Native Computing Foundation",
+title = "Cloud Native Computing Foundation",
+month = "may",
+year = "2025",
+url = "https://www.cncf.io/",
+}
+
+@misc{CRISpecOnline,
+author = "The Kubernetes Authors",
+title = "Container Runtime Interface (CRI)",
+month = "may",
+year = "2025",
+url = "https://kubernetes.io/docs/concepts/architecture/cri/",
+}
+
+@misc{docker_2019, 
+title={Docker Documentation},
+url={https://docs.docker.com/}, 
+journal={Docker Documentation}, 
+author={Docker}, year={2025},
+month={may} }
+
+@misc{containerdOnline,
+title={containerd – containerd overview}, 
+url={https://containerd.io/docs/}, 
+journal={containerd}, 
+month = "may",
+year = "2025",
+author={ContainerD} }
+
+@INPROCEEDINGS{Voulgaris2022,
+  author={Voulgaris, Konstantinos and Kiourtis, Athanasios and Karabetian, Andreas and Karamolegkos, Panagiotis and Poulakis, Yannis and Mavrogiorgou, Argyro and Kyriazis, Dimosthenis},
+  booktitle={2022 2nd International Conference on Computers and Automation (CompAuto)}, 
+  title={A Comparison of Container Systems for Machine Learning Scenarios: Docker and Podman}, 
+  year={2022},
+  volume={},
+  number={},
+  pages={114-118},
+  doi={10.1109/CompAuto55930.2022.00029}}
+
+
+@INPROCEEDINGS{Abhishek2021,
+  author={Abhishek, Manish Kumar and Rajeswara Rao, D.},
+  booktitle={2021 Fifth World Conference on Smart Trends in Systems Security and Sustainability (WorldS4)}, 
+  title={Framework to Secure Docker Containers}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={152-156},
+  doi={10.1109/WorldS451998.2021.9514041}}
+
+@misc{ebpfOnline,
+author = "eBPF.io Authors",
+title = "eBPF - Introduction, Tutorials \& Community Resources",
+month = "may",
+year = "2025",
+url = "https://ebpf.io",
+}
+
+@misc{podman,
+title={What is Podman? — Podman documentation},
+author={Podman},
+month = "may",
+year = "2025",
+url={https://docs.podman.io/}, 
+}
+
+@misc{ociSpec, title={About the Open Container Initiative - Open Container Initiative}, 
+month = "may",
+year = "2025",
+url={https://opencontainers.org/about/overview/}, 
+author={The Linux Foundation} }
+
+@misc{crio,
+title={cri-o}, 
+month = "may",
+year = "2025",
+url={https://cri-o.io/},
+author={CRIO} }
+
+@misc{ebpfSpec,
+author = "Schulist, Jay and Borkmann, Daniel and Starovoitov,  Alexei",
+title = "Linux Socket Filtering aka Berkeley Packet Filter (BPF)",
+month = "may",
+year = "2025",
+url = "https://www.kernel.org/doc/Documentation/networking/filter.txt",
+}
+‌‌
+@misc{CNCFSurvey2022,
+author = "Cloud Native Computing Foundation",
+title = "CNCF Annual Survey 2022",
+month = "mar",
+year = "2023",
+url = "https://www.cncf.io/reports/cncf-annual-survey-2022",
+}
+
+@misc{CNCFSurvey2024,
+author = "Cloud Native Computing Foundation",
+title = "CNCF Annual Survey 2024",
+month = "may",
+year = "2025",
+url = "https://www.cncf.io/reports/cncf-annual-survey-2024",
+}
+
+@misc{DatadogSurvey2022,
+author = "CDatadog, Inc.",
+title = "9 Insights on Real-World Container Usage",
+month = "mar",
+year = "2023",
+url = "https://www.datadoghq.com/container-report",
+}
+
+@misc{ReadlineSource,
+author = "Free Software Foundation, Inc",
+title = "The GNU Readline library",
+month = "mar",
+year = "2023",
+url = "https://git.savannah.gnu.org/cgit/readline.git/tree/readline.c?h=readline-8.2",
+}
+
+
+@INPROCEEDINGS{yamauchi,
+  author={Yamauchi, Toshihiro and Akao, Yohei and Yoshitani, Ryota and Nakamura, Yuichi and Hashimoto, Masaki},
+  booktitle={2018 IEEE Conference on Dependable and Secure Computing (DSC)}, 
+  title={Additional Kernel Observer to Prevent Privilege Escalation Attacks by Focusing on System Call Privilege Changes}, 
+  year={2018},
+  volume={},
+  number={},
+  pages={1-8},
+  doi={10.1109/DESEC.2018.8625137}}
+
+
+/////////////Background  Privilege Escalation //////////
+
+@article{nikolova2021privilege,
+  title={Privilege escalation vulnerabilities in the wild: a decade of attacks on the Windows kernel},
+  author={Nikolova, Bilyana and Gollmann, Dieter},
+  journal={Computers \& Security},
+  volume={100},
+  pages={102033},
+  year={2021},
+  publisher={Elsevier}
+}
+
+@article{dhage2017privilege,
+  title={Detection and Prevention of Privilege Escalation Attack in Operating System},
+  author={Dhage, Shubhangi and Ragha, Laxmi},
+  journal={International Journal of Computer Applications},
+  volume={170},
+  number={3},
+  year={2017},
+  publisher={Foundation of Computer Science (FCS), NY, USA}
+}
+
+@inproceedings{hsu2018escalation,
+  title={Escalation of Privilege Attack on Android Operating System: A Survey},
+  author={Hsu, Yi-Cheng and Shieh, Shiuhpyng},
+  booktitle={2018 17th IEEE International Conference On Trust, Security And Privacy In Computing And Communications/ 12th IEEE International Conference On Big Data Science And Engineering (TrustCom/BigDataSE)},
+  pages={167--172},
+  year={2018},
+  organization={IEEE}
+}
+
+@article{weber2019exploiting,
+  title={Exploiting Privilege Escalation Vulnerabilities on Android},
+  author={Weber, Felix and M{\"u}ller, Sven},
+  journal={Journal of Information Security and Applications},
+  volume={47},
+  pages={102384},
+  year={2019},
+  publisher={Elsevier}
+}
+
+@inproceedings{maidul2020vulnerabilities,
+  title={Vulnerabilities in containerized applications: A case study},
+  author={Maidul, Islam and Shovon, Rajib Al and Hossain, Shahriar},
+  booktitle={2020 IEEE International Conference on Informatics, IoT, and Enabling Technologies (ICIoT)},
+  pages={255--260},
+  year={2020},
+  organization={IEEE}
+}
+
+@inproceedings{barnett2021hardening,
+  title={Hardening Kubernetes: Security from Scratch},
+  author={Barnett, John and Chen, Pei},
+  booktitle={2021 IEEE/ACM 13th International Conference on Utility and Cloud Computing Companion (UCC Companion)},
+  pages={305--310},
+  year={2021},
+  organization={IEEE}
+}
+
+
+////// Introduction /////////
+
+@misc{AquaReport2023,
+  title={The State of Container Security},
+  author={Aqua Security},
+  year={2023},
+  url={https://www.aquasec.com/resources/container-security-report/}
+}
+
+// After 23/08/23
+
+@INPROCEEDINGS{Castanhel2021,
+  author={Castanhel, Gabriel R. and Heinrich, Tiago and Ceschin, Fabrício and Maziero, Carlos},
+  booktitle={2021 IEEE Symposium on Computers and Communications (ISCC)}, 
+  title={Taking a Peek: An Evaluation of Anomaly Detection Using System calls for Containers}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={1-6},
+  doi={10.1109/ISCC53001.2021.9631251}}
+
+@article{Bernaschi2002,
+author = {Bernaschi, Massimo and Gabrielli, Emanuele and Mancini, Luigi V.},
+title = {Remus: A Security-Enhanced Operating System},
+year = {2002},
+issue_date = {February 2002},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {5},
+number = {1},
+issn = {1094-9224},
+url = {https://doi.org/10.1145/504909.504911},
+doi = {10.1145/504909.504911},
+abstract = {We present a detailed analysis of the UNIX system calls and classify them according to their level of threat with respect to system penetration. Based on these results, an effective mechanism is proposed to control the invocation of critical, from the security viewpoint, system calls. The integration into existing UNIX operating systems is carried out by instrumenting the code of the system calls in such a way that the execution is granted only in the case where the invoking process and the value of the arguments comply with the rules held in an access control database. This method does not require changes in the kernel data structures and algorithms. All kernel modifications are transparent to the application processes that continue to work correctly with no need of source code changes or recompilation. A working prototype has been implemented as a loadable kernel module for the Linux operating system. The prototype is able to detect and block any attacks by which an intruder tries to gain direct access to the system as a privileged user.},
+journal = {ACM Trans. Inf. Syst. Secur.},
+month = {feb},
+pages = {36–61},
+numpages = {26},
+keywords = {system calls interception, Access control, system penetration, Linux, privileged tasks}
+}
+
+@INPROCEEDINGS{Abed2015,
+  author={Abed, Amr S. and Clancy, T. Charles and Levy, David S.},
+  booktitle={2015 IEEE Globecom Workshops (GC Wkshps)}, 
+  title={Applying Bag of System Calls for Anomalous Behavior Detection of Applications in Linux Containers}, 
+  year={2015},
+  volume={},
+  number={},
+  pages={1-5},
+  doi={10.1109/GLOCOMW.2015.7414047}}
+
+@book{Jaquith2007,
+  title={Security Metrics: Replacing Fear, Uncertainty, and Doubt},
+  author={Jaquith, A.},
+  year={2007},
+  publisher={Addison-Wesley Professional}
+}
+
+@book{Bishop2003,
+  title={Computer Security: Art and Science},
+  author={Bishop, M.},
+  year={2003},
+  publisher={Addison-Wesley Professional}
+}
+
+@INPROCEEDINGS{flora2019,
+  author={Flora, José and Antunes, Nuno},
+  booktitle={2019 15th European Dependable Computing Conference (EDCC)}, 
+  title={Studying the Applicability of Intrusion Detection to Multi-Tenant Container Environments}, 
+  year={2019},
+  volume={},
+  number={},
+  pages={133-136},
+  doi={10.1109/EDCC.2019.00033}}
+
+@article{Mutz2006,
+  title={Anomalous system call detection},
+  author={Mutz, D. and Valeur, F. and Vigna, G. and Kruegel, C.},
+  journal={Journal Name},
+  year={2006},
+  publisher={Publisher}
+}
+
+@article{Fuller2007,
+  title={Learning classifiers for misuse and anomaly detection using a bag of system calls representation},
+  author={Fuller, D. and Honavar, V.},
+  journal={Journal Name},
+  year={2007},
+  publisher={Publisher}
+}
+
+@article{Alarifi2015,
+  title={Detecting anomalies in IaaS environments through virtual machine host system call analysis},
+  author={Alarifi, S. and Wolthusen, S.},
+  journal={Journal Name},
+  year={2015},
+  publisher={Publisher}
+}
+
+@article{Hofmeyr1998,
+  title={Intrusion detection using sequences of system calls},
+  author={Hofmeyr, S. and Forrest, S. and Somayaji, A.},
+  journal={Journal Name},
+  year={1998},
+  publisher={Publisher}
+}
+
+@INPROCEEDINGS{Song2023,
+  author={Song, Somin and Suneja, Sahil and Le, Michael V. and Tak, Byungchul},
+  booktitle={2023 IEEE/ACM 23rd International Symposium on Cluster, Cloud and Internet Computing Workshops (CCGridW)}, 
+  title={Sequence-based System Call Filtering for Enhanced Container Security, is it beneficial?}, 
+  year={2023},
+  volume={},
+  number={},
+  pages={278-280},
+  doi={10.1109/CCGridW59191.2023.00057}}
+
+@INPROCEEDINGS{Kang2005,
+  author={Dae-Ki Kang and Fuller, D. and Honavar, V.},
+  booktitle={Proceedings from the Sixth Annual IEEE SMC Information Assurance Workshop}, 
+  title={Learning classifiers for misuse and anomaly detection using a bag of system calls representation}, 
+  year={2005},
+  volume={},
+  number={},
+  pages={118-125},
+  keywords={Intrusion detection;Machine learning;Databases;Telecommunication traffic;Traffic control;Data mining;Availability;Computer networks;Communication networks;Monitoring},
+  doi={10.1109/IAW.2005.1495942}}
+
+@INPROCEEDINGS{Liu2020,
+  author={Liu, Chang and Cai, Zhengong and Wang, Bingshen and Tang, Zhimin and Liu, Jiaxu},
+  booktitle={2020 IEEE 26th International Conference on Parallel and Distributed Systems (ICPADS)}, 
+  title={A protocol-independent container network observability analysis system based on eBPF}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={697-702},
+  keywords={Protocols;Machine learning;Containers;Throughput;Kernel;Observability;Monitoring;Performance Analysis;eBPF;Kubernetes;Cloud Network;Machine Learning},
+  doi={10.1109/ICPADS51040.2020.00099}}
+
+@INPROCEEDINGS{Shiraishi2020,
+  author={Shiraishi, Takashi and Noro, Masaaki and Kondo, Reiko and Takano, Yosuke and Oguchi, Naoki},
+  booktitle={2020 21st Asia-Pacific Network Operations and Management Symposium (APNOMS)}, 
+  title={Real-time Monitoring System for Container Networks in the Era of Microservices}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={161-166},
+  keywords={Containers;Topology;Monitoring;Network topology;Event detection;Real-time systems;Linux;Microservice;Container;Kubernetes;eBPF;Network latency},
+  doi={10.23919/APNOMS50412.2020.9237055}}
+
+@inproceedings{Lee2022,
+author = {Lee, Chunghan and Yoshitani, Reina and Hirotsu, Toshio},
+title = {Enhancing Packet Tracing of Microservices in Container Overlay Networks using eBPF},
+year = {2022},
+isbn = {9781450399814},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3570748.3570756},
+doi = {10.1145/3570748.3570756},
+booktitle = {Proceedings of the 17th Asian Internet Engineering Conference},
+pages = {53–61},
+numpages = {9},
+keywords = {eBPF, Sidecar, ServiceMesh, Microservices, Latency, Kubernetes, Distributed tracing},
+location = {Hiroshima, Japan},
+series = {AINTEC '22}
+}
+
+@article{Jarkas2025,
+author = {Jarkas, Omar and Ko, Ryan and Dong, Naipeng and Mahmud, Redowan},
+title = {A Container Security Survey: Exploits, Attacks, and Defenses},
+year = {2025},
+issue_date = {July 2025},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {57},
+number = {7},
+issn = {0360-0300},
+url = {https://doi.org/10.1145/3715001},
+doi = {10.1145/3715001},
+journal = {ACM Comput. Surv.},
+month = feb,
+articleno = {170},
+numpages = {36},
+keywords = {Containerization security, cloud computing, confidential computing, vulnerabilities, hardware-based security}
+}
+
+@INPROCEEDINGS{Gao2017,
+  author={Gao, Xing and Gu, Zhongshu and Kayaalp, Mehmet and Pendarakis, Dimitrios and Wang, Haining},
+  booktitle={2017 47th Annual IEEE/IFIP International Conference on Dependable Systems and Networks (DSN)}, 
+  title={ContainerLeaks: Emerging Security Threats of Information Leakages in Container Clouds}, 
+  year={2017},
+  volume={},
+  number={},
+  pages={237-248},
+  keywords={Containers;Kernel;Linux;Cloud computing;Servers;Security},
+  doi={10.1109/DSN.2017.49}}
+
+@inproceedings{Lin2018,
+author = {Lin, Xin and Lei, Lingguang and Wang, Yuewu and Jing, Jiwu and Sun, Kun and Zhou, Quan},
+title = {A Measurement Study on Linux Container Security: Attacks and Countermeasures},
+year = {2018},
+isbn = {9781450365697},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3274694.3274720},
+doi = {10.1145/3274694.3274720},
+booktitle = {Proceedings of the 34th Annual Computer Security Applications Conference},
+pages = {418–429},
+numpages = {12},
+keywords = {Container, Kernel Security Mechanisms, Privilege Escalation},
+location = {San Juan, PR, USA},
+series = {ACSAC '18}
+}
+
+@ARTICLE{Sultan2019,
+  author={Sultan, Sari and Ahmad, Imtiaz and Dimitriou, Tassos},
+  journal={IEEE Access}, 
+  title={Container Security: Issues, Challenges, and the Road Ahead}, 
+  year={2019},
+  volume={7},
+  number={},
+  pages={52976-52996},
+  keywords={Containers;Security;Computer architecture;Kernel;Cloud computing;Linux;Containers;Docker;Linux containers;OS level virtualization;lightweight virtualization;security;survey},
+  doi={10.1109/ACCESS.2019.2911732}}
+
+@INPROCEEDINGS{Sharma2024,
+  author={Sharma, Bhavye and Nadig, Deepak},
+  booktitle={ICC 2024 - IEEE International Conference on Communications}, 
+  title={eBPF-Enhanced Complete Observability Solution for Cloud-native Microservices}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1980-1985},
+  keywords={Measurement;Instruments;Scalability;Microservice architectures;Metals;Containers;Telemetry;eBPF;Observability;Kubernetes;Service Mesh},
+  doi={10.1109/ICC51166.2024.10622329}}
+
+@misc{Linux,
+author = "Linux Torvalds",
+title = "Linux Operating System",
+month = "feb",
+year = "2023",
+url = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git",
+}
+
+@misc{PodsOnline,
+author = "The Kubernetes Authors",
+title = "Pods",
+month = "may",
+year = "2025",
+url = "https://kubernetes.io/docs/concepts/workloads/pods/",
+}
+
+@misc{k8sOnline,
+author = "The Kubernetes Authors",
+title = "Overview | Kubernetes",
+month = "may",
+year = "2025",
+url = "https://kubernetes.io/docs/concepts/overview",
+}
+
+@manual{man:namespaces,
+  title        = {namespaces - overview of Linux namespaces},
+  author       = {{The Linux man-pages project}},
+  organization = {kernel.org},
+  note         = {Linux man-pages, section 7},
+  year         = {2025},
+  url          = {https://man7.org/linux/man-pages/man7/namespaces.7.html},
+}
+
+@book{rice2020container,
+  title={Container Security: Fundamental Technology Concepts that Protect Containerized Applications},
+  author={Rice, L.},
+  isbn={9781492056713},
+  url={https://books.google.com.br/books?id=J4fiDwAAQBAJ},
+  year={2020},
+  publisher={O'Reilly Media}
+}
+
+@manual{man:cgroups,
+  title        = {cgroups - overview of control groups},
+  author       = {{The Linux man-pages project}},
+  organization = {kernel.org},
+  note         = {Linux man-pages, section 7},
+  year         = {2025},
+  url          = {https://man7.org/linux/man-pages/man7/cgroups.7.html},
+}
+
+@manual{man:seccomp,
+  title        = {seccomp - overview of the seccomp Linux facility},
+  author       = {{The Linux man-pages project}},
+  organization = {kernel.org},
+  note         = {Linux man-pages, section 2},
+  year         = {2025},
+  url          = {https://man7.org/linux/man-pages/man2/seccomp.2.html},
+}
+
+@manual{man:capabilities,
+  title        = {capabilities - overview of Linux capabilities},
+  author       = {{The Linux man-pages project}},
+  organization = {kernel.org},
+  note         = {Linux man-pages, section 7},
+  year         = {2025},
+  url          = {https://man7.org/linux/man-pages/man7/capabilities.7.html},
+}
+
+@book{Yin2018,
+	edition = {Sixth edition},
+	title = {Case study research and applications: design and methods},
+	isbn = {978-1-5063-3616-9},
+	shorttitle = {Case study research and applications},
+	language = {en},
+	publisher = {SAGE},
+	author = {Yin, Robert K.},
+	year = {2018},
+	note = {OCLC: 1015881135},
+}
+
+@inproceedings{Alhindi2024,
+author = {Alhindi, Maysara and Hallett, Joseph},
+title = {Sandboxing Adoption in Open Source Ecosystems},
+year = {2024},
+isbn = {9798400705571},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3643655.3643878},
+doi = {10.1145/3643655.3643878},
+booktitle = {Proceedings of the 12th ACM/IEEE International Workshop on Software Engineering for Systems-of-Systems and Software Ecosystems},
+pages = {13–20},
+numpages = {8},
+location = {Lisbon, Portugal},
+series = {SESoS '24}
+}
+
+@InProceedings{Kurchuk2004,
+author="Kurchuk, Aleksey and Keromytis, Angelos D.",
+title="Recursive Sandboxes: Extending Systrace to Empower Applications",
+booktitle="Security and Protection in Information Processing Systems",
+year="2004",
+publisher="Springer US",
+address="Boston, MA",
+pages="473--487",
+isbn="978-1-4020-8143-9"
+}
+
+@article{10.1145/2890784,
+author = {Burn2016},
+title = {Borg, Omega, and Kubernetes},
+year = {2016},
+issue_date = {May 2016},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {59},
+number = {5},
+issn = {0001-0782},
+url = {https://doi.org/10.1145/2890784},
+doi = {10.1145/2890784},
+abstract = {Lessons learned from three container-management systems over a decade.},
+journal = {Commun. ACM},
+month = apr,
+pages = {50–57},
+numpages = {8}
+}

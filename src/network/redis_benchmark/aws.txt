@@ -1,0 +1,2 @@
+nodes: m6i.xlarge
+redis-benchmark: t2.micro 

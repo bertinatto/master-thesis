@@ -1,0 +1,32 @@
+
+\begin{tabular}{lrrr}
+\toprule
+Command & P95 Baseline (ms) & P95 eBPF (ms) & Increase (\%)\\
+\midrule
+PING\_INLINE & 0.77 & 1.11 & 44.85\\
+PING\_MBULK & 0.76 & 0.77 & 1.05\\
+SET & 0.75 & 0.78 & 3.20\\
+GET & 0.74 & 0.77 & 3.23\\
+INCR & 0.74 & 0.78 & 5.44\\
+\addlinespace
+LPUSH & 0.75 & 0.77 & 2.13\\
+RPUSH & 0.74 & 0.78 & 4.31\\
+LPOP & 0.75 & 0.77 & 2.13\\
+RPOP & 0.75 & 0.78 & 4.26\\
+SADD & 0.76 & 0.77 & 1.05\\
+\addlinespace
+HSET & 0.75 & 0.78 & 3.20\\
+SPOP & 0.75 & 0.75 & 0.00\\
+ZADD & 0.75 & 0.78 & 3.20\\
+ZPOPMIN & 0.75 & 0.76 & 1.07\\
+LPUSH (needed to benchmark LRANGE) & 0.75 & 0.78 & 3.20\\
+\addlinespace
+LRANGE\_100 (first 100 elements) & 0.95 & 0.96 & 0.84\\
+LRANGE\_300 (first 300 elements) & 1.38 & 1.48 & 6.94\\
+LRANGE\_500 (first 500 elements) & 1.81 & 1.80 & -0.88\\
+LRANGE\_600 (first 600 elements) & 2.02 & 2.03 & 0.79\\
+MSET (10 keys) & 0.78 & 0.81 & 4.09\\
+\addlinespace
+XADD & 0.77 & 0.79 & 3.13\\
+\bottomrule
+\end{tabular}

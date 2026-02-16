@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-server-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-server-1
+  template:
+    metadata:
+      labels:
+        app: http-server-1
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-server-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-server-2
+  template:
+    metadata:
+      labels:
+        app: http-server-2
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80

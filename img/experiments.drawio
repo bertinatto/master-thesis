@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36" version="26.0.14">
+  <diagram name="Page-1" id="QLd5m-kqB-fSBGHcJ7i7">
+    <mxGraphModel dx="2072" dy="759" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-1" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="140" y="120" width="580" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-2" value="" style="rounded=1;whiteSpace=wrap;html=1;fillStyle=solid;fillColor=#BDBDBD;" parent="1" vertex="1">
+          <mxGeometry x="150" y="130" width="560" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-3" value="Kubernetes Control Plane" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" parent="1" vertex="1">
+          <mxGeometry x="320" y="145" width="210" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-37" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startFill=0;dashed=1;" parent="1" source="RCA4Fh4X3SFFEuGEQZ1V-4" target="RCA4Fh4X3SFFEuGEQZ1V-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-4" value="" style="rounded=1;whiteSpace=wrap;html=1;fillStyle=solid;fillColor=#E3E3E3;" parent="1" vertex="1">
+          <mxGeometry x="150" y="230" width="240" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-7" value="Worker 1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" parent="1" vertex="1">
+          <mxGeometry x="234.25" y="410" width="70.5" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-16" value="Redis&lt;div&gt;Pod&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#BDBDBD;" parent="1" vertex="1">
+          <mxGeometry x="209.5" y="305" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startFill=0;strokeColor=default;flowAnimation=0;shadow=0;dashed=1;" parent="1" source="RCA4Fh4X3SFFEuGEQZ1V-18" target="RCA4Fh4X3SFFEuGEQZ1V-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-18" value="" style="rounded=1;whiteSpace=wrap;html=1;fillStyle=solid;fillColor=#E3E3E3;" parent="1" vertex="1">
+          <mxGeometry x="475" y="230" width="235" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-19" value="Worker 2" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" parent="1" vertex="1">
+          <mxGeometry x="556.25" y="410" width="72.5" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-20" value="Benchmarking Tool Pod" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#BDBDBD;" parent="1" vertex="1">
+          <mxGeometry x="513.13" y="305" width="158.75" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-27" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;" parent="1" source="RCA4Fh4X3SFFEuGEQZ1V-16" target="RCA4Fh4X3SFFEuGEQZ1V-20" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="410" as="sourcePoint" />
+            <mxPoint x="450" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-43" value="Kubernetes cluster" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" parent="1" vertex="1">
+          <mxGeometry x="354" y="450" width="152" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,126 @@
+\section{Introduction}
+
+\begin{frame}
+    \frametitle{Introduction}
+    \begin{itemize}
+        \item Containers and container orchestrators (CO) increasingly popular
+            % \item  Cloud Native Computing Foundation (CNCF) and Datadog surveys \cite{CNCFSurvey2024,DatadogSurvey2022}:
+            %     \begin{itemize}
+            %         \item \textbf{52\%}: containers in almost all production systems
+            %         \item \textbf{39\%}: containers in some production systems
+            %         \item \textbf{6\%}: actively evaluating
+            %         \item \textbf{Kubernetes}: used by ~50\% of organizations for managing containers
+            %     \end{itemize}
+        \item Popularity $\rightarrow$ new security challenges
+            % \begin{itemize}
+            %     \item ~50\% of organizations faced security breach in 2022 \cite{AquaReport2023}
+            % \end{itemize}
+        \item Containers share host kernel
+            \begin{itemize}
+                % \item Lightweight runtime
+                \item Less secure than virtual machines (VM)
+            \end{itemize}
+        \item Additional security mechanisms needed
+            \begin{itemize}
+                \item Example: runtime monitoring
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% TODO: removed for space
+
+% \begin{frame}
+%   \frametitle{Introduction}
+%   \begin{itemize}
+%   \item A Linux container is a process with a higher level of isolation.
+%   \item Isolation mechanisms:
+%     \begin{itemize}
+%     \item \textbf{Namespaces} isolate various system resources, such as the network stack and process tree, ensuring that containers cannot interact with each other's processes \cite{Simonsson2021}.
+%     \item \textbf{cGroups}: control the allocation of hardware resources such as RAM and CPU to each container.
+%     \item \textbf{Seccomp}: restricts the system calls that a container can make, thus limiting its access to the host system.
+%     \end{itemize}
+%   \end{itemize}
+% \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \begin{frame}
+%     \frametitle{Introduction}
+%     \begin{itemize}
+%         \item Popularity $\rightarrow$ new security challenges
+%             \begin{itemize}
+%                 \item ~50\% of organizations faced security breach in 2022 \cite{AquaReport2023}
+%             \end{itemize}
+%         \item Containers share host kernel
+%             \begin{itemize}
+%                 % \item Lightweight runtime
+%                 \item Less secure than virtual machines (VM)
+%             \end{itemize}
+%         \item Additional security mechanisms needed
+%         \begin{itemize}
+%             \item Example: runtime monitoring
+%         \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+    \frametitle{Introduction}
+    \begin{itemize}
+        % \item To improve the security of containers: runtime monitoring
+        % \item Monolithic applications
+        %     \begin{itemize}
+        %         \item Easier to monitor
+        %         \item Single host
+        %     \end{itemize}
+        % \item Cloud-native applications
+        %     \begin{itemize}
+        %         \item Distributed across various hosts
+        %         \item Modifying the application for instrumentation is hard
+        %     \end{itemize}
+        \item Most observability approaches: network or app-level metrics
+            % \begin{itemize}
+            %     \item Sidecars
+            %     \item Node-level agents
+            %     \item Application-level instrumentation
+            % \end{itemize}
+        \item Lack of system-level observability
+            \begin{itemize}
+                \item Kernel-level events
+            \end{itemize}
+            % \item It is important to develop solutions that collect data from the low-level host operating system
+            % \begin{itemize}
+            %     \item Provide fine-grained, low-overhead visibility into system behavior
+            % \end{itemize}
+        \item Extended BSD Packet Filter (eBPF)
+            % \begin{itemize}
+            % \item Executes bytecode at kernel hook points
+            % \item Used for networking, tracing, and security
+            % \end{itemize}
+        \item Monitoring containers with eBPF is challenging
+            \begin{itemize}
+                \item Container isolation
+            \end{itemize}
+        \item \textbf{Goal}: examine eBPF for container security
+            % \begin{itemize}
+            %     \item Monitor container activity in real time
+            %     \item Identify malicious behavior within containers
+            %     \item Assess overhead of eBPF-based solutions
+            % \end{itemize}
+    \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \begin{frame}
+%     \frametitle{Introduction}
+%     \begin{itemize}
+%     \end{itemize}
+% \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+

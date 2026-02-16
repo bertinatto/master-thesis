@@ -1,0 +1,68 @@
+\documentclass{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{pgfgantt}
+
+% \usepackage{minted}[frozen]
+\usepackage{minted}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{multirow}
+\usepackage{booktabs}
+
+% Choose the Inf theme
+\usetheme{Inf}
+
+% Define the title with \title[short title]{long title}
+% Short title is optional
+\title[]
+{Enhancing Linux Container Security with eBPF: A Multi-Case Study Approach}
+
+% Optional subtitle
+\subtitle{Dissertação de Mestrado}
+
+\date{Fevereiro de 2026}
+
+% Author information
+\author{Fábio J. Bertinatto}
+\institute{Instituto de Informática --- UFRGS\\\texttt{fabio.bertinatto@inf.ufrgs.br}}
+
+\begin{document}
+
+% Command to create title page
+\InfTitlePage
+
+\begin{frame}
+  \frametitle{Schedule}
+  \tableofcontents
+\end{frame}
+
+% Presentation
+\include{1-intro}
+\include{2-background}
+\include{3-related_work}
+\include{4-methodology}
+\include{5-cases}
+\include{6-conclusion}
+
+\section*{}
+
+\begin{frame}
+  \frametitle{Obrigado!}
+  \InfContacts
+\end{frame}
+
+% \bibliographystyle{abntex2-alf}
+
+\section{References}
+
+\begin{frame}[allowframebreaks]{References}
+    \bibliographystyle{IEEEtran}
+    \bibliography{biblio}
+\end{frame}
+
+
+\end{document}

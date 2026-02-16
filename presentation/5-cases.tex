@@ -1,0 +1,1217 @@
+\section{Case Studies}
+
+\begin{frame}[plain]
+    \sectionpage
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Case Studies}
+%     \begin{itemize}
+%         \item Three case studies: eBPF for container security
+%         \item Practical container scenarios
+%         \item Standard structure per case study
+%             \begin{itemize}
+%                 \item Security challenge
+%                 \item Proposed eBPF-based solution
+%                 \item Implementation
+%                 \item Evaluation of the solution
+%                 \item Lessons learned
+%             \end{itemize}
+%         \item Each case study informs subsequent design choices
+%     \end{itemize}
+% \end{frame}
+
+\subsection{Runtime Auditing of Containerized Shell Sessions}
+
+\begin{frame}[plain]
+    \subsectionpage
+\end{frame}
+
+\begin{frame}
+    \frametitle{Introduction}
+    \begin{itemize}
+        \item Admins execute shells inside containers
+            \begin{itemize}
+                \item Example: \textit{kubectl exec -it <pod\_name> -- bash}
+                \item Debugging and troubleshooting
+            \end{itemize}
+        \item Containers do not persist commands executed
+            \begin{itemize}
+                \item No audit trail after termination
+            \end{itemize}
+        % \item Kubernetes Events don't record shell commands
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Proposal}
+    \begin{itemize}
+        \item eBPF program
+            \begin{itemize}
+                \item Injected inside container
+                \item Instruments the \textit{readline} function
+                \item Monitor all commands in container
+            \end{itemize}
+            % \item Bash is the default shell interpreter in most Linux distributions
+            % \begin{itemize}
+            %     \item Mount and PID namespaces
+            %     \item nsenter tool is used for that
+            % \end{itemize}
+        \item \textit{runc} wrapper
+            % \begin{itemize}
+            %     \item Detects when a Bash process will start in a container
+            %     \item Sends the PID to the HTTP service
+            %     \item Then runs runc as usual
+            % \end{itemize}
+        \item HTTP service on worker node
+            % \begin{itemize}
+            %     \item Gets the PID from the runc and runs the eBPF program inside the container with nsenter
+            %     \item Gets events from the eBPF program and creates Kubernetes Events
+            % \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% Figure \ref{fig-impl-readline} illustrates the workflow of the eBPF-based solution proposed in this case study.
+% The \textit{runc} wrapper detects when a Bash process is to be executed inside a container, captures the Process ID (PID) of the incoming Bash process, and sends it to the HTTP service running on the worker node. After that, the wrapper proceeds to run \textit{runc}, allowing it to start the Bash process inside the container. Finally, the HTTP service accepts incoming PIDs via an HTTP interface and runs the eBPF program within the specified mount and PID's namespace using the \textit{nsenter} tool. Once the eBPF program is running within a container, it captures all commands executed within any Bash process running in that container. The eBPF program then communicates this information back to the HTTP service running on the host machine. This communication is facilitated by a Unix Domain Socket, which is mapped within the container and exposes the HTTP interface of the custom service. Upon receiving information from the eBPF program, the service creates corresponding Event resources within the Kubernetes API server. As a result, Kubernetes cluster administrators gain a comprehensive view of the actions executed within the container.
+
+\begin{frame}
+    \frametitle{Proposal}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.4\columnwidth]{../img/impl.png}
+        % \caption{Architecture of the eBPF-based solution.}
+        \label{fig-impl-readline}
+    \end{figure}
+\end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{Implementation: runc wrapper}
+%     \begin{minted}[fontsize=\footnotesize,breaklines]{shell}
+% #!/bin/bash
+% FILE=$(echo "$@" | grep ' exec ' | awk -F'--pid-file ' '{print $2}' | cut -d' ' -f1)
+% if [ ! -z "$FILE" ]; then
+% curl --unix-socket /tmp/mysocket.sock \
+%      --data "path=$FILE" "localhost/pid2"
+% fi
+% exec /usr/bin/runc "$@"
+%     \end{minted}
+% % \caption{Implementation of the runc wrapper.}
+% % \label{list:implementation-runc-wrapper}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Implementation: HTTP service}
+%     \begin{table}
+%     	\centering
+%     	\begin{tabular}{|l|l|l|p{8cm}|}
+%     		\hline
+%     		\textbf{Method} & \textbf{Path} & \textbf{Parameters} & \textbf{Description}                                                            \\
+%     		\hline
+%     		POST            & /pid          & path(string)        & Starts the eBPF program in the same container as the PID being sent             \\
+%     		\hline
+%     		POST            & /event        & message(string)     & Creates a Kubernetes Event containing the command executed inside the container \\
+%     		\hline
+%     	\end{tabular}
+%     	\caption{HTTP endpoints exposed by the HTTP service used in the eBPF-based solution.}
+%     	\label{tab:http-endpoints}
+%     \end{table}
+% \end{frame}
+
+
+\begin{frame}
+    \frametitle{Implementation}
+    \begin{itemize}
+        \item User space component
+            \begin{itemize}
+                \item Go + ebpf-go\footnote{https://github.com/cilium/ebpf/tree/main} library
+                \item Attaches the kernel space component to the \textit{uretprobe/bash\_readline} tracepoint
+            \end{itemize}
+        \item Kernel space component
+            \begin{itemize}
+                \item Written in C
+                \item \textbf{BPF\_PROG\_TYPE\_KPROBE} type
+                    % \begin{itemize}
+                    %     \item Standard eBPF method for exchanging data between the kernel and user space
+                    % \end{itemize}
+            \end{itemize}
+        \item eBPF map used for communication between user and kernel space
+    \end{itemize}
+\end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{Implementation: eBPF program}
+%     	\begin{minted}[fontsize=\footnotesize,breaklines]{C}
+%     // +build ignore
+%     #include "common.h"
+%     #include "bpf_tracing.h"
+%     char __license[] SEC("license") = "Dual MIT/GPL";
+
+%     struct event {
+%       u32 pid;
+%       u8 line[80];
+%     };
+
+%     struct {
+%       __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
+%     } events SEC(".maps");
+
+
+%     const struct event *unused __attribute__((unused));
+
+%     SEC("uretprobe/bash_readline")
+%     int uretprobe_bash_readline(struct pt_regs *ctx) {
+%       struct event event;
+%       event.pid = bpf_get_current_pid_tgid();
+%       bpf_probe_read(&event.line,
+%                      sizeof(event.line),
+%                      (void *)PT_REGS_RC(ctx));
+%       bpf_perf_event_output(ctx,
+%                             &events,
+%                             BPF_F_CURRENT_CPU,
+%                             &event,
+%                             sizeof(event));
+%       return 0;
+%     }
+%     \end{minted}
+%     	% \caption{Implementation kernel space component of the eBPF program.}
+%     	% \label{list:impl-ebpf-readline}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Implementation: deployment in Kubernetes}
+%     \begin{itemize}
+%         \item Deployment of the solution requires extra steps
+%         \begin{itemize}
+%             \item Containerd needs to invoke the runc wrapper instead of runc
+%         \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{Implementation: deployment in Kubernetes}
+%     \begin{minted}[fontsize=\footnotesize,breaklines]{toml}
+% [plugins."io.containerd.grpc.v1.cri".containerd. runtimes.wrapper]
+%   runtime_type = "io.containerd.runc.v1"
+%   pod_annotations = ["*"]
+%   container_annotations = ["*"]
+
+% [plugins."io.containerd.grpc.v1.cri".containerd. runtimes.wrapper.options]
+%   BinaryName="/usr/bin/wrapper"
+% \end{minted}
+%     	% \caption{Containerd configuration.}
+%     	% \label{list-containerd_configuration}
+% \end{frame}
+
+
+% \begin{frame}[fragile]
+%     \frametitle{Implementation: deployment in Kubernetes}
+%     \begin{itemize}
+%         \item Workloads requiring monitoring need to specify a custom RuntimeClass
+%     \end{itemize}
+
+%     	\begin{minted}[fontsize=\footnotesize]{yaml}
+%     apiVersion: node.k8s.io/v1
+%     kind: RuntimeClass
+%     metadata:
+%       name: my-wrapper-name
+%     handler: wrapper
+%     \end{minted}
+%     	% \caption{RuntimeClass that uses the runc wrapper.}
+%     	% \label{list-runtimeclass}
+% \end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{Implementation: deployment in Kubernetes}
+%     	\begin{minted}[fontsize=\footnotesize,breaklines]{yaml}
+%     apiVersion: apps/v1
+%     kind: Deployment
+%     metadata:
+%       name: nginx-deployment
+%     spec:
+%       selector:
+%         matchLabels:
+%           app: nginx
+%       replicas: 1
+%       template:
+%         metadata:
+%           labels:
+%             app: nginx
+%         spec:
+%           runtimeClassName: wrapper
+%           containers:
+%           - name: nginx
+%             image: nginx:latest
+%             volumeMounts:
+%             - mountPath: /ebpf
+%               name: ebpf-program-mount-point
+%           volumes:
+%           - name: ebpf-program-mount-point
+%             hostPath:
+%               # Location on the host where
+%               # the eBPF program is located
+%               path: /path-on-the-host
+%     \end{minted}
+%     	% \caption{Deployment Object using the custom wrapper RuntimeClass}
+%     	% \label{list-deployment}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Evaluation: specs}
+%     \begin{itemize}
+%         \item Kubernetes 1.26, single-node VM
+%             \begin{itemize}
+%                 \item 4 GiB RAM
+%                 \item Intel Skylake CPU with 4 cores
+%                 \item Fedora Linux version 37
+%                 \item Linux kernel version 6.2.8
+%             \end{itemize}
+%         \item Host machine
+%             \begin{itemize}
+%                 \item ThinkPad P1 Gen 3 laptop
+%                 \item 32 GB of RAM
+%                 \item Intel Core i7-10850H processor with 12 cores
+%                 \item Fedora Linux version 37
+%                 \item Linux kernel version 6.2.8
+%             \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{itemize}
+        \item Specs
+            \begin{itemize}
+                \item Kubernetes 1.26, single-node VM
+                    % \item \textit{hack/local-up-cluster.sh}
+                \item Vagrant 2.2.9 + KVM
+                \item VM: 4 cores, 4 GiB RAM, Fedora 37, kernel 6.2.8
+            \end{itemize}
+    \end{itemize}
+    \begin{enumerate}
+        \item Solution deployed in cluster
+        \item Bash initiated in container
+            \begin{enumerate}
+                \item \textit{kubectl exec -it <pod\_name> -- bash}
+            \end{enumerate}
+        \item Admin examine logs, processes, runs strace
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{}
+    \begin{table}
+        % \caption{Kubernetes Events.}
+        % \label{tab:events}
+        \centering
+        \footnotesize
+        \begin{tabular}{|p{0.6\textwidth}|p{0.35\textwidth}|}
+            \hline
+            \textbf{Object}                      & \textbf{Message}              \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & ls                            \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & ip a                          \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & vim /etc/nginx/nginx.conf     \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & cat /var/log/nginx/access.log \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & cat /var/log/nginx/error.log  \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & ps                            \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & apt update                    \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & apt install procps            \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & ps                            \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & strace -p 1                   \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & apt install strace            \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & strace -p 1                   \\
+            \hline
+            pod/nginx-deployment-89c6ff86b-92ndx & strace -p 28                  \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Discussion}
+    \begin{itemize}
+        \item Primary objective achieved
+            \begin{itemize}
+                \item eBPF can monitor containerized applications
+            \end{itemize}
+        \item Multi-layered solution
+            \begin{itemize}
+                \item eBPF program injected into container
+                \item Several components communicating
+                \item Deployment was complex
+            \end{itemize}
+        % \item Operator could automate deploymentSome automation could be achieved with an Operator
+        %     \begin{itemize}
+        %         \item Deploy runc wrapper
+        %         \item Create RuntimeClass
+        %         \item Modify the Containerd configuration
+        %     \end{itemize}
+    \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{System Call Tracing for Privilege Escalation Detection}
+
+\begin{frame}[plain]
+    \subsectionpage
+\end{frame}
+
+\begin{frame}
+    \frametitle{Introduction}
+    \begin{itemize}
+        \item Bag of System Calls (BoSC) \cite{Kang2005}
+          \begin{itemize}
+                \item Can predict privilege escalation
+                \item Requires tracing all syscalls
+                \item \textit{strace}\footnote{https://strace.io/}: high overhead
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Proposal}  
+%   \begin{itemize}    
+%     \item eBPF program to trace syscalls
+%     \begin{itemize}
+%         \item Comparison of various types of eBPF programs and evaluate their impact when tracing system calls
+%         \item Approach to capture system calls executed within the container and apply a variation of the BoSC technique to identify potential privilege escalation attempts
+%     \end{itemize}
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Proposal}
+    \begin{itemize}
+        \item eBPF program
+            \begin{itemize}
+                \item Captures syscalls in containers
+                \item Apply BoSC to detect privilege escalation
+                \item Notify user of anomalies
+            \end{itemize}
+        % \item User space component
+        %     \begin{itemize}
+        %         \item Detect and notify the user of anomaliesDetects and notifies the user of any anomalies identified by the kernel space component
+        %     \end{itemize}
+        % \item Kernel space component
+        %     \begin{itemize}
+        %         \item Receives events for all system call executions by hooking into the \textit{raw\_tracepoint/sys\_enter} raw tracepoint
+        %         \item Parses and constructs system call parameter fields
+        %         \item Keeps track of the last \textit{N} system calls executed
+        %             \begin{itemize}
+        %                 \item Must be large enough to hold the suspicious system calls
+        %                 \item A large \textit{N} means more processing overhead
+        %                 \item For this case study: 100
+        %                 \item This allows us to apply the BoSC technique and look for suspicious sets of system calls
+        %             \end{itemize}
+        %     \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+
+% \begin{frame}
+%   \frametitle{Proposal}
+%   % \begin{algorithm}
+%   %   \small
+%   %   \caption{Search for Anomalous Set of System Calls}\label{alg:ebpf}
+%   \begin{algorithmic}[1]
+%     \Function{SearchForAnomalousSyscallsSet}{}
+%       \State $syscall \gets \text{context.current\_syscall}()$
+%       \State $latest\_syscalls[\text{index} \mod 100] \gets syscall$
+%       \State $\text{index} \gets \text{index} + 1$
+%       \If{$latest\_syscalls$ contains $anomalous\_set$}
+%         \State \Return \text{True}
+%       \Else
+%         \State \Return \text{False}
+%       \EndIf
+%     \EndFunction
+%   \end{algorithmic}
+%   % \end{algorithm}
+% \end{frame}
+
+% Figure~\ref{fig-impl} illustrates the workflow of the eBPF-based solution presented in this case study. Each time a containerized user application executes a system call, the kernel space component receives an event and applies the Algorithm~\ref{alg:ebpf}. Once an anomalous set of system calls is detected, a signal is registered on the eBPF map, which is read and acted upon by the user space component. The user space component then logs an event to the system logging infrastructure (e.g., journald or syslogd).
+% % However, in future work, this solution could take on a more active role and terminate the suspicious process before it causes any harm to the system.
+
+\begin{frame}
+    \frametitle{Proposal}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.9\columnwidth]{../img/syscall/implementation.png}
+        % \caption{Architecture of the implementation.}
+        \label{fig-impl}
+    \end{figure}    
+\end{frame}
+
+\begin{frame}
+    \frametitle{Implementation}
+    \begin{itemize}
+        \item Kernel space component
+            \begin{itemize}
+                \item Written in C
+                \item \textbf{BPF\_PROG\_TYPE\_RAW\_TRACEPOINT} type
+            \end{itemize}
+        \item User space component
+            \begin{itemize}
+                \item Go + ebpf-go\footnote{https://github.com/cilium/ebpf/tree/main} library
+                \item Attaches the kernel space component to the \textit{raw\_tracepoint/sys\_enter} tracepoint
+            \end{itemize}
+        \item Communication via eBPF map (\textit{BPF\_MAP\_TYPE\_ARRAY})
+    \end{itemize}
+\end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{Implementation}
+
+%     % \begin{listing}[htpb]
+%     \begin{minted}[fontsize=\footnotesize,breaklines]{C}
+%     //...
+%     SEC("raw_tracepoint/sys_enter")
+%     int tracepoint__raw_syscalls__sys_enter(struct bpf_args *ctx)
+%     {
+%       // Index need to be dealt with in an atomically way.
+%       u32 index_key = 0;
+%       u64 index_init_val = 0;
+%       u64 *index_ptr;
+%       index_ptr = bpf_map_lookup_elem(&index_map, &index_key);
+%       if (!index_ptr) {
+%           bpf_map_update_elem(&index_map,
+%                               &index_key,
+%                               &index_init_val,
+%                               BPF_ANY);
+%           return 0;
+%       }
+
+%       // Reserves the current index value for the current
+%       // syscall and atomically increments the index for the next one.
+%       u32 syscall_index = __sync_fetch_and_add(index_ptr, 1) % MAX_ENTRIES;
+%       u64 syscall_init_val = 0, *syscall_ptr;
+%       syscall_ptr = bpf_map_lookup_elem(&syscall_map, &syscall_index);
+%       if (!syscall_ptr) {
+%           bpf_map_update_elem(&syscall_map,
+%                               &syscall_index,
+%                               &syscall_init_val,
+%                               BPF_ANY);
+%           return 0;
+%       }
+
+%       // Store syscall in our map. This effectively sends the
+%       // information to user-space.
+%       unsigned long syscall_id = ctx->args[1];
+%       *syscall_ptr = syscall_id;
+
+%       // Apply the algorithm.
+%     }
+%     \end{minted}
+%     % 	\caption{Implementation kernel space component of the eBPF-based solution used in this case study.}
+%     % 	\label{list:impl-ebpf-syscallb}
+%     % \end{listing}
+% \end{frame}
+
+
+% \begin{frame}
+%     \frametitle{Evaluation}
+%     \begin{table}
+%         \centering
+%         \tiny % Reduce font size    
+%         \caption{eBPF overhead benchmark.}
+%         \label{tab:ebpf:bench}
+%         \begin{tabular}{@{}p{1.8cm}cccc@{}}
+%             \toprule
+%             \textbf{Test} & \textbf{Base} & \textbf{Kprobe} & \textbf{Tracepoint} & \textbf{Raw Tracepoint} \\
+%             \midrule
+%             \multirow{12}{*}{task\_rename} & 3634077	& 2123379	& 2783954	& 3290377 \\
+%                                            & 3575526	& 2119257	& 2775150	& 3269406 \\
+%                                            & 3547105	& 2118399	& 2773609	& 3256166 \\
+%                                            & 3552119	& 2114393	& 2772998	& 3238374 \\
+%                                            & 3536425	& 2113806	& 2753713	& 3210991 \\
+%                                            & 3535852	& 2108881	& 2741596	& 3210334 \\
+%                                            & 3502616	& 2096884	& 2745746	& 3210268 \\
+%                                            & 3481862	& 2095712	& 2734844	& 3204348 \\
+%                                            & 3497963	& 2057025	& 2732783	& 3154480 \\
+%                                            & 3436194	& 2058983	& 2721204	& 3126806 \\
+%                                            & 3488200	& 2058618	& 2701266	& 3074301 \\
+%                                            & 3370600	& 1942835	& 2556992	& 3064059 \\
+%                                            \midrule
+%             \multirow{12}{*}{fib\_table\_lookup} & 227078	& 217006	& 219809	& 225775 \\
+%                                                  & 227418	& 216564	& 218820	& 224287 \\
+%                                                  & 224382	& 212639	& 218528	& 221524 \\
+%                                                  & 222373	& 211783	& 214378	& 220404 \\
+%                                                  & 222416	& 211558	& 213313	& 220570 \\
+%                                                  & 221204	& 210310	& 212369	& 219942 \\
+%                                                  & 219844	& 209461	& 212342	& 217033 \\
+%                                                  & 219352	& 209040	& 211847	& 213021 \\
+%                                                  & 217366	& 209247	& 205254	& 212151 \\
+%                                                  & 215330	& 208072	& 204731	& 211712 \\
+%                                                  & 212873	& 205315	& 205401	& 211606 \\
+%                                                  & 207209	& 202412	& 203225	& 208844 \\
+%                                                  \bottomrule
+%         \end{tabular}
+%     \end{table}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Evaluation}
+%   \begin{figure}
+%     \centering
+%     \includegraphics[width=\columnwidth]{../src/syscall/images/box_comparison.png}
+%     \caption{Syscall execution times with and without eBPF tracing.}
+%     \label{fig:box_comparison}
+%   \end{figure}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\columnwidth]{../src/syscall/images/cdf.png}
+        % \caption{Cumulative Distribution Function of execution times with and without eBPF tracing.}
+        \label{fig:cdf}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{figure}
+        \centering
+        % \includegraphics[width=\columnwidth]{src/images/redis_benchmark_rps_comparison.png}
+        \includegraphics[height=0.85\textheight]{../src/syscall/images/redis_benchmark_rps_comparison_overlap.png}
+        % \includegraphics[width=\columnwidth]{src/syscall/images/redis_benchmark_rps_comparison_overlap.png}
+
+        % \caption{Requests per Seconds (RPS) for all Redis operations with and without eBPF tracing.}
+        \label{fig:redis_benchmark_rps}
+    \end{figure}
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Evaluation}
+%     \begin{figure}
+%         \centering
+%         \includegraphics[width=0.5\columnwidth]{../src/syscall/images/escalation2.png}
+%         % \caption{Container escape by entering a different Linux namespace.}
+%         \label{fig:escalation}
+%     \end{figure}
+% \end{frame}
+%
+% \begin{frame}
+%     \frametitle{Evaluation}
+%     \begin{figure}
+%         \centering
+%         \includegraphics[width=0.8\columnwidth]{img/syscalls.png}
+%         % \caption{Excerpt of strace output for nsenter command.}
+%         \label{fig:escalation}
+%     \end{figure}
+%     \begin{figure}
+%         \centering
+%         \includegraphics[width=0.8\columnwidth]{img/cmd.png}
+%         % \caption{Simulation of the user trying to escape a container.}
+%         \label{fig:escape}
+%     \end{figure}
+% \end{frame}
+
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \centering
+            \includegraphics[width=\columnwidth]{../src/syscall/images/escalation2.png}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \centering
+            \includegraphics[width=\columnwidth]{img/syscalls.png}
+            % \vspace{0.5em}
+            % \includegraphics[width=\columnwidth]{img/cmd.png}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Discussion}
+    \begin{itemize}
+        % \item Results confirmed that raw tracepoint programs provide the least amount of overhead when tracing all system calls
+        \item Benchmarks: minimal impact
+            \begin{itemize}
+                \item Latency
+                \item Redis RPS (requests per second)
+            \end{itemize}
+        \item Detected container escape attempt
+    \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Real-Time Traffic Spike Detection in Container Networks}
+
+\begin{frame}[plain]
+    \subsectionpage
+\end{frame}
+
+\begin{frame}
+    \frametitle{Introduction}
+    \begin{itemize}
+        \item More containers per pod in Kubernetes
+            % \item Co-located applications running on the same pods can exhibit varying networking behaviors
+            %     \begin{itemize}
+            %         \item Significant network traffic
+            %     \end{itemize}
+        \item Understanding traffic anomalies matters
+            \begin{itemize}
+                \item Architecture and scaling decisions
+                \item Early signs of security incidents
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Proposal}
+    \begin{itemize}
+        \item eBPF program
+            \begin{itemize}
+                \item Passive pod-level traffic monitoring
+                \item Custom statistical algorithm detects deviations
+                \item Alerts when abnormal traffic increase
+            \end{itemize}
+            % \item Most of the logic of the solution is implemented in the user space component
+            % \item Kernel space component has a minimal implementation to avoid performance impact
+    \end{itemize}
+\end{frame}
+
+% todo: dividir em kernel e user space
+\begin{frame}
+    \frametitle{Proposal}
+    \begin{itemize}
+        \item eBPF-based solution starts on a node
+        \item Identifies running containers
+            \begin{itemize}
+                % \item Only default namespace
+                \item Maps containers to NICs
+                    % \item In general, all containers from the same pod share the same network interface
+                    % \item The network interfaces created by CRI-O are named based on the first 15 bytes of the sandbox ID assigned to each container
+                    % \item This solution uses this assumption to infer the list of network interfaces to which the kernel space eBPF program should be attached
+            \end{itemize}
+        \item Kernel space component
+            \begin{itemize}
+                \item Maps interface index $\rightarrow$ bytes received
+                \item XDP hook: earliest point in network stack
+            \end{itemize}
+        \item User space component
+            \begin{itemize}
+                \item Polls map every second
+                \item Calculates bytes per second
+                \item Runs anomaly detection algorithm
+                \item Creates alert
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.5\linewidth]{../img/case3_solution.png}
+    \end{figure}
+\end{frame}
+
+
+%TODO: update case study to say openshift is used
+
+% \begin{frame}
+%     \frametitle{Proposal}
+%     % \begin{algorithm}
+%     % 	\footnotesize
+%     % 	\caption{Anomaly Detection Algorithm.}\label{alg:anomaly_detection}
+%     \begin{algorithmic}[1]
+%         \Require {stats: PodStats, deltaBytes: Integer}
+%         \Ensure {Boolean (true if anomalous, false otherwise)}
+%         \Statex
+%
+%         \Function{isAnomalous}{stats, deltaBytes}
+%         % \Comment{Check if enough data is available for analysis}
+%         \If{stats.count $<$ 5}
+%         \State \Return \textbf{false}
+%         \EndIf
+%         % \Comment{Calculate mean and variance of delta values}
+%         \State mean $\gets$ stats.sum / stats.count
+%         \State variance $\gets$ (stats.sumSquared / stats.count) - (mean $\times$ mean)
+%         % \State stdDev $\gets 1$
+%         % \Comment{Compute standard deviation if variance is positive}
+%         % \If{variance $>$ 0}
+%         \State stdDev $\gets \sqrt{\text{variance}}$
+%         % \EndIf
+%         % \Comment{Calculate z-score for the current deltaBytes}
+%         \State zScore $\gets \frac{| \text{deltaBytes} - \text{mean} |}{\text{stdDev}}$
+%
+%         % \Comment{Return true if z-score exceeds the threshold}
+%         \Return zScore $>$ 2.5
+%         \EndFunction
+%     \end{algorithmic}
+%     % \end{algorithm}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Implementation}
+    \begin{itemize}
+        \item User space component
+            \begin{itemize}
+                \item Go + ebpf-go\footnote{https://github.com/cilium/ebpf/tree/main} library
+                \item Attaches the kernel space component to the XDP hook
+            \end{itemize}
+        \item Kernel space component
+            \begin{itemize}
+                \item Written in C
+                \item \textbf{BPF\_PROG\_TYPE\_XDP} type
+                    % \begin{itemize}
+                    %     \item Standard eBPF method for exchanging data between the kernel and user space
+                    % \end{itemize}
+            \end{itemize}
+        \item eBPF map used for communication between user and kernel space
+    \end{itemize}
+\end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{Implementation}
+
+% 	\begin{minted}[fontsize=\footnotesize,breaklines]{C}
+% // (...)
+
+% // Define an LRU hash map for storing byte
+% // count and timestamp by veth interface
+% struct {
+%   __uint(type, BPF_MAP_TYPE_LRU_HASH);
+%   __uint(max_entries, MAX_MAP_ENTRIES);
+%   __type(key, __u32);            // Virtual interface index
+%   __type(value, struct datarec); // Bytes and timestamp
+% } xdp_stats_map SEC(".maps");
+
+% int parse_eth_pkt(struct xdp_md *ctx, __u64 *pkt_size) {
+%   // Parse eth patcket and calculate packet size
+% }
+
+% SEC("xdp.frags")
+% int xdp_prog_func(struct xdp_md *ctx) {
+%   __u32 ip;
+%   __u64 pkt_size;
+%   __u64 current_time = bpf_ktime_get_ns();
+%   __u32 ifindex = ctx->ingress_ifindex;
+
+%   // Retrieve data record for this IP
+%   struct datarec *rec = bpf_map_lookup_elem(&xdp_stats_map, &ifindex);
+%   if (!rec) {
+%     // No entry in the map for this interface yet, so initialize it
+%     struct datarec init_data = {
+%       .bytes = pkt_size,
+%       .last_seen = current_time
+%     };
+%     bpf_map_update_elem(&xdp_stats_map, &ifindex, &init_data, BPF_ANY);
+%   } else {
+%     // Update byte count
+%     rec->bytes += pkt_size;
+%     rec->last_seen = current_time;
+%   }
+% }
+% \end{minted}
+
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Implementation}
+%     \begin{itemize}
+%         \item eBPF program: single container image
+%         \item Deployed via DaemonSet (all nodes)
+%         \item Permissions the solution requires
+%             \begin{itemize}
+%                 \item By default, it's not possible to map network interfaces to the pods running on the host
+%                 \item \textit{/var/run/crio/crio.sock} socket file from the host is mapped inside the container where the solution runs
+%             \end{itemize}
+%         \item Other objects required to create alerts
+%             \begin{itemize}
+%                 \item \textit{Service}
+%                 \item \textit{ServiceMonitor}\textit{PrometheusRule}
+%             \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{Implementation}
+% 	\begin{minted}[fontsize=\footnotesize,breaklines]{yaml}
+% apiVersion: apps/v1
+% kind: DaemonSet
+% metadata:
+%   name: xdp
+%   labels:
+%     app: xdp
+% spec:
+%   selector:
+%     matchLabels:
+%       app: xdp
+%   template:
+%     metadata:
+%       labels:
+%         app: xdp
+%     spec:
+%       hostNetwork: true
+%       hostPID: true
+%       containers:
+%       - name: xdp
+%         image: quay.io/bertinatto/xdp:latest
+%         imagePullPolicy: Always
+%         securityContext:
+%           privileged: true
+%         command: ["/usr/bin/xdp"]
+%         ports:
+%           - containerPort: 9101
+%             name: metrics
+%         volumeMounts:
+%           - name: crio-sock
+%             mountPath: /var/run/crio/crio.sock
+%       volumes:
+%         - name: crio-sock
+%           hostPath:
+%             path: /var/run/crio/crio.sock
+%             type: Socket
+% \end{minted}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Evaluation}
+%     \begin{itemize}
+%         \item OpenShift (OCP) version 4.18.0-rc6
+%             \begin{itemize}
+%                 \item Kubernetes distribution developed by Red Hat\footnote{https://www.redhat.com/en}
+%                 \item Kubernetes version is 1.31.4
+%             \end{itemize}
+%         \item The OCP cluster is deployed on the AWS public cloud with six nodes
+%             \begin{itemize}
+%                 \item Three nodes serve as the control plane
+%                 \item Three nodes serve as worker nodes
+%             \end{itemize}
+%         \item All nodes are configured as~\textit{m6i.xlarge}\footnote{https://aws.amazon.com/ec2/instance-types/m6i} AWS instances
+%             \begin{itemize}
+%                 \item Each features 4 vCPUs and 32 GiB of RAM
+%             \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{itemize}
+        \item OpenShift 4.18.0-rc6 (Kubernetes 1.31.4)
+        \item AWS: 6 nodes (3 control, 3 worker)
+        \item \textit{m6i.xlarge}: 4 vCPUs, 32 GiB RAM
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{itemize}
+        \item Two experiments to assess the solution overhead
+            \begin{itemize}
+                \item Containerized Redis server in a node
+                \item Benchmark tools on separate node
+            \end{itemize}
+            % \begin{itemize}
+            %     \item Ensures that the incoming Redis commands are being delivered over the network interface and not through localhost
+            %     \item Containers on the same node would not use the network
+            % \end{itemize}
+    \end{itemize}
+    \vspace{0.5em}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.5\linewidth]{../img/experiments.png}
+        % \caption{Experimental setup.}
+        % \label{fig:setup-experiments}
+    \end{figure}
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Evaluation: first experiment}
+%     \begin{itemize}
+%         \item A benchmarking tool was developed to measure the latencies of the SET and GET operations in Redis
+%         \item 100,000 key-value insertions (SET operations)
+%         \begin{itemize}
+%             \item Random 1000-byte string values
+%         \end{itemize}
+%         \item 100,000 retrievals (GET operations)
+%         \item Latency of each operation is recorded in microseconds and stored in a CSV file
+%     \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Evaluation: first experiment}
+%     \begin{itemize}
+%         \item 95 percentile
+%         \begin{itemize}
+%             \item The median latency for eBPF is slightly higher at 597 \textmu{s} compared to the baseline's 594 \textmu{s}
+%             \item Marginal increase in response time for both GET and SET operations
+%             \item The interquartile range (IQR) remains consistent at 12 \textmu{s} for both eBPF and the baseline dataset
+%             \item This suggests that eBPF has not introduced any additional central variability
+%         \end{itemize}
+%         \item Whole dataset
+%         \begin{itemize}
+%             \item The median latency for eBPF stands at 598 \textmu{s}, while the median for the baseline is still 594 \textmu{s}
+%             \item The interquartile range (IQR) is also consistent at 13 \textmu{s} for both eBPF and baseline
+%         \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\columnwidth]{../src/network/redis/images/boxplot_latencies.png}
+        % \caption{.}
+        \label{fig:boxplot-latencies}
+    \end{figure}
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Evaluation: second experiment}
+%     \begin{itemize}
+%         \item Compare the outcomes of \textit{redis-benchmark}\footnote{https://redis.io/docs/management/optimization/benchmarks} when executed against a containerized Redis server
+%         \item By default, the tool performs 100,000 requests for each Redis command
+%         \begin{itemize}
+%             \item Results were not very consistent
+%         \end{itemize}
+%         \item Increased to 1,000,000 requests because results were not consistent
+%     \end{itemize}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{figure}
+        \centering
+        \includegraphics[height=0.85\textheight]{../src/network/redis/images/redis_benchmark_rps_comparison_overlap.png}
+        \includegraphics[height=0.85\textheight]{../src/syscall/images/redis_benchmark_rps_comparison_overlap.png}
+        % \caption{Requests per Second (RPS) for all Redis operations with and without eBPF.}
+        \label{fig:redis_benchmark_rps_network}
+    \end{figure}  
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Evaluation: third experiment}
+% \begin{itemize}
+%     \item Two instances of the \textit{Nginx}\footnote{https://nginx.org} HTTP web server are deployed in the cluster
+%     \item Both instances run on the same worker node, but on different pods
+%     \begin{itemize}
+%         \item Rationale: check if the solution would correctly identify the instance where the spike in the network happens
+%     \end{itemize}
+%     \item The HTTP web servers are exposed to clients outside the Kubernetes cluster
+%     \begin{itemize}
+%         \item This is achieved using \textit{Services} and \textit{Routes} objects
+%     \end{itemize}
+%     \item Warm up the cache and create a baseline
+%     \begin{itemize}
+%         \item Two HTTP clients external to the Kubernetes cluster are simulated making requests to both HTTP web servers
+%         \item Requests are done sequentially
+%     \end{itemize}
+%     \item An anomalous burst of requests is simulated in one of the services
+%     \begin{itemize}
+%         \item Apache HTTP server benchmarking tool (\textit{ab})\footnote{https://httpd.apache.org/docs/2.4/programs/ab.html}
+%         \item The burst consists of a total of 100 requests, processed in groups of 10
+%     \end{itemize}
+% \end{itemize}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.6\linewidth]{../img/experiments_functional.png}
+        % \caption{Setup used to check the effectiveness of the eBPF-based solution.}
+        \label{fig:setup-experiments-functional}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Evaluation}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{../img/alert.png}
+        % \caption{Traffic spike alert generated by the eBPF-based solution.}
+        \label{fig:alert}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Discussion}
+    \begin{itemize}
+        \item XDP hook: minimal overhead at network layer
+        \item Redis benchmarks: negligible latency + RPS impact
+        \item Successfully detected simulated traffic spike
+        \item Simplified deployment via DaemonSet
+            \begin{itemize}
+                \item Single binary per node
+                \item No application changes required
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\subsection{Synthesis}
+
+\begin{frame}[plain]
+    \subsectionpage
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Synthesis}
+%     \begin{itemize}
+%         % \item Case studies were organized around specific primary objectives
+%         %     \begin{itemize}
+%         %         \item \textbf{Goal}: combine the lessons learned in the final case study
+%         %     \end{itemize}
+%         \item Case Study \textbf{Runtime Auditing of Containerized Shell Sessions}
+%         \begin{itemize}
+%             \item Goal
+%             \begin{itemize}
+%                 \item Evaluate the feasibility of using eBPF to monitor containerized applications in Kubernetes
+%             \end{itemize}
+%             \item Challenges
+%             \begin{itemize}
+%                 \item Development of the deployment solution was complex
+%             \end{itemize}
+%             \item Main contribution to the research
+%                 \begin{itemize}
+%                     \item Approach for deploying eBPF programs inside containers in a Kubernetes cluster
+%                 \end{itemize}
+%         \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Synthesis}
+%     \begin{itemize}
+%         \item However, a complex infrastructure was required:
+%         \begin{itemize}
+%             \item A \textit{runc} wrapper program
+%             \item An HTTP service to start the eBPF program in the correct container
+%             \item Kubernetes \textit{Events} for reporting shell commands
+%         \end{itemize}
+%         \item This case study focused on infrastructure rather than performance analysis
+%     \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Synthesis}
+%     \begin{itemize}
+%         \item Case Study \textbf{System Call Tracing for Privilege Escalation Detection}
+%             \begin{itemize}
+%                 \item Goal
+%                     \begin{itemize}
+%                         \item Build eBPF development expertise
+%                     \end{itemize}
+% %                     % \item The BoSC logic was placed in kernel space to avoid race conditions
+% %                     %     \begin{itemize}
+% %                     %         \item Risk of bugs in kernel space
+% %                     %     \end{itemize}
+%                 \item Challenges
+%                     \begin{itemize}
+%                         \item eBPF verifier strictness
+%                         \item Lack of proper eBPF documentation
+%                         \item Development relied heavily on trial and error
+%                             % \begin{itemize}
+%                             %     \item Much of the available documentation is outdated
+%                             % \end{itemize}
+%                     \end{itemize}
+%                 \item Main contributions to the research
+%                     \begin{itemize}
+%                         \item Knowledge developing more complex eBPF programs
+%                         \item Benchmarking tools and scripts used in subsequent case study
+%                         \item Lesson learned: favor minimal kernel space components
+%                     \end{itemize}
+%             \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+
+% \begin{frame}
+%     \frametitle{Synthesis}
+%     \begin{itemize}
+%         \item Case Study \textbf{Real-Time Traffic Spike Detection in Container Networks}
+%             \begin{itemize}
+%                 \item Goal
+%                     \begin{itemize}
+%                         \item Apply the lessons from the previous case studies
+%                     \end{itemize}
+%                 \item Challenges
+%                     \begin{itemize}
+%                         \item Deployment solution had to be re-architected
+%                     \end{itemize}
+%                 \item Main contributions to the research
+%                     \begin{itemize}
+%                         \item \textbf{Polished end-to-end solution to be used in future work}
+%                             % \begin{itemize}
+%                                 \item The kernel space component was kept small and contained
+%                                 \item Most logic resides in user space
+%                                 \item A single user space component per worker node
+%                                 \item Alerting integrated with OpenShift/Kubernetes
+%                                     % \begin{itemize}
+%                                     %     \item Not relying on Kubernetes Events
+%                                     % \end{itemize}
+%                             % \end{itemize}
+%                     \end{itemize}
+%             \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+
+% \begin{frame}
+%     \frametitle{Synthesis}
+%     \begin{itemize}
+%         \item This research provided valuable lessons but also raised questions
+%         \item If monitoring both syscalls and network usage:
+%             \begin{itemize}
+%                 \item What overhead would be introduced?
+%                 \item Would the overheads accumulate?
+%             \end{itemize}
+%         \item Which operations would experience the most overhead?
+%         \item Theoretically, overheads would accumulate since both solutions monitor different aspects
+%         \item Answering these questions would enhance this research
+%     \end{itemize}
+% \end{frame}
+
+
+\begin{frame}
+    \frametitle{Synthesis}
+    \begin{itemize}
+        \item \textbf{\small Runtime Auditing of Containerized Shell Sessions}
+        \begin{itemize}
+            \item {\textit{Goal:}} Assess feasibility of eBPF-based monitoring in Kubernetes
+            \item {\textit{Challenges:}} Complex deployment architecture
+            \item {\textit{Contribution:}} Kubernetes-compatible eBPF deployment approach
+        \end{itemize}
+
+        \vspace{0.6em}
+
+        \item \textbf{\small System Call Tracing for Privilege Escalation Detection}
+        \begin{itemize}
+            \item \textit{Goal:} Build eBPF development expertise
+            \item \textit{Challenges:} Verifier strictness, limited documentation
+            \item \textit{Contribution:} Advanced eBPF knowledge, benchmarking tools, design lessons
+        \end{itemize}
+
+        \vspace{0.6em}
+
+        \item \textbf{\small Real-Time Traffic Spike Detection in Container Networks}
+        \begin{itemize}
+            \item \textit{Goal:} Apply lessons from earlier case studies
+            \item \textit{Challenges:} Re-architected deployment model
+            \item \textit{Contribution:} Polished end-to-end solution with minimal kernel logic
+        \end{itemize}
+    \end{itemize}
+
+\end{frame}

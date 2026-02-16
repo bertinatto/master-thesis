@@ -1,0 +1,737 @@
+#+TITLE: Perf analysis
+
+* Data
+** Tempo de execução da chamada de sistema getpid()
+*** Baseline
+*** Programa eBPF rastreando essa chamada de sistema
+** Processo é executado 100000 vezes para cada caso (baseline e eBPF)
+** Código:
+
+#+begin_src C
+     // Get process ID and execution time
+    struct timespec start_time, end_time;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+    pid_t process_id = syscall(SYS_getpid);
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+
+    // Calculate execution time
+    double execution_time = (end_time.tv_sec - start_time.tv_sec) +
+                            (double)(end_time.tv_nsec - start_time.tv_nsec) / 1e9;
+
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+  library(ggplot2)
+  library(dplyr)
+
+  bpf_data <- read.csv("./src/syscall/output/bpf.csv")
+  baseline_data <- read.csv("./src/syscall/output/baseline.csv")
+
+  combined_data <- rbind(data.frame(execution_time = bpf_data$execution_time, Condition = 'With eBPF Tracing'),
+                         data.frame(execution_time = baseline_data$execution_time, Condition = 'Without eBPF Tracing'))
+#+END_SRC
+
+* Descriptive statistics
+
+#+BEGIN_SRC R :session a :exports both :results silent
+  library(e1071)
+
+  library(dplyr)
+
+  stats_bpf <- bpf_data %>%
+    summarise(
+      Mean = mean(execution_time, na.rm = TRUE),
+      Median = median(execution_time, na.rm = TRUE),
+      SD = sd(execution_time, na.rm = TRUE),
+      IQR = IQR(execution_time, na.rm = TRUE),
+      Min = min(execution_time, na.rm = TRUE),
+      Max = max(execution_time, na.rm = TRUE),
+      Q1 = quantile(execution_time, 0.25, na.rm = TRUE),
+      Q3 = quantile(execution_time, 0.75, na.rm = TRUE),
+      Skewness = skewness(execution_time, type = 3),
+      Kkurtosis = kurtosis(execution_time, type = 3)
+    )
+
+  stats_baseline <- baseline_data %>%
+    summarise(
+      Mean = mean(execution_time, na.rm = TRUE),
+      Median = median(execution_time, na.rm = TRUE),
+      SD = sd(execution_time, na.rm = TRUE),
+      IQR = IQR(execution_time, na.rm = TRUE),
+      Min = min(execution_time, na.rm = TRUE),
+      Max = max(execution_time, na.rm = TRUE),
+      Q1 = quantile(execution_time, 0.25, na.rm = TRUE),
+      Q3 = quantile(execution_time, 0.75, na.rm = TRUE),
+      Skewness = skewness(execution_time, type = 3),
+      Kkurtosis = kurtosis(execution_time, type = 3)
+    )
+
+  # Combine into a single data frame for table output
+  stats_table <- data.frame(
+    Statistic = c("Mean", "Median", "SD", "IQR", "Min", "Max", "Q1", "Q3", "Skewness", "Kkurtosis"),
+    `With eBPF Tracing` = as.numeric(stats_bpf[1, ]),
+    `Without eBPF Tracing` = as.numeric(stats_baseline[1, ])
+  )
+
+    library(knitr)
+    library(kableExtra)
+    table <- kable(stats_table, "latex")
+
+     ## writeLines(table, "slides/stats.tex")
+#+END_SRC
+
+
+* Visualizando Outliers
+#+begin_src R :session a :exports both :results silent
+    ggplot(combined_data, aes(sample = execution_time)) +
+      ## stat_qq() +
+      stat_qq_line(color = "red") +
+      stat_qq(color = "blue") +
+      labs(title = "QQ Plot of Execution Time",
+           x = "Theoretical Quantiles (Normal Distribution)",
+           y = "Sample Quantiles") +
+      theme_minimal()
+
+    ggsave("images/qq_normal_distribution.png", width = 8, height = 6, dpi = 300)
+  #+end_src
+
+** eBPF: visivelmente mais outliers
+#+begin_src R :session a :exports both :results silent
+  bpf_data$Index <- seq_along(bpf_data$execution_time)
+  baseline_data$Index <- seq_along(baseline_data$execution_time)
+
+  # Add a sequential column to both datasets
+  bpf_data$Index <- seq_along(bpf_data$execution_time)
+  baseline_data$Index <- seq_along(baseline_data$execution_time)
+
+  # Combine the datasets for plotting (optional, if you want them in the same plot)
+  local_combined_data <- rbind(data.frame(execution_time = bpf_data$execution_time, Condition = 'With eBPF Tracing', Index = bpf_data$Index),
+                         data.frame(execution_time = baseline_data$execution_time, Condition = 'Without eBPF Tracing', Index = baseline_data$Index))
+
+  ggplot(local_combined_data, aes(x = Index, y = execution_time, color = Condition)) +
+    geom_point(alpha = 0.5) +
+    labs(title = "Scatter Plot of Execution Times",
+         x = "Process",
+         y = "Execution Time (seconds)") +
+    theme_minimal() +
+    scale_color_manual(values = c("With eBPF Tracing" = "blue", "Without eBPF Tracing" = "red")) +
+    # HOrizontal legend bottom
+    theme(legend.text = element_text(size = 12), legend.position = "bottom", legend.direction = "horizontal") +
+    guides(color = guide_legend(title = NULL))  # Removes the legend title for "Condition"
+
+  ggsave("images/scatter_outliers.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+- Visão geral de todos os data points
+  
+#+begin_src R :session a :exports both :results silent
+
+  ggplot(local_combined_data, aes(x = Index, y = execution_time, color = Condition)) +
+    geom_point(alpha = 0.2) +
+    labs(title = "Scatter Plot of Execution Times",
+         x = "Process",
+         y = "Execution Time (seconds)") +
+    ylim(0, 0.00005) +
+    theme_minimal() +
+    scale_color_manual(values = c("With eBPF Tracing" = "blue", "Without eBPF Tracing" = "red")) +
+    # HOrizontal legend bottom
+    theme(legend.text = element_text(size = 12), legend.position = "bottom", legend.direction = "horizontal") +
+    guides(color = guide_legend(title = NULL))  # Removes the legend title for "Condition"
+
+  ggsave("images/scatter_overall.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+- Um pouco mais aproximado
+- Em um determinado momento, syscalls rastreadas por ebPF começaram a ficar mais lentas
+  - Voltaram ao normal
+
+** Filtrando outliers
+*** IQR method
+**** Abaixo de Q1−(1.5×IQR) ou acima de Q3+(1.5×IQR)
+#+begin_src R :session a :exports both :results silent
+  # Calculate the IQR for each condition
+  iqr_bpf <- IQR(bpf_data$execution_time)
+  iqr_baseline <- IQR(baseline_data$execution_time)
+
+  # Calculate the first and third quartiles for each condition
+  q1_bpf <- quantile(bpf_data$execution_time, 0.25)
+  q3_bpf <- quantile(bpf_data$execution_time, 0.75)
+  q1_baseline <- quantile(baseline_data$execution_time, 0.25)
+  q3_baseline <- quantile(baseline_data$execution_time, 0.75)
+
+  # Define the cutoffs for outliers
+  cutoff_bpf_low <- q1_bpf - 1.5 * iqr_bpf
+  cutoff_bpf_high <- q3_bpf + 1.5 * iqr_bpf
+  cutoff_baseline_low <- q1_baseline - 1.5 * iqr_baseline
+  cutoff_baseline_high <- q3_baseline + 1.5 * iqr_baseline
+
+  # Filter out the outliers
+  filtered_bpf <- bpf_data[bpf_data$execution_time >= cutoff_bpf_low & bpf_data$execution_time <= cutoff_bpf_high, ]
+  filtered_baseline <- baseline_data[baseline_data$execution_time >= cutoff_baseline_low & baseline_data$execution_time <= cutoff_baseline_high, ]
+
+  # Combine the filtered data
+  combined_filtered_data <- rbind(data.frame(execution_time = filtered_bpf$execution_time, Condition = 'With eBPF Tracing'),
+                                  data.frame(execution_time = filtered_baseline$execution_time, Condition = 'Without eBPF Tracing'))
+#+end_src
+*** Z-score
+**** Z=σ(x−μ)
+**** Data points com Z-score maior de um certo valor (e.g., 3 ou -3) são considerados outliers
+#+begin_src R :session a :exports both :results silent :eval never
+# Calculate mean and standard deviation for each dataset
+mean_bpf <- mean(bpf_data$execution_time)
+sd_bpf <- sd(bpf_data$execution_time)
+mean_baseline <- mean(baseline_data$execution_time)
+sd_baseline <- sd(baseline_data$execution_time)
+
+# Calculate Z-scores for each dataset
+bpf_data$z_score <- (bpf_data$execution_time - mean_bpf) / sdy_bpf
+baseline_data$z_score <- (baseline_data$execution_time - mean_baseline) / sd_baseline
+
+# Define the threshold for outliers (commonly 3 or -3)
+threshold <- 3
+
+# Filter out the outliers based on Z-score
+filtered_bpf_z <- bpf_data[abs(bpf_data$z_score) <= threshold, ]
+filtered_baseline_z <- baseline_data[abs(baseline_data$z_score) <= threshold, ]
+
+# Combine the filtered data
+combined_filtered_data <- rbind(data.frame(execution_time = filtered_bpf_z$execution_time, Condition = 'With eBPF Tracing'),
+                                  data.frame(execution_time = filtered_baseline_z$execution_time, Condition = 'Without eBPF Tracing'))
+
+#+end_src
+
+* Compareison with a Box plot
+#+BEGIN_SRC R :session a :exports both :results silent
+  ggplot(combined_data, aes(x = Condition, y = execution_time)) +
+    geom_boxplot(fill = c("lightgray")) +
+    labs(title = "Boxplot of Execution Times", x = "", y = "Execution Time (seconds)") +
+    theme_minimal()
+
+  ggsave("images/box_comparison_overall.png", width = 8, height = 6, dpi = 300)
+#+END_SRC
+
+#+BEGIN_SRC R :session a :exports both :results silent
+  ggplot(combined_data, aes(x = Condition, y = execution_time)) +
+    geom_boxplot(fill = c("lightgray")) +
+    labs(title = "Boxplot of Execution Times (zoomed)", x = "", y = "Execution Time (seconds)") +
+    ylim(0, 0.0000009) +
+    theme_minimal()
+
+  ggsave("images/box_comparison.png", width = 8, height = 6, dpi = 300)
+#+END_SRC
+
+
+* Quantile-to-Quantile plot
+#+BEGIN_SRC R :session a :exports both :results silent
+  # Calculate quantiles for both conditions
+  quantiles_baseline <- quantile(baseline_data$execution_time, probs = seq(0, 1, length.out = 100))
+  quantiles_bpf <- quantile(bpf_data$execution_time, probs = seq(0, 1, length.out = 100))
+
+  # Create a dataframe for plotting the QQ plot
+  qq_data <- data.frame(QuantilesBaseline = quantiles_baseline, QuantilesBPF = quantiles_bpf)
+
+  # Generate the QQ plot using ggplot2 for flexibility and customization
+  ggplot(data = qq_data, aes(x = QuantilesBaseline, y = QuantilesBPF)) +
+    geom_point(color = "blue") + # Add points
+    geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") + # Add y=x line
+    scale_x_log10() + scale_y_log10() + # Optional: Use log scales if your data spans several orders of magnitude
+    labs(title = "QQ Plot: Baseline vs BPF Execution Times",
+         x = "Baseline Quantiles",
+         y = "BPF Quantiles") +
+    theme_minimal()
+
+  ggsave("images/qq_baseline.png", width = 8, height = 6, dpi = 300)
+#+END_SRC
+** Compara quantiles de tempos de execução entre baseline e eBPF
+** Pontos acima da linha vermelha indicam que o tempo de execução do eBPF foi maior que o baseline
+** Linha vermelha representa baseline, não uma distribuição normal como no QQ plot anterior
+
+
+* KDE - Density plot with subset
+#+begin_src R :session a :exports both :results silent
+  ## # Sample a subset of data from each condition
+  ## set.seed(42)  # For reproducibility
+  ## baseline_subset <- baseline_data[sample(nrow(baseline_data), 250), ]
+  ## bpf_subset <- bpf_data[sample(nrow(bpf_data), 250), ]
+
+  ## # Combine the subsets into a single data frame for plotting
+  ## # Add a new column to each subset to indicate the condition
+  ## baseline_subset$Condition <- 'Baseline'
+  ##       bpf_subset$Condition <- 'BPF'
+
+  ## # Combine the data
+  ## combined_subset <- rbind(baseline_subset, bpf_subset)
+
+  # Assuming combined_subset contains your data with a 'Condition' column
+  ggplot(combined_data, aes(x = execution_time, fill = Condition)) +
+    geom_density() +
+    scale_x_log10() + # Logarithmic scale helps compressing the tail
+    labs(title = "Density Plot of Execution Times",
+         x = "Execution Time (seconds)",
+         y = "Density") +
+     scale_fill_manual(values = c("#1F77B4", "#FFDAB9")) +
+    ## theme_minimal() +
+    # Horizontal legend bottom
+    theme(legend.text = element_text(size = 12), legend.title = element_blank(), legend.position = "bottom", legend.direction = "horizontal") +
+    guides(color = guide_legend(title = NULL))  # Removes the legend title for "Condition"
+
+  ggsave("images/kde_density.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+** Escala logaritima para comprimir a cauda sem perder dados
+*** Tipico usada em right-skwed data
+*** Melhor visualizacao sem a cauda tomar conta do grafico
+** y: densidade, x: tempos de execucao
+*** quanto antes o pico, melhor
+** Right-skewed: nada se assemelha a uma distribuição normal
+*** Plot comprido, sugerindo uma variabilidade grande
+*** Média é pouco útil por causa da variabilidade
+*** Mediana é um indice mais adequado para comparaçoes
+** Uma segunda subida (eBPF)
+*** Mean is typically greater than the median
+*** Mean is misleading
+*** Tipico de dados que normalmente tem um valor baixo, mas pode se expandir
+
+
+* CDF
+#+BEGIN_SRC R :session a :exports both :results silent
+  ## theme_minimal(base_size = 14) +
+  ## theme(legend.title = element_text(face = "bold"),
+  ##       axis.title = element_text(face = "bold"),
+  ##       plot.title = element_text(hjust = 0.5)) # Center the plot title
+
+
+  ## ggplot(combined_data, aes(x = execution_time, color = Condition)) +
+  ##       stat_ecdf(geom = "step", size = 1.2) +
+  ##       scale_x_log10() + # Logarithmic scale helps compressing the tail
+  ##       labs(title = "CDF Plot of Execution Times", x = "Execution Time (seconds)", y = "Cumulative Probability") +
+  ##       scale_color_manual(values = c("#1F77B4", "#FFDAB9")) +
+  ##       theme_bw()
+
+  ## execution_times_at_75 <- combined_data %>%
+  ##   group_by(Condition) %>%
+  ##   summarize(execution_time_75 = quantile(execution_time, probs = 0.75, na.rm = TRUE)) %>%
+  ##   ungroup()
+  # Assuming combined_data has already been prepared
+  # Calculate the 0.75 quantile for execution_time within each condition
+  quantiles_75 <- combined_data %>%
+    group_by(Condition) %>%
+    summarise(execution_time_75 = quantile(execution_time, probs = 0.75, na.rm = TRUE)) %>%
+    ungroup()
+
+  # Extract the specific quantile values for each condition
+  execution_time_75_With_eBPF_Tracing <- quantiles_75$execution_time_75[quantiles_75$Condition == 'With eBPF Tracing']
+  execution_time_75_Without_eBPF_Tracing <- quantiles_75$execution_time_75[quantiles_75$Condition == 'Without eBPF Tracing']
+
+  library(viridis)
+  # Plotting the CDF with a double-arrowed line between the two conditions at the 0.75 cumulative probability
+  ggplot(combined_data, aes(x = execution_time, color = Condition)) +
+    stat_ecdf(geom = "step", size = 1.2) +
+    scale_x_log10() +
+    ## scale_color_manual(values = c('With eBPF Tracing' = "blue", 'Without eBPF Tracing' = "red")) +
+    labs(title = "CDF Plot of Execution Times", x = "Execution Time (seconds)", y = "Cumulative Probability") +
+    theme_minimal() +
+    ## geom_segment(x = log10(execution_time_75_With_eBPF_Tracing),
+                 ## xend = log10(execution_time_75_Without_eBPF_Tracing),
+                 ## y = 0.75, yend = 0.75,
+                 ## arrow = arrow(type = "closed", ends = "both"), color = "black") +
+    # Horizontal legend bottom
+    theme(legend.text = element_text(size = 12), legend.title = element_blank(), legend.position = "bottom", legend.direction = "horizontal") +
+    guides(color = guide_legend(title = NULL)) # Removes the legend title for "Condition"
+
+  ggsave("images/cdf.png", width = 8, height = 6, dpi = 300)
+
+#+END_SRC
+
+* redis operations
+
+#+begin_src R :session a :results silent
+  # Assuming you've read your data into data frames ebpf_latencies and baseline_lat
+  ebpf_latencies <- read.csv("./redis/ebpf_latencies.csv")
+  baseline_latencies <- read.csv("./redis/baseline_latencies.csv")
+
+  # Load necessary library
+  library(ggplot2)
+
+  # Create a combined data frame for plotting
+  combined_data <- data.frame(BaselineLatency = baseline_latencies$latency_us,
+                              EBPFTracedLatency = ebpf_latencies$latency_us)
+
+  # Scatter plot
+  ggplot(combined_data, aes(x = BaselineLatency, y = EBPFTracedLatency)) +
+    geom_point(alpha = 0.5, color = "purple") +
+    geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+    scale_x_log10() + scale_y_log10() + # Optional: Use log scales if your data spans several orders of magnitude
+    xlim(min(baseline_latencies$latency_us), max(200, quantile(baseline_latencies$latency_us, 0.99))) +
+    ylim(min(ebpf_latencies$latency_us), max(200, quantile(ebpf_latencies$latency_us, 0.99))) +
+    labs(title = "Comparison of Latencies: Baseline vs eBPF Traced",
+         x = "Baseline Latency (microseconds)",
+         y = "eBPF Traced Latency (microseconds)") +
+    theme_classic() +
+    theme(panel.grid.major = element_line(color = "grey80"))
+
+  ggsave("images/scatter_redis.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+#+begin_src R :session a :results silent
+  # Calculate quantiles for both conditions
+  quantiles_baseline <- quantile(baseline_latencies$latency_us, probs = seq(0, 1, length.out = 100))
+  quantiles_bpf <- quantile(ebpf_latencies$latency_us, probs = seq(0, 1, length.out = 100))
+
+  # Create a dataframe for plotting the QQ plot
+  qq_data <- data.frame(QuantilesBaseline = quantiles_baseline, QuantilesBPF = quantiles_bpf)
+
+  # Generate the QQ plot using ggplot2 for flexibility and customization
+  ggplot(data = qq_data, aes(x = QuantilesBaseline, y = QuantilesBPF)) +
+    geom_point(color = "blue") + # Add points
+    geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") + # Add y=x line
+    scale_x_log10() + scale_y_log10() + # Optional: Use log scales if your data spans several orders of magnitude
+    labs(title = "QQ Plot: Baseline vs BPF Execution Times",
+         x = "Baseline Quantiles",
+         y = "BPF Quantiles") +
+    theme_minimal()
+
+  ggsave("images/qq_redis.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+
+#+begin_src R :session a :results silent
+    ## library(ggplot2)
+
+    ## # Assuming latency_differences is a vector containing the differences
+    ## # If you need to calculate it in R, it would be something like:
+    ## latency_differences <- ebpf_latencies$latency_us - baseline_latencies$latency_us
+
+    ## # Histogram with a focus on the main range of differences
+    ## ggplot(data.frame(LatencyDifference = latency_differences), aes(x = LatencyDifference)) +
+    ##   ## geom_histogram(binwidth = 1, fill = "orange", color = "black", alpha = 0.7) +
+    ##   geom_vline(aes(xintercept = median(LatencyDifference)), color = "red", linetype = "dashed", size = 1) +
+    ##   geom_density(alpha = .2, fill = "#FF5733") + # Adding a density plot for smoother visualization
+    ##   ## geom_density() +
+    ##   ## xlim(-50, 50) + # Adjust this range based on your data
+    ##   ## scale_x_log10() + scale_y_log10() + # Optional: Use log scales if your data spans several orders of magnitude
+
+    ##   labs(title = "Distribution of Latency Differences (Baseline vs eBPF Traced)",
+    ##        x = "Latency Difference (microseconds)",
+    ##        y = "Count") +
+    ##   theme_minimal() +
+    ##   theme(panel.grid.major = element_line(color = "grey80"))
+    ## ##   annotate("text", x = median(latency_differences) + 4, y = 18400, label = paste("Median:", round(median(latency_differences), 2)), size = 4) # Adjust text position as needed
+
+    library(ggplot2)
+
+  # Assuming latency_differences is a vector containing the differences
+  latency_differences <- ebpf_latencies$latency_us - baseline_latencies$latency_us
+
+  # Density plot without the histogram
+  ggplot(data.frame(LatencyDifference = latency_differences), aes(x = LatencyDifference)) +
+    geom_density(alpha = 0.7, fill = "#FF5733", color = "darkred") +
+    geom_vline(aes(xintercept = median(LatencyDifference)), color = "blue", linetype = "dashed", size = 1) +
+    xlim(-50, 50) + # Adjust this range based on your data
+    labs(title = "Distribution of Latency Differences (Baseline vs eBPF Traced)",
+         x = "Latency Differences (microseconds)",
+         y = "Density") +
+    theme_minimal() +
+    theme(panel.grid.major = element_line(color = "grey80")) +
+    annotate("text", x = median(latency_differences) + 5, y = 0.09, label = paste("Median:", round(median(latency_differences), 2)), size = 3) # Adjust text position as needed
+
+
+    ggsave("images/density_diff_redis.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+#+RESULTS:
+
+The histogram displays the distribution of latency differences between eBPF traced and baseline scenarios, with a focus on the range from -100 to 100 microseconds to better visualize the bulk of the data. A few key observations:
+
+    Central Peak: The distribution has a central peak around the mean difference of approximately 4.6 microseconds, as indicated by the dashed line. This suggests that for many requests, the overhead introduced by eBPF tracing is relatively low.
+    Skewness: The distribution is skewed, with a tail extending towards positive differences, indicating instances where eBPF tracing adds more significant overhead to syscalls.
+    Mean Difference: The mean difference is highlighted on the plot, showing the average overhead introduced by eBPF tracing across all requests.
+
+This visualization helps to understand the variability in the overhead introduced by eBPF tracing, illustrating that while the impact is generally modest, there are cases with more substantial differences. The presence of values below zero (negative differences) also suggests some variability in measurement or possibly specific conditions under which eBPF tracing has less impact than the baseline measurement, although these instances are relatively rare compared to the overall dataset. ​
+​
+
+#+begin_src R :session a :results silent
+  library(ggplot2)
+  library(zoo) # For rollmean()
+
+  # Assuming ebpf_latencies and baseline_latencies are your datasets
+  window_size <- 100
+  ebpf_latencies$moving_avg <- rollmean(ebpf_latencies$latency_us, window_size, fill = NA, align="right")
+  baseline_latencies$moving_avg <- rollmean(baseline_latencies$latency_us, window_size, fill = NA, align="right")
+
+  ebpf_avg_latency <- median(ebpf_latencies$latency_us, na.rm = TRUE)
+  baseline_avg_latency <- median(baseline_latencies$latency_us, na.rm = TRUE)
+
+  # Adjusting plotting code to include legends
+  ggplot() +
+    geom_line(data = ebpf_latencies, aes(x = request, y = latency_us, color = "eBPF Traced"), size = 0.5, alpha = 0.5) +
+    geom_line(data = baseline_latencies, aes(x = request, y = latency_us, color = "Baseline"), size = 0.5, alpha = 0.5) +
+    geom_hline(yintercept = ebpf_avg_latency, color = "darkblue", linetype = "dashed", size = 0.75) +
+    geom_hline(yintercept = baseline_avg_latency, color = "darkgreen", linetype = "dashed", size = 0.75) +
+    scale_color_manual(name = "Scenario", values = c("eBPF Traced" = "blue", "Baseline" = "green")) +
+    labs(title = "Latency Evolution Over Time (Request Sequence) with Averages",
+         x = "Request Sequence", y = "Latency (microseconds)",
+         color = "Scenario") +
+    theme_minimal() +
+    xlim(0, 10000) +
+    ylim(min(c(ebpf_latencies$latency_us, baseline_latencies$latency_us)), 150) +
+    # Horizontal legend bottom
+    theme(legend.text = element_text(size = 12), legend.title = element_blank(), legend.position = "bottom", legend.direction = "horizontal") +
+    guides(color = guide_legend(title = NULL)) # Removes the legend title for "Condition"
+
+
+  ggsave("images/timeseries_redis.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+
+* redis-benchmark
+- Load the data
+
+#+begin_src R :session a :exports both :results silent
+        # Load necessary libraries
+        library(ggplot2)
+        library(dplyr)
+
+        # Read the datasets
+        redis_bpf <- read.csv("./redis_benchmark/redis_bpf.csv")
+        redis_baseline <- read.csv("./redis_benchmark/redis_baseline.csv")
+
+        # Combine the datasets for easier plotting
+        redis_bpf$Dataset <- 'eBPF'
+        redis_baseline$Dataset <- 'Baseline'
+        combined_data <- rbind(redis_bpf, redis_baseline)
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+  # Throughput (RPS) Comparison
+  ggplot(combined_data, aes(x = test, y = rps, fill = Dataset)) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    labs(title = "Throughput (RPS) Comparison", x = "Redis Command", y = "Requests per Second (RPS)") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+    ggsave("images/redis_benchmark_throughput.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+  #  Assuming differences is already calculated as shown previously
+
+    # Use geom_text to add labels to the bars showing the actual values
+    ## ggplot(combined_data, aes(x = test, y = rps, fill = Dataset)) +
+    ##   geom_bar(stat = "identity", position = position_dodge()) +
+    ##   geom_text(aes(label = rps), vjust = -0.5, position = position_dodge(width = 0.9), size = 3) +
+    ##   labs(title = "Throughput (RPS) Comparison", x = "Test", y = "Requests per Second (RPS)") +
+    ##   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    ##       ggsave("images/redis_benchmark_throu.png", width = 8, height = 6, dpi = 300)
+
+
+        ## # Average Latency Comparison
+        ggplot(combined_data, aes(x = test, y = avg_latency_ms, fill = Dataset)) +
+          geom_bar(stat = "identity", position = position_dodge()) +
+          labs(title = "Average Latency Comparison", x = "Redis Command", y = "Latency (ms)") +
+          theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+          ggsave("images/redis_benchmark_latency_avg.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+  ## # Median (p50) Latency Comparison
+  ggplot(combined_data, aes(x = test, y = p50_latency_ms, fill = Dataset)) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    labs(title = "Median (p50) Latency Comparison", x = "Redis Command", y = "Latency (ms)") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+    ggsave("images/redis_benchmark_latency_median.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+          # 95th Percentile Latency Comparison
+          ggplot(combined_data, aes(x = test, y = p95_latency_ms, fill = Dataset)) +
+            geom_bar(stat = "identity", position = position_dodge()) +
+            labs(title = "95th Percentile Latency Comparison", x = "Redis Command", y = "Latency (ms)") +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+  ggsave("images/redis_benchmark_latency_p95.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+  # 99th Percentile Latency Comparison
+  ggplot(combined_data, aes(x = test, y = p99_latency_ms, fill = Dataset)) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    labs(title = "99th Percentile Latency Comparison", x = "Redis Command", y = "Latency (ms)") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+  ggsave("images/redis_benchmark_latency_p99.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+  library(ggplot2)
+  library(dplyr)
+
+  # Assuming redis_bpf and redis_baseline are already defined
+  # Example data (replace with your actual data)
+  # redis_bpf <- data.frame(test = c("Test1", "Test2"), rps = c(100, 110))
+  # redis_baseline <- data.frame(test = c("Test1", "Test2"), rps = c(90, 105))
+
+  # Merge the datasets
+  local_combined_data <- merge(redis_bpf, redis_baseline, by = "test", suffixes = c("_ebpf", "_baseline"))
+
+  # Determine the max value for each test to set the bar height
+  local_combined_data$max_value <- pmax(local_combined_data$rps_ebpf, local_combined_data$rps_baseline)
+
+  # Identify which condition each part of the bar will represent
+  local_combined_data <- local_combined_data %>%
+    mutate(lower_part = ifelse(rps_ebpf > rps_baseline, "Baseline", "eBPF"),
+           upper_part = ifelse(rps_ebpf > rps_baseline, "eBPF", "Baseline"),
+           lower_value = pmin(rps_ebpf, rps_baseline),
+           upper_value = max_value - lower_value)
+
+  # Prepare the plot data
+  plot_data <- tidyr::pivot_longer(local_combined_data, cols = c(lower_value, upper_value),
+                                   names_to = "segment", values_to = "value")
+
+  # Adjust segment names based on original condition
+  plot_data$segment <- recode(plot_data$segment,
+                              lower_value = plot_data$lower_part,
+                              upper_value = plot_data$upper_part)
+
+  # Plot
+  ggplot(plot_data, aes(x = test, y = value, fill = segment)) +
+    geom_bar(stat = "identity", position = "stack") +
+    ## scale_fill_manual(values = c("eBPF" = "lightgray", "Baseline" = "darkgray"),
+    ##                  name = "Condition",
+    ##                  labels = c("eBPF", "Baseline")) +
+    scale_fill_viridis_d(option = "magma", begin = 0.2, end = 0.8, name = "Condition", labels = c("eBPF", "Baseline")) +
+    labs(title = "Throughput (RPS) Comparison", x = "Redis Command", y = "Requests Per Second (RPS)") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+    ggsave("images/redis_benchmark_rps_comparison.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+    # Load required libraries
+    library(ggplot2)
+    library(reshape2)
+
+  
+  baseline_data <- read.csv("./redis_benchmark/redis_baseline.csv", stringsAsFactors = FALSE)
+  ebpf_data <- read.csv("./redis_benchmark/redis_bpf.csv", stringsAsFactors = FALSE)
+
+    # Merge datasets on 'test' column (command name)
+    merged_data <- merge(baseline_data, ebpf_data, by = "test", suffixes = c("_Baseline", "_eBPF"))
+
+    # Select necessary columns for plotting
+    data <- data.frame(
+      Command = merged_data$test,
+      Baseline = merged_data$rps_Baseline,
+      eBPF = merged_data$rps_eBPF
+    )
+
+    # Reshape data for ggplot
+    melted_data <- melt(data, id.vars = "Command", variable.name = "Dataset", value.name = "RPS")
+
+    # Create overlapping bar chart
+    ggplot(melted_data, aes(x = Command, y = RPS, fill = Dataset)) +
+      geom_bar(stat = "identity", position = "identity", alpha = 0.6) +  # Overlapping bars
+      labs(title = "Throughput Comparison",
+           x = "Redis Command",
+           y = "Requests per Second (RPS)") +
+      ## scale_fill_viridis_d(option = "magma", begin = 0.2, end = 0.8, name = "Condition", labels = c("eBPF", "Baseline")) +
+      ## scale_fill_manual(values = c("Baseline" = "#FF6666", "eBPF" = "#66B2FF")) +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+    ggsave("./images/redis_benchmark_rps_comparison_overlap.png", width = 8, height = 6, dpi = 300)
+
+
+#+end_src
+
+
+# #+begin_src R :session a :exports both :results silent
+#       # Load necessary libraries
+#       library(ggplot2)
+#       library(dplyr)
+#       library(readr)
+
+#       # Import the datasets
+#       baseline_data <- read_csv("/home/fbertina/src/mestrado/perf/trabalho_final/redis_benchmark/redis_baseline.csv")
+#       ebpf_data <- read_csv("/home/fbertina/src/mestrado/perf/trabalho_final/redis_benchmark/redis_bpf.csv")
+
+#       # Merge the datasets for comparison
+#       # Assuming both datasets have a common column 'test' for merging
+#       comparison_data <- merge(ebpf_data, baseline_data, by="test", suffixes=c("_ebpf", "_baseline"))
+
+#       comparison_data <- comparison_data %>%
+#         mutate(short_label = sapply(strsplit(as.character(test), " "), `[`, 1))
+
+#       # Calculate the overheads for RPS and latency
+#       comparison_data$rps_over
+#   head <- comparison_data$rps_baseline - comparison_data$rps_ebpf
+#       comparison_data$avg_latency_overhead_ms <- comparison_data$avg_latency_ms_ebpf - comparison_data$avg_latency_ms_baseline
+#       comparison_data$p50_latency_overhead_ms <- comparison_data$p50_latency_ms_ebpf - comparison_data$p50_latency_ms_baseline
+#       comparison_data$p95_latency_overhead_ms <- comparison_data$p95_latency_ms_ebpf - comparison_data$p95_latency_ms_baseline
+#       comparison_data$p99_latency_overhead_ms <- comparison_data$p99_latency_ms_ebpf - comparison_data$p99_latency_ms_baseline
+# #+end_src
+# ** Compare RPS
+
+# #+begin_src R :session a :exports both :results silent
+#   # Plotting
+#   # Requests per Second (RPS) comparison
+#   ggplot(comparison_data, aes(x=test)) +
+#     geom_bar(aes(y=rps_ebpf, fill="eBPF"), stat="identity", position=position_dodge()) +
+#     geom_bar(aes(y=rps_baseline, fill="Baseline"), stat="identity", position=position_dodge(), alpha=0.5) +
+#     labs(title="RPS (Requests per Second) Comparison", y="RPS", fill="Scenario") +
+#     theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) # Adjust 'size' as needed
+
+#   ggsave("images/redis_benchmark_rps.png", width = 8, height = 6, dpi = 300)
+
+# #+end_src
+
+# ** Compare latency
+
+# #+begin_src R :session a :exports both :results silent
+#     # Average Latency comparison
+#     ggplot(comparison_data, aes(x=test)) +
+#       geom_bar(aes(y=avg_latency_ms_ebpf, fill="eBPF"), stat="identity", position=position_dodge()) +
+#       geom_bar(aes(y=avg_latency_ms_baseline, fill="Baseline"), stat="identity", position=position_dodge(), alpha=0.5) +
+#       labs(title="Average Latency (ms) Comparison", y="Latency (ms)", fill="Scenario") +
+#       theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) # Adjust 'size' as needed
+
+#     ggsave("images/redis_benchmark_latency_avg.png", width = 8, height = 6, dpi = 300)
+
+# #+end_src
+
+# ** RPS overhead
+
+# #+begin_src R :session a :exports both :results silent
+#   # Assuming you would create similar plots for p50, p95, and p99 latencies
+#   # RPS Overhead
+#   ggplot(comparison_data, aes(x=test, y=rps_overhead)) +
+#     geom_bar(stat="identity", fill="red") +
+#     labs(title="RPS Overhead (Baseline - eBPF)", y="RPS Overhead") +
+#     theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) # Adjust 'size' as needed
+
+# #+end_src
+
+
+#+RESULTS:
+
+* Conclusion
+** Median is a good value for comparing
+
+* TODO
+** First
+*** TODO descriptive stats table OR bar charts
+**** TODO Summary and variability
+*** TODO redis-benchmark plots
+*** Conclusion
+** Second
+*** DONE more data and plots about RPS ("redis" directory)
+
+

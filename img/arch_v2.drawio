@@ -1,0 +1,91 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" version="26.0.16">
+  <diagram id="LinuxContainerArchitecture" name="Linux Container Architecture">
+    <mxGraphModel dx="1428" dy="753" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="orchestrators" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontColor=#1976d2;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="50" y="70" width="700" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="engines_layer" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e8;strokeColor=#388e3c;fontColor=#388e3c;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="50" y="160" width="700" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="docker" value="Docker" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#2e7d32;fontColor=#2e7d32;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="130" y="200" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="containerd" value="Containerd" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#2e7d32;fontColor=#2e7d32;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="270" y="200" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="podman" value="Podman" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#2e7d32;fontColor=#2e7d32;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="200" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="crio" value="CRI-O" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#2e7d32;fontColor=#2e7d32;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="550" y="200" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="runtimes_layer" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#f57c00;fontColor=#f57c00;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="50" y="270" width="700" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="runc" value="runc" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcc02;strokeColor=#e65100;fontColor=#e65100;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="290" y="310" width="98" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="crun" value="crun" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcc02;strokeColor=#e65100;fontColor=#e65100;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="310" width="98" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kernel_layer" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#0277bd;fontColor=#0277bd;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="50" y="380" width="700" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="namespaces" value="Namespaces" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3e5fc;strokeColor=#01579b;fontColor=#01579b;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="420" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="cgroups" value="cgroups" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3e5fc;strokeColor=#01579b;fontColor=#01579b;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="340" y="420" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="seccomp" value="seccomp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3e5fc;strokeColor=#01579b;fontColor=#01579b;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="480" y="420" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="hardware" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;fontColor=#7b1fa2;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="50" y="490" width="700" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow1" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#666666;strokeWidth=2;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="130" as="sourcePoint" />
+            <mxPoint x="400" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow2" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#666666;strokeWidth=2;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="240" as="sourcePoint" />
+            <mxPoint x="400" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow3" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#666666;strokeWidth=2;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="350" as="sourcePoint" />
+            <mxPoint x="400" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow4" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#666666;strokeWidth=2;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="460" as="sourcePoint" />
+            <mxPoint x="400" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nRSmEdCaKCdCAClCzr4w-4" value="Container Orchestrators and End Users" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="285" y="85" width="285" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="nRSmEdCaKCdCAClCzr4w-5" value="Container Engines" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="245" y="160" width="285" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="nRSmEdCaKCdCAClCzr4w-6" value="Container Runtimes" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="250" y="270" width="285" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="nRSmEdCaKCdCAClCzr4w-7" value="Linux Kernel" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="250" y="380" width="285" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="nRSmEdCaKCdCAClCzr4w-8" value="Hardware" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="250" y="505" width="285" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

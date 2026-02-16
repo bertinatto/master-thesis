@@ -1,0 +1,148 @@
+\section{Related Work}
+
+\begin{frame}[plain]
+    \sectionpage
+\end{frame}
+%
+% \begin{frame}
+%     \frametitle{eBPF-based Monitoring and Observability Solutions}
+%     \begin{itemize}
+%         \item Burns \cite{Burns2018} introduces the sidecar pattern for observability in Kubernetes
+%             \begin{itemize}
+%                 \item Resource overhead
+%                 \item Manual instrumentation of each service
+%             \end{itemize}
+%         \item Rice \cite{Rice2022} proposes a paradigm shift toward using a single eBPF-based agent per node
+%             \begin{itemize}
+%                 \item Tracee \cite{TraceeOnline} forensics tool
+%             \end{itemize}
+%         \item Nam et al. \cite{Nam2022} extend eBPF applications to inter-container communication security
+%             \begin{itemize}
+%                 \item Addressing unauthorized access prevention between containers sharing the same host
+%                 \item It focuses primarily on communication channels rather than comprehensive behavioral analysis of containerized applications
+%             \end{itemize}
+%         % \item Current eBPF-based monitoring solutions show substantial performance enhancements compared to traditional methods
+%         %     \begin{itemize}
+%         %         \item However, most of these solutions function as standalone tools or agents and do not integrate well with Kubernetes
+%         %     \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{System Call Analysis}
+%     \begin{itemize}
+%         \item Abed et al. \cite{Abed2015} conducted pioneering research applying BoSC techniques to identify behavioral anomalies in Linux containers
+%             \begin{itemize}
+%                 \item Collect system call traces using the \textit{strace} tool and comparing them against pre-established normal behavior baselines
+%                 \item Reactive nature, i.e., anomalies are identified only after attacks have occurred
+%             \end{itemize}
+%         \item Castanhel et al. \cite{Castanhel2021} investigated system call sequence analysis for detecting security threats in containerized applications
+%             \begin{itemize}
+%                 \item Machine learning algorithms to evaluate system call sequences against custom datasets containing both normal and anomalous behaviors
+%             \end{itemize}
+%     \end{itemize}
+
+%     % While analyzing system calls has shown potential for detecting anomalies in containerized applications, current methods have several limitations.
+%     % The primary emphasis on detecting incidents after they occur reduces the effectiveness of real-time threat prevention.
+%     % Furthermore, existing research lacks evaluation against modern container-specific evasion techniques.
+% \end{frame}
+
+
+% \begin{frame}
+%     \frametitle{Network Traffic Analysis and Anomaly Detection}
+%     \begin{itemize}
+%         \item Liu et al. \cite{Liu2020} developed a comprehensive system utilizing eBPF to analyze network traffic across containerized environments
+%             \begin{itemize}
+%                 \item Three distinct eBPF program types to collect data from various network protocols: socket filters, kprobe/kretprobe, and tracepoint.
+%                 \item Machine learning techniques for anomaly detection
+%             \end{itemize}
+%             % While this low overhead is promising, the specific testing scenarios and workload characteristics that produced these results require further examination for broader applicability.
+
+%         \item Shiraishi et al. \cite{Shiraishi2020} focus specifically on real-time monitoring within containerized microservice architectures
+%             \begin{itemize}
+%                 \item Propose a system that utilizes eBPF sensors to gather service-related network metrics
+%             \end{itemize}
+%             % Their approach constructs comprehensive full-stack topology views and dynamically adjusts sensor positioning in response to container orchestrator events.
+%             % However, their work primarily addresses operational observability rather than security-oriented anomaly detection.
+
+%         \item Lee et al. \cite{Lee2022} address the specific challenges of packet tracing in container overlay networks through eBPF-based solutions
+%             \begin{itemize}
+%                 \item Enhance traditional distributed tracing methods by incorporating infrastructure-layer analysis alongside application-layer latency measurements
+%             \end{itemize}
+%             % To overcome existing tracing limitations, they employ a modified sidecar proxy to insert trace context at fixed positions within HTTP headers, effectively reducing the search space required for trace context detection using eBPF.
+%             % While innovative, this approach requires application-level modifications that may limit its applicability in environments where application changes are not feasible.
+
+%         \item Sharma et al. \cite{Sharma2024} presents an eBPF-based observability solution specifically designed for cloud-native applications in Kubernetes environments
+%             \begin{itemize}
+%                 \item Solution operates entirely in kernel space without degrading the performance of instrumented events
+%             \end{itemize}
+%             % The authors report significant performance improvements compared to existing solutions, with cluster CPU usage reduced by factors ranging from 21 to 214, and memory utilization decreased by 30\% to 159\%.
+%             % However, these significant performance claims require validation under diverse workload conditions.
+
+%             % Current methods utilizing network-level eBPF monitoring provide various options for monitoring network traffic and detecting anomalies.
+%             % However, they frequently lack a real-time capability to identify issues such as unusual traffic spikes.
+%             % Additionally, these approaches often depend on modifications at the application level, which may not always be feasible.
+
+%             % Our work seeks to address this gap by introducing a solution that continuously and passively monitors all incoming traffic at the pod level, utilizing a custom statistical algorithm to identify deviations in network activity, and promptly issues alerts for such occurrences. This approach enhances early detection capabilities, allowing for a proactive response to potential security threats or system inefficiencies.
+%     \end{itemize}
+% \end{frame}
+
+% todo: multi domian foucus
+
+\begin{frame}
+    \frametitle{Research Gaps and Opportunities}
+    \begin{table}[htbp]
+        \centering
+        % \caption{State-of-the-art in Container Security Monitoring}
+        \label{tab:sota-container-security}
+        \resizebox{\textwidth}{!}{%
+            \begin{tabular}{|l|l|l|l|}
+                \hline
+                \textbf{Study} & \textbf{Approach} & \textbf{Focus} & \textbf{Real-time} \\
+                \hline
+                Burns (2018) & Sidecar pattern & General observability & Yes \\
+                \hline
+                Rice (2022) & eBPF agent & Host-level tracing & Yes \\
+                \hline
+                Cassagnes (2020) & eBPF & Performance monitoring & Yes \\
+                \hline
+                Nam (2022) & eBPF & Inter-container communication & Yes \\
+                \hline
+                Abed (2015) & strace + BoSC & Anomaly detection & No \\
+                \hline
+                Castanhel (2021) & ML + syscalls & Privilege escalation & No \\
+                \hline
+                Liu (2020) & eBPF + ML & Network monitoring & Yes \\
+                \hline
+                Shiraishi (2020) & eBPF sensors & Network monitoring & Yes \\
+                \hline
+                Lee (2022) & eBPF + sidecar & Packet tracing & Yes \\
+                \hline
+                Sharma (2024) & eBPF & Cloud-native observability & Yes \\
+                \hline
+                \textbf{This work} & \textbf{eBPF} & \textbf{Multi-domain} & \textbf{Yes} \\
+                \hline
+            \end{tabular}%
+        }
+    \end{table}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Research Gaps and Opportunities}
+    \textbf{Existing solutions:}
+    \begin{itemize}
+        \item Monitor single domain (network or syscall)
+        \item Reactive: detect anomalies post-incident
+        \item Lack Kubernetes-native integration
+    \end{itemize}
+
+    \vspace{1em}
+    \textbf{This thesis:}
+    \begin{itemize}
+        \item Multi-domain: shell sessions, system calls, and network
+        \item Proactive real-time detection
+        \item Native Kubernetes integration (2 case studies)
+    \end{itemize}
+\end{frame}
+
+

@@ -1,0 +1,143 @@
+\section{Background}
+
+\begin{frame}[plain]
+    \sectionpage
+\end{frame}
+
+\begin{frame}
+    \frametitle{Background}
+    \begin{itemize}
+        \item Linux container is a process with a higher level of isolation \cite{Zhan2022}
+        \item Isolation mechanisms:
+            \begin{itemize}
+                \item \textbf{Namespaces} isolate system resources (network, process tree)
+                \item \textbf{cGroups}: control hardware resources (RAM, CPU)
+                \item \textbf{Seccomp}: restricts available system calls
+            \end{itemize}
+        \item Container runtimes: runc\footnote{runc: https://github.com/opencontainers/runc} and crun\footnote{crun: https://github.com/containers/crun}
+        \item Container engines: Docker\footnote{Docker: https://www.docker.com}, Containerd\footnote{Containerd: https://containerd.io}, Podman\footnote{Podman: https://podman.io}, and CRI-O\footnote{CRI-O: https://cri-o.io}
+        % \begin{itemize}
+        %     \item Storage
+        %     \item Netoworking
+        %     \item Image management
+        % \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Background}
+    \begin{itemize}
+        \item Kubernetes: leading Container Orchestrator
+            \begin{itemize}
+                % \item Created by Google, maintained by CNCF
+                \item Manages containers at scale (multiple nodes)
+                \item Declarative model via objects
+                \begin{itemize}
+                    \item \textbf{Pod}: One or more containers with shared resources
+                \end{itemize}
+                % \item Key objects:
+                %     \begin{itemize}
+                %         \item \textbf{Pod}: One or more containers with shared resources
+                %         \item \textbf{DaemonSet}: Pods running on worker nodes
+                %         \item \textbf{Service}: Exposes applications to network
+                %         \item \textbf{Namespace}: Isolates groups of objects
+                %     \end{itemize}
+                \item Controllers reconcile actual vs. desired state
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+%
+% \begin{frame}
+%     \frametitle{Background}
+%     \begin{figure}
+%         \centering
+%         \includegraphics[width=1\columnwidth]{../img/arch_v2.png}
+%         % \caption{Architecture of Linux Containers.}
+%         \label{fig-linux-containers}
+%     \end{figure}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Background}
+%     \begin{itemize}
+%         \item The BSD Packet Filter (BPF) \cite{McCanne1993} was introduced in 1992
+%             \begin{itemize}
+%                 \item Virtual Machine (VM) with a Just-In-Time (JIT) compilation engine
+%                 \item Packet filtering within the kernel of Unix BSD systems
+%             \end{itemize}
+%             % \item The Linux operating system kernel has supported BPF since version 2.5.
+%         \item Extended BPF (eBPF)
+%             \begin{itemize}
+%                 \item Introduced in Linux version 3.15
+%                 \item From two to ten registers
+%                 \item Additional instructions
+%                 \item Invocation of a controlled set of kernel instructions
+%                 \item Result: versatile in-kernel virtual machine
+%             \end{itemize}
+%             % \item This variant expanded the number of available registers from two to ten, introduced additional instructions, enabled the invocation of a controlled set of kernel instructions, and included various other improvements.
+%             % \item These advances transformed BPF into a versatile in-kernel virtual machine
+%             % \item Initially, eBPF was mainly associated with fast packet processing \cite{Toke2018} and network monitoring \cite{Abranches2021}.
+%             % \item However, subsequent advances have made eBPF a valuable tool for tracing, profiling, and debugging programs.
+%         \item eBPF programs are executed upon triggering predefined hook points within the kernel or an application
+%             \begin{itemize}
+%                 \item Network events, system calls, and kernel tracepoints, among others
+%             \end{itemize}
+%         \item As of version 6.1 of the Linux kernel, there are 32 different types of eBPF programs
+%             \begin{itemize}
+%                 \item Each type of eBPF program can be attached to specific hook points
+%             \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Background}
+    \begin{itemize}
+        \item eBPF: kernel runtime environment
+        \item Execute bytecode at kernel hook points
+            \begin{itemize}
+                \item Network events, system calls, tracepoints
+            \end{itemize}
+            % \item Networking, tracing, and security
+        \item 32 program types (Linux 6.1)
+            % \begin{itemize}
+            %     \item Each type of eBPF program can be attached to specific hook points
+            % \end{itemize}
+    \end{itemize}
+    \vspace{1em}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\columnwidth]{../img/ebpf.png}
+        % \caption{eBPF program workflow.}
+        \label{fig-ebpf}
+    \end{figure}
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Background}
+%     \begin{table}[htbp]
+%         \centering
+%         \begin{tabular}{|p{0.5\linewidth}|p{0.45\linewidth}|}
+%             \hline
+%             \textbf{eBPF Program Identifier}          & \textbf{Common Name}    \\ \hline
+%             \texttt{BPF\_PROG\_TYPE\_KPROBE}          & Kprobe                  \\ \hline
+%             \texttt{BPF\_PROG\_TYPE\_TRACEPOINT}      & Tracepoint              \\ \hline
+%             \texttt{BPF\_PROG\_TYPE\_RAW\_TRACEPOINT} & Raw Tracepoint          \\ \hline
+%             \texttt{BPF\_PROG\_TYPE\_XDP}             & XDP (eXpress Data Path) \\ \hline
+%             \texttt{BPF\_PROG\_TYPE\_TC}              & TC (Traffic Control)    \\ \hline
+%         \end{tabular}
+%         % \caption{Relevant eBPF program types used in this work.}
+%         \label{tab:ebpf_program_types}
+%     \end{table}
+% \end{frame}
+%
+% TODO: removido por causa do 
+% \begin{frame}
+%     \frametitle{Background}
+%     \begin{figure}[htbp]
+%         \centering
+%         \includegraphics[width=0.6\columnwidth]{../img/hooks_location.png}
+%         \caption{Location of network hooks.}
+%         \label{fig:hooks-location}
+%     \end{figure}
+% \end{frame}
+

@@ -1,0 +1,149 @@
+\section{Methodology}
+
+\begin{frame}[plain]
+    \sectionpage
+\end{frame}
+
+\begin{frame}
+    \frametitle{Research Approach}
+    \begin{itemize}
+        \item Exploratory multi-case study approach
+        \item Why multiple case studies?
+            \begin{itemize}
+                \item eBPF technical diversity
+                \item Containers need broad security coverage
+                \item Deployment contexts
+                % \item Real-world applicability
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% todo: removever o how and why da dissertacao
+
+% \begin{frame}
+%     \frametitle{Methodology: Research Approach}
+%     \begin{itemize}
+%         \item Qualitative, exploratory research design, with multiple case studies as the primary research method
+%         \begin{itemize}
+%             \item Case study research is particularly suitable for investigating contemporary phenomena within their real-life context\cite{Yin2018}
+%             \item Ideal for examining emerging technologies, such as eBPF, in production container environments
+%         \end{itemize}
+%         \item Iterative approach where each case study builds upon insights from previous cases
+%     \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Methodology: Research Approach}
+%     \begin{itemize}
+%         \item The multiple case study approach was selected for several strategic reasons
+%         \item Technical diversity offered by eBPF
+%         \begin{itemize}
+%             \item Various program types that can be attached to different kernel hook points
+%         \end{itemize}
+%         \item Security coverage that eBPF can provide
+%         \begin{itemize}
+%             \item Container security encompasses multiple attack vectors due to the shared kernel architecture
+%         \end{itemize}
+%         \item Deployment contexts
+%         \begin{itemize}
+%             \item Standalone container deployments
+%             \item Complex orchestrated systems like Kubernetes
+%         \end{itemize}
+%         \item Real-world applicability
+%         \item The research framework follows a systematic approach for each case study
+%         \begin{itemize}
+%             \item Identify a specific container security challenge
+%             \item An eBPF-based solution is then designed to address the identified problem
+%             \item Implementation of the proposed solution
+%             \item Functional validation to assess effectiveness
+%             \item Performance impact assessment, when it makes sense
+%         \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Research Approach}   
+    \begin{itemize}
+        \item Systematic approach per each case study
+            \begin{itemize}
+                \item Identify security challenge
+                \item Design eBPF-based solution
+                \item Implement solution
+                \item Validate effectiveness
+                \item Assess performance impact when it makes sense
+            \end{itemize}
+        \item Each case study builds on previous insights
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Research Approach}
+    \begin{itemize}
+        \item Implementation
+            \begin{itemize}
+                \item Dual-component architecture
+                \item User space components
+                    \begin{itemize}
+                        % \item Python + BCC unavailable in containers
+                        \item Go + Cilium eBPF library\footnote{https://github.com/cilium/ebpf/tree/main}
+                        \item Attach eBPF programs to hook points in the kernel
+                        \item Handle Kubernetes integration
+                    \end{itemize}
+                \item Kernel space components
+                    \begin{itemize}
+                        \item Written in C
+                        \item Compiled with LLVM clang
+                    \end{itemize}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Methodology: Research Approach}
+%     \begin{itemize}
+%         \item Deployment
+%         \item Case study-dependent
+%         \begin{itemize}
+%             \item eBPF-based solutions injected into containers
+%             \item Single eBPF-based program monitored the containerized applications from the host system
+%         \end{itemize}
+%         \item In all cases, no changes were required to the monitored applications
+%     \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Methodology: Research Approach}
+% % \section{Data Collection}
+%     \begin{itemize}
+%         \item Data collection
+%         \begin{itemize}
+%             \item Performed according to the environment and goals of each case study
+%             \item Several programs were used
+%             \item Programs available in the Linux kernel source tree
+%             \item Custom and existing benchmarking tools
+%             \item All datasets produced during benchmarking were retained for analysis and are publicly accessible \footnote{https://github.com/bertinatto/master-thesis/tree/master/src}
+%         \end{itemize}
+%     \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Methodology: Tools And Technologies}
+%     \begin{table}
+%         \centering
+%         \begin{tabular}{|p{0.32\linewidth}|p{0.6\linewidth}|}
+%             % \begin{tabular}{|l|l|}
+%             \hline
+%             \textbf{Tool}             & \textbf{Purpose}                                        \\ \hline
+%             Podman, Containerd, CRI-O & Container creation and management                       \\ \hline
+%             Kubernetes, OpenShift     & Container orchestration                                 \\ \hline
+%             Vagrant                   & Virtualization of Kubernetes nodes                      \\ \hline
+%             ebpf-go library           & Creation of eBPF-based solutions                        \\ \hline
+%             Nginx, Redis              & Containerized application workloads                     \\ \hline
+%             ab, redis-benchmark       & Performance benchmarking and functional testing         \\ \hline
+%             R language                & Data analysis                                           \\ \hline
+%         \end{tabular}
+%         % \caption{Tools and Technologies Used in This Research.}
+%         \label{tab:tools}
+%     \end{table}
+% \end{frame}
+

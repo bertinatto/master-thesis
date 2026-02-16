@@ -1,0 +1,55 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36" version="26.0.14">
+  <diagram name="Page-1" id="QLd5m-kqB-fSBGHcJ7i7">
+    <mxGraphModel dx="1727" dy="615" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-1" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="10" y="120" width="380" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="Hoaz_1gGOVw62strZktB-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startFill=0;dashed=1;" edge="1" parent="1" source="RCA4Fh4X3SFFEuGEQZ1V-2" target="RCA4Fh4X3SFFEuGEQZ1V-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-2" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;Kubernetes Control Plane&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillStyle=solid;fillColor=#BDBDBD;rotation=-90;" parent="1" vertex="1">
+          <mxGeometry x="-130" y="285" width="370" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-4" value="" style="rounded=1;whiteSpace=wrap;html=1;fillStyle=solid;fillColor=#E3E3E3;" parent="1" vertex="1">
+          <mxGeometry x="100" y="130" width="260" height="370" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-7" value="Worker Node 1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;rotation=-90;" parent="1" vertex="1">
+          <mxGeometry x="60" y="300" width="115.75" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-16" value="HTTP Server 1&lt;br&gt;Pod" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#BDBDBD;" parent="1" vertex="1">
+          <mxGeometry x="132.5" y="145" width="195" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-20" value="Apache Benchmarking Tool (ab)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#BDBDBD;rotation=-90;" parent="1" vertex="1">
+          <mxGeometry x="420" y="156.25" width="190.93" height="132.5" as="geometry" />
+        </mxCell>
+        <mxCell id="RCA4Fh4X3SFFEuGEQZ1V-43" value="Kubernetes cluster" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;rotation=-90;" parent="1" vertex="1">
+          <mxGeometry x="300" y="300" width="152" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Hoaz_1gGOVw62strZktB-2" value="HTTP Server 2&lt;div&gt;Pod&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#BDBDBD;" vertex="1" parent="1">
+          <mxGeometry x="132.5" y="332.5" width="195" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="Hoaz_1gGOVw62strZktB-3" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="RCA4Fh4X3SFFEuGEQZ1V-16" target="RCA4Fh4X3SFFEuGEQZ1V-20">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="287" y="393" as="sourcePoint" />
+            <mxPoint x="257.5316910610359" y="564.3778097239192" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Hoaz_1gGOVw62strZktB-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" edge="1" parent="1" source="Hoaz_1gGOVw62strZktB-10" target="RCA4Fh4X3SFFEuGEQZ1V-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Hoaz_1gGOVw62strZktB-10" value="HTTP Client 1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#BDBDBD;" vertex="1" parent="1">
+          <mxGeometry x="160" y="40" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Hoaz_1gGOVw62strZktB-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=default;startArrow=classic;startFill=1;" edge="1" parent="1" source="Hoaz_1gGOVw62strZktB-11" target="Hoaz_1gGOVw62strZktB-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Hoaz_1gGOVw62strZktB-11" value="HTTP Client 2" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#BDBDBD;" vertex="1" parent="1">
+          <mxGeometry x="160" y="550" width="140" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

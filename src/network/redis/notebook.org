@@ -1,0 +1,430 @@
+#+TITLE: Perf analysis
+
+* redis-benchmark
+- Load the data
+
+#+begin_src R :session a :exports both :results silent
+        # Load necessary libraries
+        library(ggplot2)
+        library(dplyr)
+
+        # Read the datasets
+        redis_bpf <- read.csv("./results/ebpf_redis_benchmark_0202_v4_1M.csv")
+        redis_baseline <- read.csv("./results/baseline_redis_benchmark_0202_v4_1M.csv")
+
+        # Combine the datasets for easier plotting
+        redis_bpf$Dataset <- 'eBPF'
+        redis_baseline$Dataset <- 'Baseline'
+        combined_data <- rbind(redis_bpf, redis_baseline)
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+  library(xtable)
+  merged <- merge(redis_baseline, redis_bpf, by="test", suffixes=c("_baseline", "_ebpf"))
+  p_star_table <- merged[, c("test",
+                             "p50_latency_ms_baseline", "p50_latency_ms_ebpf",
+                             "p95_latency_ms_baseline", "p95_latency_ms_ebpf",
+                             "p99_latency_ms_baseline", "p99_latency_ms_ebpf")]
+  
+  latex_table <- xtable(p_star_table)
+  print(latex_table, type="latex", include.rownames=FALSE, digits=3)
+#+end_src
+
+* Create p50 latex table
+#+BEGIN_SRC R :results silent :exports code
+  library(knitr)
+  library(readr)
+  library(dplyr)
+
+  # Read the CSV files
+  baseline <- read.csv("./results/baseline_redis_benchmark_0202_v4_1M.csv")
+  ebpf <- read.csv("./results/ebpf_redis_benchmark_0202_v4_1M.csv")
+
+  # Merge data on the "test" column (Redis command)
+  data <- baseline %>%
+    select(test, p50_latency_ms) %>%
+    rename(p50_baseline = p50_latency_ms) %>%
+    inner_join(ebpf %>% select(test, p50_latency_ms) %>%
+                 rename(p50_ebpf = p50_latency_ms), by = "test")
+
+  # Calculate percentage increase
+  data <- data %>%
+    mutate(p50_increase = ((p50_ebpf - p50_baseline) / p50_baseline) * 100)
+
+  # Rename columns for LaTeX output
+  colnames(data) <- c("Command", "P50 Baseline (ms)", "P50 eBPF (ms)", "Increase (%)")
+
+  # Generate the LaTeX table
+  kable(data, format = "latex", booktabs = TRUE, digits = 2)
+
+  # Define file path for LaTeX output
+  output_file <- "./results/redis_benchmark_table_p50.tex"
+
+  # Write LaTeX table to file
+  sink(output_file)
+  cat(kable(data, format = "latex", booktabs = TRUE, digits = 2))
+  sink()
+#+END_SRC
+
+* Create p99 latex table
+#+BEGIN_SRC R :results silent :exports code
+  library(knitr)
+  library(readr)
+  library(dplyr)
+
+  # Read the CSV files
+  baseline <- read.csv("./results/baseline_redis_benchmark_0202_v4_1M.csv")
+  ebpf <- read.csv("./results/ebpf_redis_benchmark_0202_v4_1M.csv")
+
+  # Merge data on the "test" column (Redis command)
+  data <- baseline %>%
+    select(test, p99_latency_ms) %>%
+    rename(p99_baseline = p99_latency_ms) %>%
+    inner_join(ebpf %>% select(test, p99_latency_ms) %>%
+                 rename(p99_ebpf = p99_latency_ms), by = "test")
+
+  # Calculate percentage increase
+  data <- data %>%
+    mutate(p99_increase = ((p99_ebpf - p99_baseline) / p99_baseline) * 100)
+
+  # Rename columns for LaTeX output
+  colnames(data) <- c("Command", "P99 Baseline (ms)", "P99 eBPF (ms)", "Increase (%)")
+
+  # Generate the LaTeX table
+  kable(data, format = "latex", booktabs = TRUE, digits = 2)
+
+  # Define file path for LaTeX output
+  output_file <- "./results/redis_benchmark_table_p99.tex"
+
+  # Write LaTeX table to file
+  sink(output_file)
+  cat(kable(data, format = "latex", booktabs = TRUE, digits = 2))
+  sink()
+#+END_SRC
+
+#+begin_src R :session a :exports both :results silent
+  # Throughput (RPS) Comparison
+  ggplot(combined_data, aes(x = test, y = rps, fill = Dataset)) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    labs(title = "Throughput (RPS) Comparison", x = "Redis Command", y = "Requests per Second (RPS)") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+    ggsave("./images/redis_benchmark_throughput.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+* Create p95 latex table
+
+#+BEGIN_SRC R :results silent :exports code
+  library(knitr)
+  library(readr)
+  library(dplyr)
+
+  # Read the CSV files
+  baseline <- read.csv("./results/baseline_redis_benchmark_0202_v4_1M.csv")
+  ebpf <- read.csv("./results/ebpf_redis_benchmark_0202_v4_1M.csv")
+
+  # Merge data on the "test" column (Redis command)
+  data <- baseline %>%
+    select(test, p95_latency_ms) %>%
+    rename(p95_baseline = p95_latency_ms) %>%
+    inner_join(ebpf %>% select(test, p95_latency_ms) %>%
+                 rename(p95_ebpf = p95_latency_ms), by = "test")
+
+  # Calculate percentage increase
+  data <- data %>%
+    mutate(p95_increase = ((p95_ebpf - p95_baseline) / p95_baseline) * 100)
+
+  # Rename columns for LaTeX output
+  colnames(data) <- c("Command", "P95 Baseline (ms)", "P95 eBPF (ms)", "Increase (%)")
+
+  # Generate the LaTeX table
+  kable(data, format = "latex", booktabs = TRUE, digits = 2)
+
+  # Define file path for LaTeX output
+  output_file <- "./results/redis_benchmark_table_p95.tex"
+
+  # Write LaTeX table to file
+  sink(output_file)
+  cat(kable(data, format = "latex", booktabs = TRUE, digits = 2))
+  sink()
+#+END_SRC
+
+#+begin_src R :session a :exports both :results silent
+  # Throughput (RPS) Comparison
+  ggplot(combined_data, aes(x = test, y = rps, fill = Dataset)) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    labs(title = "Throughput (RPS) Comparison", x = "Redis Command", y = "Requests per Second (RPS)") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+    ggsave("./images/redis_benchmark_throughput.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+* p99 latex table
+#+begin_src R :session a :exports both :results silent
+  #  Assuming differences is already calculated as shown previously
+
+    # Use geom_text to add labels to the bars showing the actual values
+    ## ggplot(combined_data, aes(x = test, y = rps, fill = Dataset)) +
+    ##   geom_bar(stat = "identity", position = position_dodge()) +
+    ##   geom_text(aes(label = rps), vjust = -0.5, position = position_dodge(width = 0.9), size = 3) +
+    ##   labs(title = "Throughput (RPS) Comparison", x = "Test", y = "Requests per Second (RPS)") +
+    ##   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    ##       ggsave("images/redis_benchmark_throu.png", width = 8, height = 6, dpi = 300)
+
+
+        ## # Average Latency Comparison
+        ggplot(combined_data, aes(x = test, y = avg_latency_ms, fill = Dataset)) +
+          geom_bar(stat = "identity", position = position_dodge()) +
+          labs(title = "Average Latency Comparison", x = "Redis Command", y = "Latency (ms)") +
+          theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+          ggsave("./images/redis_benchmark_latency_avg.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+  ## # Median (p50) Latency Comparison
+  ggplot(combined_data, aes(x = test, y = p50_latency_ms, fill = Dataset)) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    labs(title = "Median (p50) Latency Comparison", x = "Redis Command", y = "Latency (ms)") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+    ggsave("./images/redis_benchmark_latency_median.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+          # 95th Percentile Latency Comparison
+          ggplot(combined_data, aes(x = test, y = p95_latency_ms, fill = Dataset)) +
+            geom_bar(stat = "identity", position = position_dodge()) +
+            labs(title = "95th Percentile Latency Comparison", x = "Redis Command", y = "Latency (ms)") +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+  ggsave("./images/redis_benchmark_latency_p95.png", width = 8, height = 6, dpi = 300)
+
+#+end_src
+
+#+begin_src R :session a :exports both :results silent
+    # Load required libraries
+    library(ggplot2)
+    library(reshape2)
+
+  baseline_data <- read.csv("./results/baseline_redis_benchmark_0202_v4_1M.csv", stringsAsFactors = FALSE)
+  ebpf_data <- read.csv("./results/ebpf_redis_benchmark_0202_v4_1M.csv", stringsAsFactors = FALSE)
+
+    # Merge datasets on 'test' column (command name)
+    merged_data <- merge(baseline_data, ebpf_data, by = "test", suffixes = c("_Baseline", "_eBPF"))
+
+    # Select necessary columns for plotting
+    data <- data.frame(
+      Command = merged_data$test,
+      Baseline = merged_data$rps_Baseline,
+      eBPF = merged_data$rps_eBPF
+    )
+
+    # Reshape data for ggplot
+    melted_data <- melt(data, id.vars = "Command", variable.name = "Dataset", value.name = "RPS")
+
+    # Create overlapping bar chart
+    ggplot(melted_data, aes(x = Command, y = RPS, fill = Dataset)) +
+      geom_bar(stat = "identity", position = "identity", alpha = 0.6) +  # Overlapping bars
+      labs(title = "Throughput Comparison",
+           x = "Redis Command",
+           y = "Requests per Second (RPS)") +
+      ## scale_fill_viridis_d(option = "magma", begin = 0.2, end = 0.8, name = "Condition", labels = c("eBPF", "Baseline")) +
+      ## scale_fill_manual(values = c("Baseline" = "#FF6666", "eBPF" = "#66B2FF")) +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+    ggsave("./images/redis_benchmark_rps_comparison_overlap.png", width = 8, height = 6, dpi = 300)
+
+
+#+end_src
+
+* redis operations
+
+#+begin_src R :session a :results silent
+  # Assuming you've read your data into data frames ebpf_latencies and baseline_lat
+  ebpf_latencies <- read.csv("./results/ebpf_latencies_0202_v2.csv")
+  baseline_latencies <- read.csv("./results/baseline_latencies_0202_v2.csv")
+
+  # Load necessary library
+  library(ggplot2)
+
+  # Create a combined data frame for plotting
+  combined_data <- data.frame(BaselineLatency = baseline_latencies$latency_us,
+                              EBPFTracedLatency = ebpf_latencies$latency_us)
+
+  
+  # Scatter plot
+  ggplot(combined_data, aes(x = BaselineLatency, y = EBPFTracedLatency)) +
+    geom_point(alpha = 0.5, color = "purple") +
+    geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+    scale_x_log10() + scale_y_log10() + # Optional: Use log scales if your data spans several orders of magnitude
+    xlim(min(baseline_latencies$latency_us), max(200, quantile(baseline_latencies$latency_us, 0.99))) +
+    ylim(min(ebpf_latencies$latency_us), max(200, quantile(ebpf_latencies$latency_us, 0.99))) +
+    labs(title = "Comparison of Latencies: Baseline vs eBPF Traced",
+         x = "Baseline Latency (microseconds)",
+         y = "eBPF Traced Latency (microseconds)") +
+    theme_classic() +
+    theme(panel.grid.major = element_line(color = "grey80"))
+
+  ggsave("./images/scatter_redis.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+* Box plot
+
+#+begin_src R :session a :results silent
+        # Load necessary library
+        library(ggplot2)
+        library(dplyr)
+
+        # Read the CSV files
+        ebpf_latencies <- read.csv("./results/ebpf_latencies_0202_v2.csv")
+        baseline_latencies <- read.csv("./results/baseline_latencies_0202_v2.csv")
+
+        # Add a column to distinguish between datasets
+        ebpf_latencies$Condition <- "eBPF"
+        baseline_latencies$Condition <- "Baseline"
+
+        # Combine the datasets into one data frame
+        combined_data <- rbind(
+          data.frame(Latency = ebpf_latencies$latency_us, Condition = "eBPF"),
+          data.frame(Latency = baseline_latencies$latency_us, Condition = "Baseline")
+        )
+
+      # Define the upper limit dynamically (e.g., 95th percentile to avoid extreme outliers)
+    lower_limit <- quantile(combined_data$Latency, 0)  # 5th percentile
+    upper_limit <- quantile(combined_data$Latency, 0.95)  # 95th percentile
+
+    # Filter data within this range
+  filtered_data <- combined_data %>%
+    filter(Latency >= lower_limit & Latency <= upper_limit)
+
+  # Calculate statistics per condition
+  latency_stats <- filtered_data %>%
+    group_by(Condition) %>%
+    summarise(
+      Median = median(Latency),
+      Q1_25th = quantile(Latency, 0.25),
+      Q3_75th = quantile(Latency, 0.75),
+      IQR = IQR(Latency),
+      Min = min(Latency),
+      Max = max(Latency),
+      Lower_Whisker = max(min(Latency), Q1_25th - 1.5 * IQR),
+      Upper_Whisker = min(max(Latency), Q3_75th + 1.5 * IQR)
+    )
+
+  # Print the computed statistics
+  print(latency_stats)
+
+        # Create a simple box plot
+        ggplot(combined_data, aes(x = Condition, y = Latency)) +
+          geom_boxplot(fill = "lightgray") +
+          labs(title = "Boxplot of Latencies", x = "", y = "Latency (microseconds)") +
+          ## ylim(0, 0.0000009) +
+          ylim(lower_limit, upper_limit) +
+          theme_minimal()
+
+        # Save the plot
+        ggsave("./images/boxplot_latencies.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+* CDF
+#+begin_src R :session a :results silent
+  # Define x-axis zoom limits dynamically
+  #lower_limit <- quantile(combined_data$Latency, 0.01)  # 1st percentile (avoid extreme low values)
+  upper_limit <- quantile(combined_data$Latency, 0.9999)  # 99th percentile (exclude extreme high values)
+
+  # Create the zoomed-in CDF plot
+  ggplot(combined_data, aes(x = Latency, color = Condition)) +
+    stat_ecdf(size = 1) +  # Empirical CDF
+    scale_x_continuous(limits = c(0, upper_limit)) +  # Zoomed-in range
+    labs(title = "Cumulative Distribution of Latencies (Zoomed-in)",
+         x = "Latency (microseconds)", 
+         y = "Cumulative Probability") +
+    theme_minimal()
+
+  # Save the plot
+  ggsave("./images/cdf_latencies.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+#+begin_src R :session a :results silent
+  # Calculate quantiles for both conditions
+  quantiles_baseline <- quantile(baseline_latencies$latency_us, probs = seq(0, 1, length.out = 100))
+  quantiles_bpf <- quantile(ebpf_latencies$latency_us, probs = seq(0, 1, length.out = 100))
+
+  # Create a dataframe for plotting the QQ plot
+  qq_data <- data.frame(QuantilesBaseline = quantiles_baseline, QuantilesBPF = quantiles_bpf)
+
+  # Generate the QQ plot using ggplot2 for flexibility and customization
+  ggplot(data = qq_data, aes(x = QuantilesBaseline, y = QuantilesBPF)) +
+    geom_point(color = "blue") + # Add points
+    geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") + # Add y=x line
+    scale_x_log10() + scale_y_log10() + # Optional: Use log scales if your data spans several orders of magnitude
+    labs(title = "QQ Plot: Baseline vs BPF Execution Times",
+         x = "Baseline Quantiles",
+         y = "BPF Quantiles") +
+    theme_minimal()
+
+  ggsave("images/qq_redis.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+
+#+begin_src R :session a :results silent
+  library(ggplot2)
+
+  # Assuming latency_differences is a vector containing the differences
+  latency_differences <- ebpf_latencies$latency_us - baseline_latencies$latency_us
+
+  # Density plot without the histogram
+  ggplot(data.frame(LatencyDifference = latency_differences), aes(x = LatencyDifference)) +
+    geom_density(alpha = 0.7, fill = "#FF5733", color = "darkred") +
+    geom_vline(aes(xintercept = median(LatencyDifference)), color = "blue", linetype = "dashed", size = 1) +
+    xlim(-50, 50) + # Adjust this range based on your data
+    labs(title = "Distribution of Latency Differences (Baseline vs eBPF Traced)",
+         x = "Latency Differences (microseconds)",
+         y = "Density") +
+    theme_minimal() +
+    theme(panel.grid.major = element_line(color = "grey80")) +
+    annotate("text", x = median(latency_differences) + 5, y = 0.09, label = paste("Median:", round(median(latency_differences), 2)), size = 3) # Adjust text position as needed
+
+
+    ggsave("images/density_diff_redis.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
+#+begin_src R :session a :results silent
+  library(ggplot2)
+  library(zoo) # For rollmean()
+
+  # Assuming ebpf_latencies and baseline_latencies are your datasets
+  window_size <- 100
+  ebpf_latencies$moving_avg <- rollmean(ebpf_latencies$latency_us, window_size, fill = NA, align="right")
+  baseline_latencies$moving_avg <- rollmean(baseline_latencies$latency_us, window_size, fill = NA, align="right")
+
+  ebpf_avg_latency <- median(ebpf_latencies$latency_us, na.rm = TRUE)
+  baseline_avg_latency <- median(baseline_latencies$latency_us, na.rm = TRUE)
+
+  # Adjusting plotting code to include legends
+  ggplot() +
+    geom_line(data = ebpf_latencies, aes(x = request, y = latency_us, color = "eBPF Traced"), size = 0.5, alpha = 0.5) +
+    geom_line(data = baseline_latencies, aes(x = request, y = latency_us, color = "Baseline"), size = 0.5, alpha = 0.5) +
+    geom_hline(yintercept = ebpf_avg_latency, color = "darkblue", linetype = "dashed", size = 0.75) +
+    geom_hline(yintercept = baseline_avg_latency, color = "darkgreen", linetype = "dashed", size = 0.75) +
+    scale_color_manual(name = "Scenario", values = c("eBPF Traced" = "blue", "Baseline" = "green")) +
+    labs(title = "Latency Evolution Over Time (Request Sequence) with Averages",
+         x = "Request Sequence", y = "Latency (microseconds)",
+         color = "Scenario") +
+    theme_minimal() +
+    xlim(0, 10000) +
+    ylim(min(c(ebpf_latencies$latency_us, baseline_latencies$latency_us)), 150) +
+    # Horizontal legend bottom
+    theme(legend.text = element_text(size = 12), legend.title = element_blank(), legend.position = "bottom", legend.direction = "horizontal") +
+    guides(color = guide_legend(title = NULL)) # Removes the legend title for "Condition"
+
+
+  ## ggsave("images/timeseries_redis.png", width = 8, height = 6, dpi = 300)
+#+end_src
+
